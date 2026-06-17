@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA BLADE — FAZ 0 · Sanat Yönü</title>
+<style>
+:root{--bg:#0b0d16;--card:#12141f;--line:#222637;--ink:#e8ecf6;--mut:#8b93a8;--amber:#ffb24a;--cyan:#7fe0ff}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 700px at 70% -10%,#1a1430,#0b0d16 60%);color:var(--ink);
+  font:15px/1.55 ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
+.kicker{font:700 12px/1 ui-monospace,monospace;letter-spacing:.32em;color:var(--amber);text-transform:uppercase}
+h1{font-size:34px;margin:12px 0 6px;letter-spacing:-.01em}
+h1 b{color:var(--amber)}
+.lead{color:var(--mut);max-width:760px;font-size:16px}
+.sect{margin-top:54px}
+.sect>h2{font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);
+  font-family:ui-monospace,monospace;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.card .hd{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.tag{font:700 11px/1 ui-monospace,monospace;letter-spacing:.1em;padding:5px 9px;border-radius:999px}
+.tag.old{color:#ff8a8a;background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.25)}
+.tag.new{color:#7df0b0;background:rgba(80,255,150,.1);border:1px solid rgba(80,255,150,.25)}
+.ttl{font-weight:600;font-size:14px}
+.frame{position:relative;background:#06081a}
+.scene{height:430px}
+.scene svg{width:100%;height:100%;display:block}
+.heroframe{height:360px;display:flex;align-items:flex-end;justify-content:center;
+  background:linear-gradient(180deg,#171326,#0a0b14);padding:18px}
+.heroframe svg{height:100%;display:block;filter:drop-shadow(0 8px 14px rgba(0,0,0,.6))}
+.cap{padding:14px 16px;color:var(--mut);font-size:13px;border-top:1px solid var(--line)}
+ul.notes{margin:10px 0 0;padding-left:18px}
+ul.notes li{margin:5px 0;color:var(--mut);font-size:13.5px}
+ul.notes li b{color:var(--ink)}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+.swatch{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.swatch .sv{height:96px;border-radius:8px;overflow:hidden;background:#0c1430}
+.swatch .sv svg{width:100%;height:100%;display:block}
+.swatch .nm{margin-top:9px;font:700 12px/1.2 ui-monospace,monospace;color:var(--ink)}
+.swatch .ds{margin-top:3px;font-size:11.5px;color:var(--mut)}
+.foot{margin-top:60px;color:var(--mut);font-size:13px;border-top:1px solid var(--line);padding-top:18px}
+code{font-family:ui-monospace,monospace;color:var(--amber);font-size:12.5px;background:rgba(255,180,74,.08);padding:1px 6px;border-radius:5px}
+</style></head>
+<body><div class="wrap">
+<div class="kicker">NOVA BLADE · Görsel Yeniden Tasarım</div>
+<h1>FAZ 0 — <b>Sanat Yönü Temeli</b> + Pilot Sahne</h1>
+<p class="lead">Ortak SVG sanat-yönü kütüphanesi (<code>NB_ART</code>) kuruldu ve iki pilot varlığa uygulandı:
+<b>Karoon çöl sahnesi</b> ve <b>ana kahraman</b> (kapüşonlu Muhafız). Oyun mantığı, ekonomi, kayıt ve state'e
+dokunulmadı — yalnızca görsel temsil katmanı yeniden inşa edildi.</p>
+<div class="sect">
+  <h2>1 · Ortak Kütüphane — NB_ART defs</h2>
+  <p class="lead" style="margin-bottom:20px">Her sahne/karakter kendi <code>prefix</code>'iyle çağırır →
+  id çakışması olmadan filtre ve gradyanları paylaşır.</p>
+  <div class="lib" id="lib"></div>
+</div>
+<div class="sect">
+  <h2>2 · Pilot Sahne — Karoon (Çöl) · Önce / Sonra</h2>
+  <div class="grid2">
+    <div class="card"><div class="hd"><span class="ttl">Karoon</span><span class="tag old">ÖNCE</span></div>
+      <div class="frame scene" id="dOld"></div>
+      <div class="cap">Düz illüstrasyon: tek katman kum, sabit ikiz güneş, basit shimmer.</div></div>
+    <div class="card"><div class="hd"><span class="ttl">Karoon</span><span class="tag new">SONRA</span></div>
+      <div class="frame scene" id="dNew"></div>
+      <div class="cap">Sinematik atmosfer + derinlik + god-ray + ısı pusu.</div></div>
+  </div>
+  <ul class="notes">
+    <li><b>God-ray'ler:</b> ikiz güneşten tozun içinden geçen, yavaş nefes alan ışık konileri.</li>
+    <li><b>Atmosferik perspektif:</b> uzak dağlar soluk mor/gri pusa kayar; ön dunlar doygun.</li>
+    <li><b>Isı pusu:</b> <code>NB_ART heat</code> (feTurbulence + displacement) ile orta zeminde kırılma.</li>
+    <li><b>Bloom:</b> güneş çekirdekleri <code>NB_ART glow</code> ile katmanlı halo.</li>
+    <li><b>Set dressing + parallax:</b> nem buharlaştırıcılar, inen mekik silüeti, krayt iskeleti; uzak/yakın iki toz katmanı.</li>
+    <li><b>Doku:</b> tüm sahneye <code>NB_ART noise</code> ile ince film greni.</li>
+  </ul>
+</div>
+<div class="sect">
+  <h2>3 · Pilot Karakter — Muhafız · Önce / Sonra</h2>
+  <div class="grid2">
+    <div class="card"><div class="hd"><span class="ttl">Hooded Guardian</span><span class="tag old">ÖNCE</span></div>
+      <div class="frame heroframe" id="hOld"></div>
+      <div class="cap">Düz dolgu zırh, tek renk pelerin, düz vizör bandı.</div></div>
+    <div class="card"><div class="hd"><span class="ttl">Hooded Guardian</span><span class="tag new">SONRA</span></div>
+      <div class="frame heroframe" id="hNew"></div>
+      <div class="cap">Malzeme gradyanları + kıvrım + rim ışık + cam vizör.</div></div>
+  </div>
+  <ul class="notes">
+    <li><b>Malzeme ayrımı:</b> zırha özel <code>cloth</code> ve <code>steel</code> gradyanları, renk tonlama ile her zırh setine uyar.</li>
+    <li><b>Kumaş kıvrımları:</b> pelerine çok-noktalı gölge/highlight fold çizgileri.</li>
+    <li><b>Rim ışık:</b> arkadan gelen güneşi taklit eden ince trim konturu.</li>
+    <li><b>Cam vizör:</b> <code>NB_ART glass</code> radyal yansıma + glow'lu enerji bandı.</li>
+    <li><b>Korundu:</b> tüm animasyon kancaları (<code>#armG</code>, <code>#swordG</code>, <code>.nbUpper</code>, <code>#slashTrail</code>) ve savurma fiziği aynen çalışır.</li>
+  </ul>
+</div>
+<div class="foot"><b>Sonraki:</b> FAZ 1 — bu kütüphane ve pilot standart referans alınarak kalan tüm gezegen sahneleri
+gezegen kimliğine uygun paletle yeniden çizilecek. · Entegre teslim: <code>NOVA BLADE v3.html</code> + <code>nova-v3-theme.css</code>.</div>
+</div>
+<script>
+
+var S={armorEq:0,swordEq:0,heroSkin:'classic'};
+var ARMORS=[{name:'Çırak Tuniği',style:'robe',c:{cloak:'#d9cfae',body:'#efe7cc',trim:'#8a7a55'}}];
+var SWORDS=[{color:'#7fe0ff',glow:'#d6f5ff',type:'single'}];
+function sword(){return SWORDS[S.swordEq];}
+function bladeSVG(i,sc,uid){sc=sc||1;var sw=SWORDS[i]||SWORDS[0];
+  return '<g transform="scale('+sc+')"><rect x="-2.4" y="0" width="4.8" height="13" rx="2" fill="#3a3f48" stroke="#14171d"/>'
+  +'<rect x="-1.4" y="2" width="2.8" height="2" fill="'+sw.glow+'"/>'
+  +'<rect x="-2" y="-46" width="4" height="46" rx="2" fill="'+sw.color+'" opacity=".9" filter="drop-shadow(0 0 4px '+sw.glow+')"/>'
+  +'<rect x="-0.9" y="-46" width="1.8" height="46" rx="1" fill="#fff"/></g>';
+}
+
+function nbRng(seed){ let s=seed%2147483647; if(s<=0)s+=2147483646;
+  return function(){ s=(s*16807)%2147483647; return (s-1)/2147483646; }; }
+
+/* twinkling starfield */
+function nbStars(seed,n,yMax,color,baseOp){
+  const r=nbRng(seed); let out='';
+  for(let i=0;i<n;i++){
+    const x=(r()*1200).toFixed(0), y=(r()*yMax).toFixed(0);
+    const rad=(0.4+r()*1.2).toFixed(2), o=((baseOp||0.3)+r()*0.5).toFixed(2);
+    const tw=r()<0.35
+      ? '<animate attributeName="opacity" values="'+o+';'+(o*0.2).toFixed(2)+';'+o+'" dur="'+(2.5+r()*4).toFixed(1)+'s" repeatCount="indefinite"/>'
+      : '';
+    out+='<circle cx="'+x+'" cy="'+y+'" r="'+rad+'" fill="'+(color||'#fff')+'" opacity="'+o+'">'+tw+'</circle>';
+  }
+  return out;
+}
+
+/* vertical falling particle field (snow / spore), seamless loop */
+function nbFall(id,seed,n,color,rad,dur,sway,op){
+  const r=nbRng(seed); let dots='';
+  for(let i=0;i<n;i++){
+    const x=(r()*1200).toFixed(0), y=(r()*600).toFixed(0);
+    dots+='<circle cx="'+x+'" cy="'+y+'" r="'+(rad*(0.5+r())).toFixed(2)+'" fill="'+color+'" opacity="'+((op||0.5)*(0.5+r()*0.5)).toFixed(2)+'"/>';
+  }
+  return '<g><g id="'+id+'">'+dots+'</g><use href="#'+id+'" y="-600"/>'
+    +'<animateTransform attributeName="transform" type="translate" values="0 0;'+sway+' 300;0 600" dur="'+dur+'s" repeatCount="indefinite"/></g>';
+}
+
+/* rising particle field (embers / fireflies-ish), seamless loop */
+function nbRise(id,seed,n,color,rad,dur,op,yBand){
+  const r=nbRng(seed); let dots='';
+  for(let i=0;i<n;i++){
+    const x=(r()*1200).toFixed(0), y=(yBand[0]+r()*(yBand[1]-yBand[0])).toFixed(0);
+    dots+='<circle cx="'+x+'" cy="'+y+'" r="'+(rad*(0.5+r())).toFixed(2)+'" fill="'+color+'" opacity="'+((op||0.6)*(0.4+r()*0.6)).toFixed(2)+'"/>';
+  }
+  return '<g><g id="'+id+'">'+dots+'</g><use href="#'+id+'" y="600"/>'
+    +'<animateTransform attributeName="transform" type="translate" values="0 0;14 -300;0 -600" dur="'+dur+'s" repeatCount="indefinite"/></g>';
+}
+
+const VIG='<radialGradient id="@vig" cx=".5" cy=".4" r=".8"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></radialGradient>';
+function svgOpen(){ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice">'; }
+function vig(P){ return VIG.replace('@vig',P+'vig')+'</defs>'; } // call inside defs tail
+function vigRect(P){ return '<rect width="1200" height="600" fill="url(#'+P+'vig)"/>'; }
+window.NB_ART = (function(){
+  function filters(P){ return ''
+    /* yumuşak geniş hale (bloom dış katman) */
+    + '<filter id="'+P+'soft" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    /* sıkı parlak çekirdek (enerji kaynakları) */
+    + '<filter id="'+P+'glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    /* ince prosedürel toz/aşınma — düşük opaklık koyu benek */
+    + '<filter id="'+P+'noise" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.8 0.34"/></filter>'
+    /* büyük ölçekli leke/yıpranma (yatay streak) */
+    + '<filter id="'+P+'weather" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.5" numOctaves="3" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.6 0.24"/></filter>'
+    /* ısı pusu / atmosfer kırılması (animasyonlu yer değiştirme) */
+    + '<filter id="'+P+'heat" x="-12%" y="-12%" width="124%" height="124%"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.045" numOctaves="2" seed="3" result="t"><animate attributeName="baseFrequency" values="0.011 0.045;0.014 0.058;0.011 0.045" dur="8s" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" in2="t" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter>';
+  }
+  function vignette(P){ return '<radialGradient id="'+P+'vig" cx=".5" cy=".42" r=".82"><stop offset=".48" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".52"/></radialGradient>'; }
+  function scan(P,col){ col=col||'#9fe6ff'; return '<pattern id="'+P+'scan" width="3" height="3" patternUnits="userSpaceOnUse"><rect width="3" height="1.1" fill="'+col+'" opacity=".06"/></pattern>'; }
+  function metal(id,a,b){ a=a||'#aeb8c6'; b=b||'#2c323d'; return '<linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+b+'"/><stop offset=".16" stop-color="'+a+'"/><stop offset=".46" stop-color="'+b+'"/><stop offset=".7" stop-color="'+a+'" stop-opacity=".5"/><stop offset="1" stop-color="'+b+'"/></linearGradient>'; }
+  function cloth(id,a,b){ a=a||'#caa'; b=b||'#544'; return '<linearGradient id="'+id+'" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="'+a+'"/><stop offset=".5" stop-color="'+b+'"/><stop offset="1" stop-color="'+b+'"/></linearGradient>'; }
+  function glass(id,c){ c=c||'#bfe6ff'; return '<radialGradient id="'+id+'" cx=".36" cy=".28" r=".85"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".38" stop-color="'+c+'" stop-opacity=".16"/><stop offset="1" stop-color="#05121e" stop-opacity="0"/></radialGradient>'; }
+  function energy(id,c){ c=c||'#7fe0ff'; return '<radialGradient id="'+id+'" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="'+c+'"/><stop offset="1" stop-color="'+c+'" stop-opacity="0"/></radialGradient>'; }
+  function lib(P){ return filters(P)+vignette(P)+scan(P); }
+  return { filters:filters, vignette:vignette, scan:scan, metal:metal, cloth:cloth, glass:glass, energy:energy, lib:lib };
+})();
+var NB_ART = window.NB_ART;
+function desertOld(){
+const P='nbd_';
+return svgOpen()+
+'<defs>'
++'<linearGradient id="'+P+'sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140c2c"/><stop offset=".32" stop-color="#3a1f47"/><stop offset=".58" stop-color="#8a4448"/><stop offset=".78" stop-color="#d9824e"/><stop offset=".92" stop-color="#f2b06a"/><stop offset="1" stop-color="#e8a45c"/></linearGradient>'
++'<radialGradient id="'+P+'sun1"><stop offset="0" stop-color="#fff6d8"/><stop offset=".2" stop-color="#ffe2a0"/><stop offset=".5" stop-color="#ff9d4d" stop-opacity=".5"/><stop offset="1" stop-color="#ff9d4d" stop-opacity="0"/></radialGradient>'
++'<radialGradient id="'+P+'sun2"><stop offset="0" stop-color="#ffd9b0"/><stop offset=".35" stop-color="#ff8a4d" stop-opacity=".7"/><stop offset="1" stop-color="#ff6a3a" stop-opacity="0"/></radialGradient>'
++'<linearGradient id="'+P+'dune1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c47a44"/><stop offset="1" stop-color="#94572c"/></linearGradient>'
++'<linearGradient id="'+P+'dune2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8693a"/><stop offset="1" stop-color="#6e431e"/></linearGradient>'
++'<linearGradient id="'+P+'gnd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6034"/><stop offset="1" stop-color="#5c3818"/></linearGradient>'
++'<filter id="'+P+'b6" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6"/></filter>'
++vig(P)
++'<rect width="1200" height="600" fill="url(#'+P+'sky)"/>'
++nbStars(11,40,200,'#ffe8d0',0.25)
+/* binary suns */
++'<circle cx="860" cy="178" r="150" fill="url(#'+P+'sun1)"><animate attributeName="opacity" values="1;.85;1" dur="7s" repeatCount="indefinite"/></circle>'
++'<circle cx="860" cy="178" r="46" fill="#ffeebc"/>'
++'<circle cx="965" cy="128" r="64" fill="url(#'+P+'sun2)"/>'
++'<circle cx="965" cy="128" r="17" fill="#ffc890"/>'
+/* distant flock */
++'<g opacity=".55"><path d="M0 0q6 -6 12 0M14 2q6 -6 12 0M7 8q5 -5 10 0" stroke="#2c1626" stroke-width="2" fill="none"/>'
++'<animateTransform attributeName="transform" type="translate" values="-60 230;1260 170" dur="46s" repeatCount="indefinite"/></g>'
+/* far mesas */
++'<path d="M0 400 L70 372 110 372 150 398 240 398 300 350 340 350 360 366 430 366 470 398 620 398 660 376 740 376 800 404 1200 404 1200 470 0 470Z" fill="#6e4060" opacity=".75"/>'
++'<path d="M520 404 L560 340 600 332 640 344 668 404Z" fill="#5e3656" opacity=".85"/>'
+/* mid dunes */
++'<path d="M0 452 Q180 408 380 444 T760 440 Q980 414 1200 452 L1200 600 0 600Z" fill="url(#'+P+'dune1)"/>'
++'<path d="M0 452 Q180 408 380 444" stroke="#ffd9a0" stroke-width="2" fill="none" opacity=".25"/>'
++'<path d="M560 442 Q760 418 960 436" stroke="#ffd9a0" stroke-width="2" fill="none" opacity=".18"/>'
+/* half-buried wreck */
++'<g fill="#2e1c26">'
++'<path d="M150 470 q40 -64 130 -58 q40 4 52 30 l-14 30 q-80 -16 -168 -2Z"/>'
++'<path d="M214 412 l8 -34 6 0 -4 36Z"/><path d="M258 414 l16 -26 6 2 -12 28Z"/>'
++'<rect x="296" y="430" width="44" height="8" rx="3" transform="rotate(-18 296 430)"/>'
++'</g>'
++'<circle cx="222" cy="380" r="3" fill="#ff8a3a"><animate attributeName="opacity" values="1;.15;1" dur="1.8s" repeatCount="indefinite"/></circle>'
+/* near dunes + ground */
++'<path d="M0 492 Q240 462 470 488 T900 484 Q1060 472 1200 490 L1200 600 0 600Z" fill="url(#'+P+'dune2)"/>'
++'<rect y="520" width="1200" height="80" fill="url(#'+P+'gnd)"/>'
++'<ellipse cx="320" cy="556" rx="26" ry="6" fill="#4a2c12" opacity=".5"/>'
++'<ellipse cx="930" cy="566" rx="34" ry="7" fill="#4a2c12" opacity=".4"/>'
++'<circle cx="540" cy="556" r="5" fill="#6e4724"/><circle cx="552" cy="560" r="3" fill="#7a5230"/>'
+/* heat shimmer */
++'<rect y="430" width="1200" height="44" fill="#ffce8a" opacity=".1"><animate attributeName="opacity" values=".06;.16;.06" dur="4.5s" repeatCount="indefinite"/></rect>'
+/* drifting sand streaks (seamless) */
++'<g opacity=".5"><g id="'+P+'sand">'
++'<path d="M40 500 q60 -6 130 0" stroke="#ffd9a0" stroke-width="2.5" fill="none" opacity=".3"/>'
++'<path d="M420 540 q80 -8 170 0" stroke="#ffd9a0" stroke-width="2" fill="none" opacity=".22"/>'
++'<path d="M820 514 q70 -6 150 0" stroke="#ffd9a0" stroke-width="2.5" fill="none" opacity=".28"/>'
++'<path d="M1060 556 q60 -5 120 0" stroke="#ffd9a0" stroke-width="2" fill="none" opacity=".2"/>'
++'</g><use href="#'+P+'sand" x="1200"/>'
++'<animateTransform attributeName="transform" type="translate" from="0 0" to="-1200 0" dur="11s" repeatCount="indefinite"/></g>'
++vigRect(P)+'</svg>';
+}
+function desertNew(){
+const P='nbd_';
+return svgOpen()+
+'<defs>'
++NB_ART.filters(P)
++'<linearGradient id="'+P+'sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120a26"/><stop offset=".26" stop-color="#34183f"/><stop offset=".5" stop-color="#7a3a4e"/><stop offset=".7" stop-color="#c4623f"/><stop offset=".86" stop-color="#e8954e"/><stop offset="1" stop-color="#f2b566"/></linearGradient>'
++'<radialGradient id="'+P+'sun1"><stop offset="0" stop-color="#fff6d8"/><stop offset=".16" stop-color="#ffe2a0"/><stop offset=".44" stop-color="#ff9d4d" stop-opacity=".55"/><stop offset="1" stop-color="#ff7a3a" stop-opacity="0"/></radialGradient>'
++'<radialGradient id="'+P+'sun2"><stop offset="0" stop-color="#ffe6c4"/><stop offset=".34" stop-color="#ff8a4d" stop-opacity=".7"/><stop offset="1" stop-color="#ff5a30" stop-opacity="0"/></radialGradient>'
++'<linearGradient id="'+P+'ray" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd89a" stop-opacity=".5"/><stop offset=".5" stop-color="#ffb060" stop-opacity=".14"/><stop offset="1" stop-color="#ffb060" stop-opacity="0"/></linearGradient>'
++'<linearGradient id="'+P+'far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5878"/><stop offset="1" stop-color="#553a5e"/></linearGradient>'
++'<linearGradient id="'+P+'mid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a5a48"/><stop offset="1" stop-color="#6e3a2c"/></linearGradient>'
++'<linearGradient id="'+P+'dune1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cc8048"/><stop offset="1" stop-color="#8f5128"/></linearGradient>'
++'<linearGradient id="'+P+'dune2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b06e3a"/><stop offset="1" stop-color="#6a3e1c"/></linearGradient>'
++'<linearGradient id="'+P+'gnd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a5e32"/><stop offset="1" stop-color="#552f16"/></linearGradient>'
++vig(P)
++'<rect width="1200" height="600" fill="url(#'+P+'sky)"/>'
++nbStars(11,30,150,'#ffe8d0',0.22)
++'<ellipse cx="900" cy="250" rx="900" ry="220" fill="#ff9a52" opacity=".18" filter="url(#'+P+'soft)"/>'
++'<g opacity=".7" filter="url(#'+P+'soft)"><g>'
++'<polygon points="870,150 250,470 360,470 905,160" fill="url(#'+P+'ray)"/>'
++'<polygon points="884,150 520,480 600,480 905,162" fill="url(#'+P+'ray)"/>'
++'<polygon points="900,152 770,486 840,486 918,160" fill="url(#'+P+'ray)"/>'
++'<polygon points="912,150 1010,478 1080,470 930,158" fill="url(#'+P+'ray)"/>'
++'<animate attributeName="opacity" values=".5;.85;.5" dur="9s" repeatCount="indefinite"/>'
++'<animateTransform attributeName="transform" type="translate" values="0 0;18 0;0 0" dur="22s" repeatCount="indefinite"/>'
++'</g></g>'
++'<circle cx="884" cy="158" r="170" fill="url(#'+P+'sun1)"><animate attributeName="opacity" values="1;.82;1" dur="7s" repeatCount="indefinite"/></circle>'
++'<circle cx="884" cy="158" r="50" fill="#fff0c4" filter="url(#'+P+'glow)"/>'
++'<circle cx="884" cy="158" r="44" fill="#ffeebc"/>'
++'<circle cx="992" cy="112" r="74" fill="url(#'+P+'sun2)"/>'
++'<circle cx="992" cy="112" r="18" fill="#ffcf94" filter="url(#'+P+'glow)"/>'
++'<g fill="#fff" opacity=".5"><circle cx="760" cy="232" r="2.6"/><circle cx="700" cy="276" r="3.4"/><circle cx="650" cy="312" r="2"/><circle cx="820" cy="206" r="2"/></g>'
++'<g opacity=".5"><path d="M0 0q6 -6 12 0M14 2q6 -6 12 0M7 8q5 -5 10 0" stroke="#2c1626" stroke-width="2" fill="none"/>'
++'<animateTransform attributeName="transform" type="translate" values="-60 240;1260 180" dur="48s" repeatCount="indefinite"/></g>'
++'<path d="M0 408 L120 356 200 384 300 340 380 380 470 348 560 388 660 344 770 384 880 352 1000 392 1100 362 1200 396 1200 470 0 470Z" fill="url(#'+P+'far)" opacity=".55"/>'
++'<rect y="388" width="1200" height="84" fill="#caa0b0" opacity=".12" filter="url(#'+P+'soft)"/>'
++'<g fill="#3a2436" opacity=".7"><rect x="150" y="356" width="5" height="48"/><circle cx="152.5" cy="354" r="5"/><rect x="172" y="368" width="4" height="36"/><circle cx="174" cy="366" r="4"/>'
++'<rect x="1040" y="360" width="5" height="44"/><circle cx="1042.5" cy="358" r="5"/></g>'
++'<g opacity=".66"><g fill="#241420"><path d="M0 0 l30 6 l8 -3 l-2 7 l-36 -2 Z"/><path d="M6 9 l18 2 l-2 5 l-14 -1 Z"/></g>'
++'<animateTransform attributeName="transform" type="translate" values="980 90;520 300" dur="26s" repeatCount="indefinite"/></g>'
++'<path d="M0 446 Q200 410 400 440 T800 436 Q1000 412 1200 446 L1200 600 0 600Z" fill="url(#'+P+'mid)" opacity=".9"/>'
++'<path d="M520 444 L566 360 612 352 656 366 690 444Z" fill="#5e3034" opacity=".8"/>'
++'<path d="M0 470 Q180 432 380 462 T760 458 Q980 434 1200 470 L1200 600 0 600Z" fill="url(#'+P+'dune1)"/>'
++'<path d="M0 470 Q180 432 380 462" stroke="#ffd9a0" stroke-width="2.5" fill="none" opacity=".4"/>'
++'<path d="M560 460 Q760 438 960 454" stroke="#ffd9a0" stroke-width="2" fill="none" opacity=".26"/>'
++'<g filter="url(#'+P+'heat)"><rect y="452" width="1200" height="60" fill="#ffce8a" opacity=".12"><animate attributeName="opacity" values=".08;.18;.08" dur="5s" repeatCount="indefinite"/></rect></g>'
++'<g fill="#2a1822">'
++'<path d="M150 488 q40 -64 130 -58 q40 4 52 30 l-14 30 q-80 -16 -168 -2Z"/>'
++'<path d="M214 430 l8 -34 6 0 -4 36Z"/><path d="M258 432 l16 -26 6 2 -12 28Z"/>'
++'<rect x="296" y="448" width="44" height="8" rx="3" transform="rotate(-18 296 448)"/></g>'
++'<g stroke="#3a2630" stroke-width="3" fill="none" opacity=".8"><path d="M820 520 q6 -30 -2 -54"/><path d="M838 520 q4 -32 -2 -58"/><path d="M856 520 q3 -30 0 -54"/><path d="M812 470 q26 -8 52 0"/></g>'
++'<circle cx="222" cy="398" r="3" fill="#ff8a3a" filter="url(#'+P+'glow)"><animate attributeName="opacity" values="1;.15;1" dur="1.8s" repeatCount="indefinite"/></circle>'
++'<path d="M0 510 Q240 480 470 506 T900 502 Q1060 490 1200 508 L1200 600 0 600Z" fill="url(#'+P+'dune2)"/>'
++'<rect y="536" width="1200" height="64" fill="url(#'+P+'gnd)"/>'
++'<path d="M0 510 Q240 480 470 506" stroke="#ffca7a" stroke-width="2" fill="none" opacity=".3"/>'
++'<ellipse cx="320" cy="566" rx="28" ry="6" fill="#3c2410" opacity=".5"/>'
++'<ellipse cx="930" cy="574" rx="36" ry="7" fill="#3c2410" opacity=".42"/>'
++'<circle cx="540" cy="566" r="5" fill="#6e4724"/><circle cx="552" cy="570" r="3" fill="#7a5230"/>'
++'<g opacity=".4" filter="url(#'+P+'soft)"><g id="'+P+'haze">'
++'<ellipse cx="300" cy="498" rx="260" ry="22" fill="#e8b074"/><ellipse cx="900" cy="514" rx="300" ry="26" fill="#d89a64"/>'
++'</g><use href="#'+P+'haze" x="1200"/>'
++'<animateTransform attributeName="transform" type="translate" from="0 0" to="-1200 0" dur="34s" repeatCount="indefinite"/></g>'
++'<g opacity=".5"><g id="'+P+'sand">'
++'<path d="M40 524 q60 -6 130 0" stroke="#ffd9a0" stroke-width="2.5" fill="none" opacity=".32"/>'
++'<path d="M420 556 q80 -8 170 0" stroke="#ffd9a0" stroke-width="2" fill="none" opacity=".24"/>'
++'<path d="M820 534 q70 -6 150 0" stroke="#ffd9a0" stroke-width="2.5" fill="none" opacity=".3"/>'
++'<path d="M1060 568 q60 -5 120 0" stroke="#ffd9a0" stroke-width="2" fill="none" opacity=".22"/>'
++'</g><use href="#'+P+'sand" x="1200"/>'
++'<animateTransform attributeName="transform" type="translate" from="0 0" to="-1200 0" dur="11s" repeatCount="indefinite"/></g>'
++'<rect width="1200" height="600" filter="url(#'+P+'noise)" opacity=".05"/>'
++vigRect(P)+'</svg>';
+}
+function heroOld(){
+    var a = ARMORS[S.armorEq], c = a.c;
+    var sw = (typeof sword==='function') ? sword() : null;
+    var saber  = (sw && sw.color && sw.color!=='rainbow') ? sw.color : '#7fe0ff';
+    var saberG = (sw && sw.glow  && sw.color!=='rainbow') ? sw.glow  : '#d6f5ff';
+    if(/^#0|^#1|^#2/.test(saber)) saber = saberG;
+    var cloak = c.cloak, trim = c.trim;
+    var M='#2b2f3a', Mm='#3a404e', Ml='#4d5566', Mh='#6b7486', Md='#171a21';
+    var suit='#101218', skin='#c9a07c', skinD='#9a7350';
+    var glove='#15171e', gloveHi='#2a2f3a';
+    var ambient =
+      '<ellipse cx="61" cy="156.5" rx="27" ry="4.6" fill="#000" opacity=".45"/>' +
+      '<ellipse cx="61" cy="155" rx="30" ry="6" fill="'+saber+'" opacity=".1"><animate attributeName="opacity" values=".05;.14;.05" dur="3s" repeatCount="indefinite"/></ellipse>' +
+      '<g>' +
+        '<circle cx="34" cy="150" r="1.1" fill="'+trim+'"><animate attributeName="cy" values="150;68" dur="3.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.9;0" dur="3.4s" repeatCount="indefinite"/></circle>' +
+        '<circle cx="90" cy="150" r="1" fill="'+saber+'"><animate attributeName="cy" values="150;62" dur="4.1s" begin=".8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.85;0" dur="4.1s" begin=".8s" repeatCount="indefinite"/></circle>' +
+        '<circle cx="25" cy="140" r=".9" fill="'+trim+'"><animate attributeName="cy" values="140;60" dur="3.8s" begin="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.8;0" dur="3.8s" begin="1.6s" repeatCount="indefinite"/></circle>' +
+      '</g>';
+    var cloakBack =
+      '<path fill="'+cloak+'" opacity=".95"><animate attributeName="d" dur="4.2s" repeatCount="indefinite" values="M50 56 Q34 100 33 150 L60 150 Q56 100 60 58 Z;M50 56 Q30 104 30 152 L60 150 Q56 100 60 58 Z;M50 56 Q34 100 33 150 L60 150 Q56 100 60 58 Z"/></path>' +
+      '<path fill="'+cloak+'" opacity=".82"><animate attributeName="d" dur="3.6s" repeatCount="indefinite" values="M70 56 Q88 100 88 150 L60 150 Q63 100 60 58 Z;M70 56 Q92 104 92 152 L60 150 Q63 100 60 58 Z;M70 56 Q88 100 88 150 L60 150 Q63 100 60 58 Z"/></path>' +
+      '<path d="M52 58 Q44 102 43 146 L60 146 Q58 100 60 60 Z" fill="#000" opacity=".22"/>' +
+      '<path d="M50 56 Q34 100 33 150" stroke="'+trim+'" stroke-width="1" fill="none" opacity=".5"/>';
+    var backArm =
+      '<path d="M52 66 Q45 76 45 88 Q45 93 47 97" stroke="'+Mm+'" stroke-width="7.5" stroke-linecap="round" fill="none"/>' +
+      '<ellipse cx="47.5" cy="98" rx="3.8" ry="4.1" fill="'+glove+'"/>';
+    var upperBack = '<g id="nbBodyB" class="nbUpper">'+cloakBack+backArm+'</g>';
+    var legs =
+      '<path d="M49 99 L46 122 L45 145 L57 145 L58 121 L59 100 Z" fill="'+suit+'"/>' +
+      '<path d="M62 100 L63 121 L65 145 L75 145 L72 122 L70 99 Z" fill="'+suit+'"/>' +
+      '<path d="M48 100 L59 100 L58 116 Q53 119 48 116 Z" fill="'+M+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M62 100 L70 100 L71 116 Q66 119 62 116 Z" fill="'+M+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M45 120 h12 v8 q-6 4 -12 0 Z" fill="'+Mm+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M63 120 h12 v8 q-6 4 -12 0 Z" fill="'+Mm+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<rect x="50" y="122" width="3" height="5" rx=".6" fill="'+trim+'" opacity=".6"/>' +
+      '<rect x="68" y="122" width="3" height="5" rx=".6" fill="'+trim+'" opacity=".6"/>' +
+      '<path d="M46 129 h11 l-1 16 h-9 Z" fill="'+M+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M63 129 h11 l1 16 h-9 Z" fill="'+M+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M47 132 l9 0 M64 132 l9 0" stroke="'+Mh+'" stroke-width=".6" opacity=".45"/>' +
+      '<path d="M44 145 L43 153 Q43 157 48 157 L58 157 L57 145 Z" fill="'+Md+'"/>' +
+      '<path d="M64 145 L65 157 L73 157 Q78 157 78 153 L77 145 Z" fill="'+Md+'"/>' +
+      '<path d="M43 154 L58 154 L58 157.5 L43 157.5 Z" fill="#0c0e13"/>' +
+      '<path d="M64 154 L78 154 L78 157.5 L64 157.5 Z" fill="#0c0e13"/>' +
+      '<path d="M46 147 h10 M65 147 h10" stroke="'+Mh+'" stroke-width=".7" opacity=".4"/>';
+    var torso =
+      '<path d="M47 60 L73 58 L77 100 Q60 108 44 101 Z" fill="'+suit+'"/>' +
+      '<path d="M46 84 L76 82 M46 90 L76 88 M46.5 96 L76.5 94" stroke="'+Md+'" stroke-width="1.1" opacity=".6"/>' +
+      '<path d="M47 60 L73 58 L75 80 Q60 88 45 80 Z" fill="'+M+'" stroke="'+Md+'" stroke-width=".8"/>' +
+      '<path d="M60 60 L61 84" stroke="'+Md+'" stroke-width="1.2"/>' +
+      '<path d="M49 62 L58 61 L57 78 Q53 80 49 78 Z" fill="'+Ml+'" opacity=".55"/>' +
+      '<path d="M63 61 L72 60 L73 78 Q68 80 63 78 Z" fill="'+Mm+'" opacity=".5"/>' +
+      '<path d="M52 58 L60 64 L68 57 L66 55 L60 60 L54 55 Z" fill="'+Mh+'"/>' +
+      '<path d="M48 66 L46 86 M73 64 L75 84" stroke="'+trim+'" stroke-width="1" opacity=".4"/>' +
+      '<circle cx="60.5" cy="72" r="5.5" fill="none" stroke="'+trim+'" stroke-width=".8" opacity=".5"/>' +
+      '<circle cx="60.5" cy="72" r="3.3" fill="'+trim+'"><animate attributeName="opacity" values="1;.45;1" dur="2.2s" repeatCount="indefinite"/></circle>';
+    var belt =
+      '<rect x="44" y="98" width="33" height="8" rx="2.5" fill="'+Md+'"/>' +
+      '<rect x="56" y="96.5" width="9" height="11" rx="2" fill="'+M+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<rect x="58.5" y="99.5" width="4" height="5" rx="1" fill="'+trim+'" opacity=".85"/>' +
+      '<rect x="46" y="104" width="7" height="9" rx="1.6" fill="'+Mm+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<rect x="68" y="104" width="7" height="8" rx="1.6" fill="'+Mm+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<rect x="71" y="105" width="3.2" height="11" rx="1.6" fill="'+Mh+'" stroke="'+Md+'" stroke-width=".6"/>' +
+      '<path stroke="'+cloak+'" stroke-width="3" fill="none" stroke-linecap="round"><animate attributeName="d" dur="3.2s" repeatCount="indefinite" values="M53 106 L52 124;M53 106 L50 125;M53 106 L52 124"/></path>';
+    var pauldron =
+      '<path d="M58 57 Q67 52 75 58 Q79 63 76 71 L61 71 Q56 64 58 57 Z" fill="'+M+'" stroke="'+Md+'" stroke-width=".8"/>' +
+      '<path d="M59 60 Q67 56 74 60" stroke="'+Mh+'" stroke-width="1" fill="none" opacity=".6"/>' +
+      '<path d="M60 65 Q67 62 73 65" stroke="'+Md+'" stroke-width=".8" fill="none" opacity=".5"/>' +
+      '<path d="M70 57 L75 58 L75.5 66 L71 67 Z" fill="'+trim+'" opacity=".5"/>';
+    var neck = '<path d="M57 55 L57 60 L64 60 L64 55 Z" fill="'+skinD+'"/>';
+    var head =
+      '<path d="M48 50 Q45 26 60.5 24 Q76 26 73 50 Q72 58 64 60 L57 60 Q49 58 48 50 Z" fill="'+cloak+'"/>' +
+      '<path d="M48 50 Q45 26 60.5 24 L60.5 60 L57 60 Q49 58 48 50 Z" fill="#000" opacity=".18"/>' +
+      '<path d="M52 47 Q51 32 60.5 31 Q70 32 69 47 Q68 55 62 57 L59 57 Q53 55 52 47 Z" fill="#0a0c12"/>' +
+      '<path d="M55 45 Q55 38 60.5 37.5 Q66 38 66 45 Q66 52 60.5 55 Q55 52 55 45 Z" fill="'+skin+'"/>' +
+      '<path d="M60.5 37.5 Q66 38 66 45 Q66 51 61 54 L61 45 Z" fill="'+skinD+'" opacity=".45"/>' +
+      '<path d="M55.5 47 Q60.5 50 65.5 46.5 L65 52 Q60.5 56 56 52 Z" fill="'+Mm+'" stroke="'+Md+'" stroke-width=".6"/>' +
+      '<path d="M57 49 h7 M57 51 h7" stroke="'+Md+'" stroke-width=".5" opacity=".6"/>' +
+      '<circle cx="58" cy="50.4" r=".7" fill="'+trim+'" opacity=".7"/>' +
+      '<path d="M54.5 42.5 L66.5 41.8 L66.3 44 L54.7 44.6 Z" fill="'+saber+'" opacity=".9"><animate attributeName="opacity" values=".9;.5;.9" dur="2.4s" repeatCount="indefinite"/></path>' +
+      '<ellipse cx="57.5" cy="43" rx="1.5" ry="1" fill="'+saberG+'"><animate attributeName="ry" values="1;1;.12;1;1" keyTimes="0;.45;.5;.55;1" dur="4.4s" repeatCount="indefinite"/></ellipse>' +
+      '<ellipse cx="63.5" cy="42.6" rx="1.5" ry="1" fill="'+saberG+'"><animate attributeName="ry" values="1;1;.12;1;1" keyTimes="0;.45;.5;.55;1" dur="4.4s" repeatCount="indefinite"/></ellipse>' +
+      '<path d="M52 47 Q51 32 60.5 31 Q70 32 69 47" stroke="'+trim+'" stroke-width=".8" fill="none" opacity=".35"/>';
+    var frontArm =
+      '<g id="armG">' +
+        '<path d="M64 64 Q73 66 78 73 Q81 77 81.5 81" stroke="'+suit+'" stroke-width="8.5" stroke-linecap="round" fill="none"/>' +
+        '<path d="M64 64 Q72 66 77 72" stroke="'+Mh+'" stroke-width="2" stroke-linecap="round" fill="none" opacity=".15"/>' +
+        '<path d="M74 71 Q79 76 81.5 81" stroke="'+M+'" stroke-width="6.8" stroke-linecap="round" fill="none"/>' +
+        '<path d="M75.5 73 Q79 77 81 81" stroke="'+trim+'" stroke-width="1" fill="none" opacity=".55"/>' +
+        '<ellipse cx="82" cy="83" rx="4" ry="4.2" fill="'+glove+'"/>' +
+        '<path d="M79 81.5 q3 -1.6 6 0" stroke="'+gloveHi+'" stroke-width="1" fill="none" opacity=".7"/>' +
+        '<g id="swordG" transform="translate(83 84) rotate(32)">'+bladeSVG(S.swordEq,1,'h')+'</g>' +
+        '<path id="slashTrail" d="M84 34 Q122 74 100 118" stroke="'+saber+'" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0" filter="drop-shadow(0 0 6px '+saberG+')"/>' +
+      '</g>';
+    var breathe = '<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -1.1;0 0" dur="3.6s" repeatCount="indefinite"/>'+torso+belt+pauldron+neck+head+frontArm+'</g>';
+    var upperFront = '<g id="nbBodyF" class="nbUpper">'+breathe+'</g>';
+    return '<svg viewBox="0 0 120 170">'+ambient+upperBack+legs+upperFront+'</svg>';
+  }
+function heroNew(){
+    var a = ARMORS[S.armorEq], c = a.c;
+    var sw = (typeof sword==='function') ? sword() : null;
+    var saber  = (sw && sw.color && sw.color!=='rainbow') ? sw.color : '#7fe0ff';
+    var saberG = (sw && sw.glow  && sw.color!=='rainbow') ? sw.glow  : '#d6f5ff';
+    if(/^#0|^#1|^#2/.test(saber)) saber = saberG;            // çok koyu kılıçta görünür kal
+    var cloak = c.cloak, trim = c.trim;
+    /* renk tonlama yardımcıları → malzeme gradyanları (kumaş/metal) zırh rengine uyar */
+    function hx(h){h=(h||'#888').replace('#','');if(h.length===3)h=h.split('').map(function(x){return x+x;}).join('');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+    function shade(h,f){var c=hx(h),t=f<0?0:255,a=Math.abs(f);return '#'+c.map(function(v){return ('0'+Math.round(v+(t-v)*a).toString(16)).slice(-2);}).join('');}
+    var cloakHi=shade(cloak,.26), cloakLo=shade(cloak,-.42), cloakSh=shade(cloak,-.62);
+    var trimHi=shade(trim,.4);
+    var M='#2b2f3a', Mm='#3a404e', Ml='#4d5566', Mh='#6b7486', Md='#171a21';
+    var suit='#101218', skin='#c9a07c', skinD='#9a7350';
+    var glove='#15171e', gloveHi='#2a2f3a';
+
+    /* --- ortak sanat-yönü defs (glow/noise) + zırha özel malzeme gradyanları --- */
+    var defs = '<defs>'+NB_ART.filters('nbh_')
+      + NB_ART.cloth('nbh_cloth',cloakHi,cloakLo)
+      + NB_ART.metal('nbh_steel','#b6c0cf','#262b34')
+      + NB_ART.glass('nbh_visor',saberG)
+      + NB_ART.energy('nbh_core',trim)
+      + '</defs>';
+
+    /* --- ambient: gölge, kılıç zemini, yükselen Force zerreleri --- */
+    var ambient =
+      '<ellipse cx="61" cy="156.5" rx="27" ry="4.6" fill="#000" opacity=".45"/>' +
+      '<ellipse cx="61" cy="155" rx="30" ry="6" fill="'+saber+'" opacity=".1"><animate attributeName="opacity" values=".05;.14;.05" dur="3s" repeatCount="indefinite"/></ellipse>' +
+      '<g>' +
+        '<circle cx="34" cy="150" r="1.1" fill="'+trim+'"><animate attributeName="cy" values="150;68" dur="3.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.9;0" dur="3.4s" repeatCount="indefinite"/></circle>' +
+        '<circle cx="90" cy="150" r="1" fill="'+saber+'"><animate attributeName="cy" values="150;62" dur="4.1s" begin=".8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.85;0" dur="4.1s" begin=".8s" repeatCount="indefinite"/></circle>' +
+        '<circle cx="25" cy="140" r=".9" fill="'+trim+'"><animate attributeName="cy" values="140;60" dur="3.8s" begin="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.8;0" dur="3.8s" begin="1.6s" repeatCount="indefinite"/></circle>' +
+      '</g>';
+
+    /* --- arka katman (.nbUpper): pelerin (kumaş gradyanı + kıvrımlar + rim) + arka kol --- */
+    var cloakBack =
+      '<path fill="url(#nbh_cloth)" opacity=".97"><animate attributeName="d" dur="4.2s" repeatCount="indefinite" values="M50 56 Q34 100 33 150 L60 150 Q56 100 60 58 Z;M50 56 Q30 104 30 152 L60 150 Q56 100 60 58 Z;M50 56 Q34 100 33 150 L60 150 Q56 100 60 58 Z"/></path>' +
+      '<path fill="url(#nbh_cloth)" opacity=".84"><animate attributeName="d" dur="3.6s" repeatCount="indefinite" values="M70 56 Q88 100 88 150 L60 150 Q63 100 60 58 Z;M70 56 Q92 104 92 152 L60 150 Q63 100 60 58 Z;M70 56 Q88 100 88 150 L60 150 Q63 100 60 58 Z"/></path>' +
+      '<path d="M52 58 Q44 102 43 146 L58 146 Q56 100 60 60 Z" fill="'+cloakSh+'" opacity=".55"/>' +
+      '<path d="M55 60 Q50 102 49 144 M66 60 Q70 102 70 146" stroke="'+cloakSh+'" stroke-width="1.1" fill="none" opacity=".5"/>' +
+      '<path d="M58 60 Q55 100 55 142" stroke="'+cloakHi+'" stroke-width=".8" fill="none" opacity=".4"/>' +
+      '<path d="M50 56 Q34 100 33 150" stroke="'+trim+'" stroke-width="1" fill="none" opacity=".55"/>' +
+      '<path d="M70 56 Q88 100 88 150" stroke="'+trimHi+'" stroke-width=".7" fill="none" opacity=".35"/>';
+    var backArm =
+      '<path d="M52 66 Q45 76 45 88 Q45 93 47 97" stroke="'+Mm+'" stroke-width="7.5" stroke-linecap="round" fill="none"/>' +
+      '<path d="M52 66 Q46 75 46 86" stroke="'+Mh+'" stroke-width="2" stroke-linecap="round" fill="none" opacity=".4"/>' +
+      '<ellipse cx="47.5" cy="98" rx="3.8" ry="4.1" fill="'+glove+'"/>';
+    var upperBack = '<g id="nbBodyB" class="nbUpper">'+cloakBack+backArm+'</g>';
+
+    /* --- bacaklar (yere sabit): zırhlı dizlik + baldır + bot --- */
+    var legs =
+      '<path d="M49 99 L46 122 L45 145 L57 145 L58 121 L59 100 Z" fill="'+suit+'"/>' +
+      '<path d="M62 100 L63 121 L65 145 L75 145 L72 122 L70 99 Z" fill="'+suit+'"/>' +
+      '<path d="M48 100 L59 100 L58 116 Q53 119 48 116 Z" fill="url(#nbh_steel)" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M62 100 L70 100 L71 116 Q66 119 62 116 Z" fill="url(#nbh_steel)" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M45 120 h12 v8 q-6 4 -12 0 Z" fill="url(#nbh_steel)" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M63 120 h12 v8 q-6 4 -12 0 Z" fill="url(#nbh_steel)" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<rect x="50" y="122" width="3" height="5" rx=".6" fill="'+trim+'" opacity=".6"/>' +
+      '<rect x="68" y="122" width="3" height="5" rx=".6" fill="'+trim+'" opacity=".6"/>' +
+      '<path d="M46 129 h11 l-1 16 h-9 Z" fill="'+M+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M63 129 h11 l1 16 h-9 Z" fill="'+M+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<path d="M47 132 l9 0 M64 132 l9 0" stroke="'+Mh+'" stroke-width=".6" opacity=".45"/>' +
+      '<path d="M44 145 L43 153 Q43 157 48 157 L58 157 L57 145 Z" fill="'+Md+'"/>' +
+      '<path d="M64 145 L65 157 L73 157 Q78 157 78 153 L77 145 Z" fill="'+Md+'"/>' +
+      '<path d="M43 154 L58 154 L58 157.5 L43 157.5 Z" fill="#0c0e13"/>' +
+      '<path d="M64 154 L78 154 L78 157.5 L64 157.5 Z" fill="#0c0e13"/>' +
+      '<path d="M46 147 h10 M65 147 h10" stroke="'+Mh+'" stroke-width=".7" opacity=".4"/>';
+
+    /* --- gövde zırhı: metal plaka + sheen highlight + panel + aşınma + çekirdek --- */
+    var torso =
+      '<path d="M47 60 L73 58 L77 100 Q60 108 44 101 Z" fill="'+suit+'"/>' +
+      '<path d="M46 84 L76 82 M46 90 L76 88 M46.5 96 L76.5 94" stroke="'+Md+'" stroke-width="1.1" opacity=".6"/>' +
+      '<path d="M47 60 L73 58 L75 80 Q60 88 45 80 Z" fill="url(#nbh_steel)" stroke="'+Md+'" stroke-width=".8"/>' +
+      '<path d="M48 61 L72 59.5" stroke="#eef3fa" stroke-width="1.1" opacity=".5"/>' +
+      '<path d="M60 60 L61 84" stroke="'+Md+'" stroke-width="1.2"/>' +
+      '<path d="M49 62 L58 61 L57 78 Q53 80 49 78 Z" fill="'+Ml+'" opacity=".5"/>' +
+      '<path d="M63 61 L72 60 L73 78 Q68 80 63 78 Z" fill="'+Mm+'" opacity=".5"/>' +
+      '<path d="M64 64 l7 5 M50 70 l5 6" stroke="'+Md+'" stroke-width=".6" opacity=".4"/>' +
+      '<path d="M52 58 L60 64 L68 57 L66 55 L60 60 L54 55 Z" fill="'+Mh+'"/>' +
+      '<path d="M48 66 L46 86 M73 64 L75 84" stroke="'+trim+'" stroke-width="1" opacity=".4"/>' +
+      '<circle cx="60.5" cy="72" r="6" fill="url(#nbh_core)" opacity=".8"/>' +
+      '<circle cx="60.5" cy="72" r="5.5" fill="none" stroke="'+trim+'" stroke-width=".8" opacity=".5"/>' +
+      '<circle cx="60.5" cy="72" r="3.3" fill="'+trim+'" filter="url(#nbh_glow)"><animate attributeName="opacity" values="1;.45;1" dur="2.2s" repeatCount="indefinite"/></circle>';
+
+    /* --- kemer + kılıflar + sallanan kayış --- */
+    var belt =
+      '<rect x="44" y="98" width="33" height="8" rx="2.5" fill="'+Md+'"/>' +
+      '<rect x="56" y="96.5" width="9" height="11" rx="2" fill="url(#nbh_steel)" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<rect x="58.5" y="99.5" width="4" height="5" rx="1" fill="'+trim+'" opacity=".85"/>' +
+      '<rect x="46" y="104" width="7" height="9" rx="1.6" fill="'+Mm+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<rect x="68" y="104" width="7" height="8" rx="1.6" fill="'+Mm+'" stroke="'+Md+'" stroke-width=".7"/>' +
+      '<rect x="71" y="105" width="3.2" height="11" rx="1.6" fill="'+Mh+'" stroke="'+Md+'" stroke-width=".6"/>' +
+      '<path stroke="'+cloakLo+'" stroke-width="3" fill="none" stroke-linecap="round"><animate attributeName="d" dur="3.2s" repeatCount="indefinite" values="M53 106 L52 124;M53 106 L50 125;M53 106 L52 124"/></path>';
+
+    /* --- omuz zırhı (pauldron) — metal + highlight --- */
+    var pauldron =
+      '<path d="M58 57 Q67 52 75 58 Q79 63 76 71 L61 71 Q56 64 58 57 Z" fill="url(#nbh_steel)" stroke="'+Md+'" stroke-width=".8"/>' +
+      '<path d="M59 60 Q67 55 74 59" stroke="#eef3fa" stroke-width="1" fill="none" opacity=".55"/>' +
+      '<path d="M60 65 Q67 62 73 65" stroke="'+Md+'" stroke-width=".8" fill="none" opacity=".5"/>' +
+      '<path d="M70 57 L75 58 L75.5 66 L71 67 Z" fill="'+trim+'" opacity=".5"/>';
+
+    /* --- boyun + kapüşonlu kafa + cam vizör --- */
+    var neck = '<path d="M57 55 L57 60 L64 60 L64 55 Z" fill="'+skinD+'"/>';
+    var head =
+      '<path d="M48 50 Q45 26 60.5 24 Q76 26 73 50 Q72 58 64 60 L57 60 Q49 58 48 50 Z" fill="url(#nbh_cloth)"/>' +
+      '<path d="M48 50 Q45 26 60.5 24 L60.5 60 L57 60 Q49 58 48 50 Z" fill="'+cloakSh+'" opacity=".42"/>' +
+      '<path d="M48 50 Q45 26 60.5 24" stroke="'+trim+'" stroke-width=".8" fill="none" opacity=".5"/>' +
+      '<path d="M52 47 Q51 32 60.5 31 Q70 32 69 47 Q68 55 62 57 L59 57 Q53 55 52 47 Z" fill="#0a0c12"/>' +
+      '<path d="M55 45 Q55 38 60.5 37.5 Q66 38 66 45 Q66 52 60.5 55 Q55 52 55 45 Z" fill="'+skin+'"/>' +
+      '<path d="M60.5 37.5 Q66 38 66 45 Q66 51 61 54 L61 45 Z" fill="'+skinD+'" opacity=".45"/>' +
+      '<path d="M55.5 47 Q60.5 50 65.5 46.5 L65 52 Q60.5 56 56 52 Z" fill="'+Mm+'" stroke="'+Md+'" stroke-width=".6"/>' +
+      '<path d="M54.5 42 L66.5 41.3 L66.3 45.4 L54.7 46 Z" fill="url(#nbh_visor)"/>' +
+      '<path d="M54.5 42.5 L66.5 41.8 L66.3 44 L54.7 44.6 Z" fill="'+saber+'" opacity=".85" filter="url(#nbh_glow)"><animate attributeName="opacity" values=".85;.45;.85" dur="2.4s" repeatCount="indefinite"/></path>' +
+      '<path d="M57 49 h7 M57 51 h7" stroke="'+Md+'" stroke-width=".5" opacity=".6"/>' +
+      '<circle cx="58" cy="50.4" r=".7" fill="'+trim+'" opacity=".7"/>' +
+      '<ellipse cx="57.5" cy="43" rx="1.5" ry="1" fill="'+saberG+'"><animate attributeName="ry" values="1;1;.12;1;1" keyTimes="0;.45;.5;.55;1" dur="4.4s" repeatCount="indefinite"/></ellipse>' +
+      '<ellipse cx="63.5" cy="42.6" rx="1.5" ry="1" fill="'+saberG+'"><animate attributeName="ry" values="1;1;.12;1;1" keyTimes="0;.45;.5;.55;1" dur="4.4s" repeatCount="indefinite"/></ellipse>' +
+      '<path d="M52 47 Q51 32 60.5 31 Q70 32 69 47" stroke="'+trim+'" stroke-width=".8" fill="none" opacity=".35"/>';
+
+    /* --- ön kol (#armG) — omuzdan (64,64) döner; kılıç + iz --- */
+    var frontArm =
+      '<g id="armG">' +
+        '<path d="M64 64 Q73 66 78 73 Q81 77 81.5 81" stroke="'+suit+'" stroke-width="8.5" stroke-linecap="round" fill="none"/>' +
+        '<path d="M64 64 Q72 66 77 72" stroke="'+Mh+'" stroke-width="2" stroke-linecap="round" fill="none" opacity=".2"/>' +
+        '<path d="M74 71 Q79 76 81.5 81" stroke="url(#nbh_steel)" stroke-width="6.8" stroke-linecap="round" fill="none"/>' +
+        '<path d="M75.5 73 Q79 77 81 81" stroke="'+trim+'" stroke-width="1" fill="none" opacity=".55"/>' +
+        '<ellipse cx="82" cy="83" rx="4" ry="4.2" fill="'+glove+'"/>' +
+        '<path d="M79 81.5 q3 -1.6 6 0" stroke="'+gloveHi+'" stroke-width="1" fill="none" opacity=".7"/>' +
+        '<g id="swordG" transform="translate(83 84) rotate(32)">'+bladeSVG(S.swordEq,1,'h')+'</g>' +
+        '<path id="slashTrail" d="M84 34 Q122 74 100 118" stroke="'+saber+'" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0" filter="drop-shadow(0 0 6px '+saberG+')"/>' +
+      '</g>';
+
+    var breathe = '<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -1.1;0 0" dur="3.6s" repeatCount="indefinite"/>'+torso+belt+pauldron+neck+head+frontArm+'</g>';
+    var upperFront = '<g id="nbBodyF" class="nbUpper">'+breathe+'</g>';
+
+    return '<svg viewBox="0 0 120 170">'+defs+ambient+upperBack+legs+upperFront+'</svg>';
+  };
+function put(id,svg){var el=document.getElementById(id);if(el)el.innerHTML=svg;}
+put('dOld',desertOld()); put('dNew',desertNew());
+put('hOld',heroOld());   put('hNew',heroNew());
+var P='sw_';
+function swSvg(inner){return '<svg viewBox="0 0 160 96" preserveAspectRatio="xMidYMid slice"><defs>'+NB_ART.lib(P)
+  +NB_ART.metal(P+'metal','#b6c0cf','#262b34')+NB_ART.cloth(P+'cloth','#caa074','#4a3320')
+  +NB_ART.glass(P+'glass','#7fe0ff')+NB_ART.energy(P+'energy','#7fe0ff')+'</defs>'+inner+'</svg>';}
+var SW=[
+ ['softGlow / glow','katmanlı bloom','<rect width="160" height="96" fill="#0c1430"/><circle cx="54" cy="48" r="16" fill="#ffd89a" filter="url(#'+P+'soft)"/><circle cx="108" cy="48" r="11" fill="#7fe0ff" filter="url(#'+P+'glow)"/>'],
+ ['noise','prosedürel toz/gren','<rect width="160" height="96" fill="#6e4a2c"/><rect width="160" height="96" filter="url(#'+P+'noise)" opacity=".5"/>'],
+ ['weather','yıpranma streak','<rect width="160" height="96" fill="#41474f"/><rect width="160" height="96" filter="url(#'+P+'weather)" opacity=".5"/>'],
+ ['heat','ısı pusu kırılması','<rect width="160" height="96" fill="#c4623f"/><g filter="url(#'+P+'heat)"><rect x="14" y="36" width="132" height="24" rx="4" fill="#ffce8a" opacity=".7"/></g>'],
+ ['vignette','köşe karartma','<rect width="160" height="96" fill="#3a5a7a"/><rect width="160" height="96" fill="url(#'+P+'vig)"/>'],
+ ['scan','holografik tarama','<rect width="160" height="96" fill="#0a1c28"/><rect width="160" height="96" fill="url(#'+P+'scan)"/><rect x="20" y="30" width="120" height="36" rx="6" fill="none" stroke="#7fe0ff" stroke-width="1.4" opacity=".7"/>'],
+ ['metal','fırçalanmış plaka','<rect width="160" height="96" fill="#0c1430"/><rect x="22" y="20" width="116" height="56" rx="10" fill="url(#'+P+'metal)"/>'],
+ ['cloth','kumaş/pelerin','<rect width="160" height="96" fill="#0c1430"/><rect x="22" y="20" width="116" height="56" rx="10" fill="url(#'+P+'cloth)"/>'],
+ ['glass','cam/vizör','<rect width="160" height="96" fill="#101826"/><rect x="22" y="20" width="116" height="56" rx="10" fill="#0a1622"/><rect x="22" y="20" width="116" height="56" rx="10" fill="url(#'+P+'glass)"/>'],
+ ['energy','enerji glow','<rect width="160" height="96" fill="#06101a"/><circle cx="80" cy="48" r="30" fill="url(#'+P+'energy)"/>']
+];
+document.getElementById('lib').innerHTML=SW.map(function(s){return '<div class="swatch"><div class="sv">'+swSvg(s[2])+'</div><div class="nm">'+s[0]+'</div><div class="ds">'+s[1]+'</div></div>';}).join('');
+</script>
+</body></html>

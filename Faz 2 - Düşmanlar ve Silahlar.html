@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA BLADE — FAZ 2 · Düşmanlar & Silahlar</title>
+<style>
+:root{--bg:#0b0d16;--card:#11131e;--line:#222637;--ink:#e8ecf6;--mut:#8b93a8;--amber:#ffb24a;--cyan:#7fe0ff}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 760px at 72% -12%,#1a1330,#0b0d16 62%);color:var(--ink);
+  font:15px/1.55 ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:40px 24px 90px}
+.kicker{font:700 12px/1 ui-monospace,monospace;letter-spacing:.32em;color:var(--amber);text-transform:uppercase}
+h1{font-size:35px;margin:12px 0 6px;letter-spacing:-.01em}
+h1 b{color:var(--amber)}
+.lead{color:var(--mut);max-width:880px;font-size:16px}
+code{font-family:ui-monospace,monospace;color:var(--amber);font-size:12.5px;background:rgba(255,180,74,.08);padding:1px 6px;border-radius:5px}
+
+/* section headers */
+.sec{margin-top:56px}
+.sec-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
+.sec-h h2{font-size:24px;margin:0;letter-spacing:-.01em}
+.sec-h .n{font:700 12px/1 ui-monospace,monospace;color:var(--cyan);letter-spacing:.1em}
+.sec-h p{color:var(--mut);font-size:14px;margin:0;flex:1;min-width:240px}
+
+/* wave band */
+.wave{margin-top:34px}
+.wave-band{display:flex;align-items:center;gap:14px;padding:13px 18px;border-radius:13px;
+  background:linear-gradient(90deg,var(--wc,#ff7a2a)18, transparent 70%);border:1px solid var(--line);border-left:3px solid var(--wc,#ff7a2a)}
+.wave-no{font:800 26px/1 ui-monospace,monospace;color:var(--wc,#ff7a2a);letter-spacing:.02em}
+.wave-meta .ttl{font-weight:700;font-size:17px}
+.wave-meta .ttl small{color:var(--wc,#ff7a2a);font:700 11px/1 ui-monospace,monospace;letter-spacing:.08em;margin-left:8px}
+.wave-meta .biome{color:var(--mut);font:600 12px/1.4 ui-monospace,monospace;letter-spacing:.04em}
+.wave-intro{color:var(--mut);font-size:13.5px;margin:12px 2px 0;max-width:900px}
+
+/* grids */
+.egrid{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:880px){.egrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.egrid{grid-template-columns:1fr}}
+.wgrid{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:760px){.wgrid{grid-template-columns:1fr}}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s}
+.card:hover{transform:translateY(-3px);border-color:var(--ac,#3a4258);box-shadow:0 14px 36px -18px var(--ac,#000)}
+.card .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 15px;border-bottom:1px solid var(--line)}
+.card .name{font-weight:700;font-size:14.5px;line-height:1.2}
+.card .role{font:700 10px/1 ui-monospace,monospace;letter-spacing:.08em;padding:5px 8px;border-radius:999px;white-space:nowrap;
+  color:var(--ac,#7df0b0);background:color-mix(in srgb,var(--ac,#7df0b0) 14%,transparent);border:1px solid color-mix(in srgb,var(--ac,#7df0b0) 30%,transparent)}
+.frame{background:radial-gradient(120% 90% at 50% 18%,#101322,#06070f 70%);position:relative}
+.efr{aspect-ratio:200/216}
+.wfr{aspect-ratio:20/7}
+.frame svg{width:100%;height:100%;display:block}
+.cap{padding:11px 15px 13px;border-top:1px solid var(--line)}
+.cap .d{color:var(--mut);font-size:12.5px;line-height:1.5}
+.pw{display:flex;align-items:center;gap:8px;margin-top:9px}
+.pw .lbl{font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.12em;color:var(--mut)}
+.pw .bar{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
+.pw .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ac,#ff7a2a),#fff8)}
+.pw .val{font:800 11px/1 ui-monospace,monospace;color:var(--ac,#ff7a2a);min-width:30px;text-align:right}
+
+/* tier badge for weapons */
+.tier{font:800 10px/1 ui-monospace,monospace;letter-spacing:.1em;padding:5px 9px;border-radius:6px;white-space:nowrap;
+  color:#05060f;background:var(--tc,#aeb8c6)}
+.fxline{display:flex;gap:8px;align-items:flex-start;margin-top:2px}
+.fxline .star{color:var(--ac);font-size:13px;line-height:1.4}
+
+.note{margin-top:40px;padding:15px 17px;background:rgba(127,224,255,.05);border:1px solid rgba(127,224,255,.18);border-radius:12px;color:var(--mut);font-size:13.5px}
+.note b{color:var(--ink)}
+.foot{margin-top:50px;color:var(--mut);font-size:13px;border-top:1px solid var(--line);padding-top:18px}
+.foot b{color:var(--ink)}
+</style></head>
+<body><div class="wrap">
+<div class="kicker">NOVA BLADE · Görsel Yeniden Tasarım</div>
+<h1>FAZ 2 — <b>Düşmanlar & Silahlar</b></h1>
+<p class="lead">Her dalga <b>bambaşka bir fraksiyon</b>: oyuncu bir sonraki dalgada ne çıkacağını merak etsin diye
+atmosfer, siluet ve renk paleti dalgadan dalgaya tamamen değişir — hurda akıncılarından kemik tarikatına,
+asi makinelerden boşluk korsanlarına. Tüm <b>20 silah</b> güce göre sıralı; güç arttıkça boyut, aura,
+parçacık ve rün katmanları büyür. Her kare canlı, animasyonlu SVG.</p>
+
+<!-- ============ DÜŞMANLAR ============ -->
+<div class="sec">
+  <div class="sec-h"><span class="n">BÖLÜM A</span><h2>Düşman Rosteri · Dalga / Dalga</h2>
+    <p>7 dalga · 20 düşman. Her dalga yeni bir tehdit dili konuşur.</p></div>
+  <div id="enemyRoot"></div>
+</div>
+
+<!-- ============ SİLAHLAR ============ -->
+<div class="sec">
+  <div class="sec-h"><span class="n">BÖLÜM B</span><h2>20 Silah Konsepti · Güce Göre Sıralı</h2>
+    <p>Sıradan → Mitik. Daha güçlü silah, görsel olarak da daha görkemli.</p></div>
+  <div id="weaponRoot" class="wgrid"></div>
+</div>
+
+<div class="note"><b>Sistem:</b> Düşmanlar 8 farklı siluet ailesi (piyade · uçan · ağır · hayalet · küre · mech · korsan · boss)
+ve dalgaya özel palet kullanır; aynı aile bile her dalgada farklı kask/pelerin/silah/çekirdek ile yeniden okunur.
+Silahlar 11 ayrı tür (kılıç · hançer · balta · mızrak · trident · katana · tırpan · glaive · çekiç · çift kılıç · büyük kılıç)
+ve 6 nadirlik kademesi üzerine kurulu. Renkler oyunun mevcut paletine (amber/cyan + gezegen LUT'ları) bağlı.</div>
+
+<div class="foot"><b>Sonraki:</b> seçilen düşman + silah skin'lerinin <code>NOVA BLADE v3.html</code> içine entegrasyonu
+(<code>NB_ENEMY_SKINS</code> tablosu + <code>SWORDS</code> SVG render hattı). Hangi tasarımları canlı oyuna alalım — söyle, bağlayayım.</div>
+</div>
+
+<script src="faz2-art.js"></script>
+<script src="faz2-enemies.js"></script>
+<script src="faz2-weapons.js"></script>
+<script>
+(function(){
+  /* ---- DÜŞMANLAR ---- */
+  const eroot = document.getElementById('enemyRoot');
+  NB2_WAVES.forEach((wv, wi)=>{
+    const sec = document.createElement('div'); sec.className='wave';
+    sec.style.setProperty('--wc', wv.accent);
+    sec.innerHTML =
+      '<div class="wave-band"><div class="wave-no">'+wv.wave+'</div>'
+      +'<div class="wave-meta"><div class="ttl">'+wv.faction+'<small>DALGA '+wv.wave+'</small></div>'
+      +'<div class="biome">'+wv.biome+'</div></div></div>'
+      +'<div class="wave-intro">'+wv.intro+'</div>'
+      +'<div class="egrid"></div>';
+    const grid = sec.querySelector('.egrid');
+    wv.enemies.forEach((en, ei)=>{
+      const pfx = 'e'+wi+'_'+ei+'_';
+      const pw = Math.min(100, Math.round(en.power/40*100));
+      const card = document.createElement('div'); card.className='card';
+      card.style.setProperty('--ac', wv.accent);
+      card.innerHTML =
+        '<div class="hd"><div class="name">'+en.n+'</div><div class="role">'+en.role+'</div></div>'
+        +'<div class="frame efr"><svg viewBox="0 0 200 216" preserveAspectRatio="xMidYMid meet">'+en.build(pfx)+'</svg></div>'
+        +'<div class="cap"><div class="d">'+en.desc+'</div>'
+        +'<div class="pw"><span class="lbl">GÜÇ</span><span class="bar"><i style="width:'+pw+'%"></i></span><span class="val">'+en.power+'</span></div></div>';
+      grid.appendChild(card);
+    });
+    eroot.appendChild(sec);
+  });
+
+  /* ---- SİLAHLAR ---- */
+  const TIER_COL = {'Sıradan':'#aeb8c6','Gelişmiş':'#54e08a','Nadir':'#4db8ff','Epik':'#b86bff','Efsanevi':'#ffb24a','Mitik':'#ff7ad8'};
+  const wroot = document.getElementById('weaponRoot');
+  NB2_WEAPONS.forEach((wp, i)=>{
+    const pfx='w'+i+'_';
+    const tc = TIER_COL[wp.tier]||'#aeb8c6';
+    const pw = Math.round(wp.power/20*100);
+    const card = document.createElement('div'); card.className='card';
+    card.style.setProperty('--ac', wp.c); card.style.setProperty('--tc', tc);
+    card.innerHTML =
+      '<div class="hd"><div class="name"><span style="color:'+tc+';font:800 11px/1 ui-monospace,monospace;margin-right:7px">#'+String(i+1).padStart(2,'0')+'</span>'+wp.n+'</div>'
+      +'<div class="tier">'+wp.tier+'</div></div>'
+      +'<div class="frame wfr"><svg viewBox="0 0 400 140" preserveAspectRatio="xMidYMid meet">'+wp.build(pfx)+'</svg></div>'
+      +'<div class="cap"><div class="fxline"><span class="star">◆</span><div class="d">'+wp.fx+'</div></div>'
+      +'<div class="pw"><span class="lbl">GÜÇ</span><span class="bar"><i style="width:'+pw+'%;background:linear-gradient(90deg,'+wp.c+',#fff8)"></i></span><span class="val" style="color:'+wp.c+'">'+wp.power+'</span></div></div>';
+    wroot.appendChild(card);
+  });
+})();
+</script>
+</body></html>

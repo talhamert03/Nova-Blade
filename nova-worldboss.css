@@ -1,0 +1,203 @@
+/* =============================================================================
+   NOVA BLADE · WORLD BOSS — kalıcı orb + savaş arenası + 5 iblis boss
+   ============================================================================= */
+
+/* ---------- kalıcı yuvarlak World Boss orb (sağ üst) ---------- */
+#wbOrb{
+  position:absolute; top:76px; right:12px; z-index:30;
+  width:56px; height:56px; border-radius:50%;
+  background:radial-gradient(circle at 38% 32%, #4a1018 0%, #2a070c 60%, #150305 100%);
+  border:2px solid #ff3b4d;
+  box-shadow:0 0 0 3px rgba(255,59,77,.14), 0 0 18px -2px #ff3b4d, inset 0 0 14px -4px #ff8a8a;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:transform .14s ease, box-shadow .2s;
+  animation:wbOrbPulse 2.2s ease-in-out infinite;
+}
+#wbOrb:active{ transform:scale(.92); }
+#wbOrb:hover{ box-shadow:0 0 0 3px rgba(255,59,77,.22), 0 0 26px 0 #ff3b4d, inset 0 0 14px -2px #ffb0b0; }
+#wbOrb svg{ width:74%; height:74%; display:block; filter:drop-shadow(0 1px 2px #000); }
+#wbOrb .wbOrbRing{ position:absolute; inset:-6px; border-radius:50%; border:2px solid #ff3b4d; opacity:0; animation:wbOrbRing 2.2s ease-out infinite; pointer-events:none; }
+#wbOrb .wbOrbCount{
+  position:absolute; bottom:-4px; right:-4px; min-width:18px; height:18px; padding:0 4px;
+  border-radius:9px; background:#ffd24a; color:#2a1a00; font:800 11px/18px ui-monospace,monospace;
+  text-align:center; border:1.5px solid #2a070c; box-shadow:0 1px 3px #000;
+}
+#wbOrb .wbOrbLbl{
+  position:absolute; top:50%; right:60px; transform:translateY(-50%);
+  font:800 8px/1 ui-monospace,monospace; letter-spacing:.08em; color:#ff7a8a;
+  text-shadow:0 1px 2px #000; white-space:nowrap; pointer-events:none; text-align:right;
+}
+@keyframes wbOrbPulse{ 0%,100%{ box-shadow:0 0 0 3px rgba(255,59,77,.14), 0 0 16px -2px #ff3b4d, inset 0 0 14px -4px #ff8a8a; } 50%{ box-shadow:0 0 0 4px rgba(255,59,77,.22), 0 0 26px 1px #ff3b4d, inset 0 0 16px -2px #ffb0b0; } }
+@keyframes wbOrbRing{ 0%{ opacity:.6; transform:scale(1); } 100%{ opacity:0; transform:scale(1.5); } }
+body.spaceMode #wbOrb, body.worldBoss #wbOrb{ display:none; }
+
+/* ---------- roster modal ---------- */
+#wbRoster{ position:fixed; inset:0; z-index:120; display:flex; align-items:center; justify-content:center;
+  background:rgba(4,3,8,.74); opacity:0; transition:opacity .22s; padding:16px; }
+#wbRoster.show{ opacity:1; }
+#wbRoster .wbCard{ width:min(460px,94vw); max-height:88vh; overflow:auto; border-radius:18px;
+  background:linear-gradient(180deg,#140a12,#0c0710); border:1px solid #3a1622;
+  box-shadow:0 24px 60px -16px #000, 0 0 0 1px rgba(255,59,77,.12); transform:translateY(14px) scale(.98); transition:transform .22s; }
+#wbRoster.show .wbCard{ transform:none; }
+.wbHead{ position:relative; padding:18px 18px 12px; background:linear-gradient(180deg,#2a0a14,#160810); border-bottom:1px solid #3a1622; }
+.wbHead h2{ margin:0; font:900 19px/1.1 'Orbitron',ui-monospace,system-ui,sans-serif; letter-spacing:.04em;
+  color:#ff5666; text-shadow:0 0 14px rgba(255,59,77,.5); }
+.wbHead p{ margin:5px 0 0; font-size:11.5px; color:#c39aa6; line-height:1.5; }
+.wbHead .wbX{ position:absolute; top:12px; right:12px; width:30px; height:30px; border-radius:9px; border:1px solid #4a2230;
+  background:rgba(0,0,0,.4); color:#e7b9c4; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.wbHead .wbX:active{ transform:scale(.9); }
+.wbList{ padding:12px; display:flex; flex-direction:column; gap:10px; }
+.wbBossRow{ display:flex; gap:12px; align-items:center; padding:11px; border-radius:13px;
+  background:linear-gradient(180deg,#190d15,#120a10); border:1px solid #321420; position:relative; overflow:hidden; }
+.wbBossRow.ready{ border-color:#7a2236; box-shadow:inset 0 0 0 1px rgba(255,59,77,.12); cursor:pointer; transition:transform .12s, border-color .2s; }
+.wbBossRow.ready:hover{ border-color:#ff3b4d; transform:translateY(-1px); }
+.wbBossRow.ready:active{ transform:scale(.99); }
+.wbBossRow.locked{ opacity:.5; filter:grayscale(.5); }
+.wbBossRow .wbPort{ width:60px; height:60px; flex:0 0 60px; border-radius:11px; overflow:hidden;
+  background:radial-gradient(circle at 50% 36%, #2c0f18, #0c0509); border:1px solid #3a1824; display:flex; align-items:flex-end; justify-content:center; }
+.wbBossRow .wbPort svg{ width:118%; height:118%; }
+.wbBossInfo{ flex:1; min-width:0; }
+.wbBossInfo .wbN{ font:800 14px/1.15 system-ui,sans-serif; color:#fff; display:flex; align-items:center; gap:7px; }
+.wbBossInfo .wbN .wbTier{ font:800 8.5px/1 ui-monospace,monospace; letter-spacing:.06em; padding:2px 6px; border-radius:6px;
+  background:rgba(255,59,77,.16); color:#ff8a96; border:1px solid rgba(255,59,77,.3); }
+.wbBossInfo .wbSub{ font-size:11px; color:#b58c99; margin-top:3px; line-height:1.45; }
+.wbBossInfo .wbRwd{ display:flex; gap:9px; margin-top:6px; flex-wrap:wrap; font:700 10.5px/1 ui-monospace,monospace; }
+.wbBossInfo .wbRwd span{ display:inline-flex; align-items:center; gap:3px; padding:3px 7px; border-radius:7px; background:rgba(255,255,255,.05); }
+.wbHpMini{ font:800 12px/1 ui-monospace,monospace; color:#ff6b7a; }
+.wbGo{ flex:0 0 auto; align-self:stretch; display:flex; align-items:center; padding:0 4px; }
+.wbGo .wbBtn{ padding:9px 13px; border-radius:10px; border:0; font:800 12px/1 system-ui; cursor:pointer;
+  background:linear-gradient(180deg,#ff4658,#c41f30); color:#fff; box-shadow:0 4px 12px -4px #ff3b4d; white-space:nowrap; }
+.wbGo .wbBtn:active{ transform:scale(.94); }
+.wbGo .wbLock{ font:700 11px/1 ui-monospace,monospace; color:#8a6b75; text-align:center; }
+
+/* ---------- ARENA sahnesi ---------- */
+#wbScene{ position:absolute; inset:0; display:none; overflow:hidden; z-index:8;
+  background:radial-gradient(120% 90% at 50% 18%, #3a0c18 0%, #1a0710 46%, #0a040a 100%); cursor:crosshair; }
+body.worldBoss #wbScene{ display:block; }
+body.worldBoss #bgWrap, body.worldBoss #actors, body.worldBoss #bossBtn,
+body.worldBoss #particleLayer, body.worldBoss #luckyShip, body.worldBoss #comboBox, body.worldBoss #spaceScene{ display:none !important; }
+#wbScene .wbFloor{ position:absolute; left:0; right:0; bottom:0; height:34%;
+  background:linear-gradient(180deg, rgba(40,8,16,0) 0%, #1c0710 60%, #120509 100%); }
+#wbScene .wbGrid{ position:absolute; left:0; right:0; bottom:0; height:30%;
+  background-image:linear-gradient(90deg, rgba(255,59,77,.12) 1px, transparent 1px), linear-gradient(rgba(255,59,77,.1) 1px, transparent 1px);
+  background-size:42px 30px; transform:perspective(260px) rotateX(58deg); transform-origin:bottom; opacity:.55; }
+#wbScene .wbEmber{ position:absolute; width:3px; height:3px; border-radius:50%; background:#ff7a3a; box-shadow:0 0 6px #ff7a3a; opacity:0; }
+
+/* arena hero (sol) */
+#wbHero{ position:absolute; left:6%; bottom:20%; width:clamp(108px,30vw,168px); z-index:9;
+  filter:drop-shadow(0 10px 16px rgba(0,0,0,.55)); transform-origin:50% 97%; }
+#wbHero svg{ width:100%; display:block; }
+/* === GERÇEK savaş sahnesiyle birebir aynı çok katmanlı savurma (nbSw* sınıfları) === */
+#wbHero.nbSwR{ animation:nbBraceR .44s cubic-bezier(.3,.8,.28,1); }
+#wbHero.nbSwL{ animation:nbBraceL .44s cubic-bezier(.3,.8,.28,1); }
+#wbHero.nbSwBig.nbSwR{ animation:nbBraceRb .48s cubic-bezier(.3,.8,.28,1); }
+#wbHero.nbSwBig.nbSwL{ animation:nbBraceLb .48s cubic-bezier(.3,.8,.28,1); }
+#wbHero svg .nbUpper{ transform-box:view-box; transform-origin:60px 99px; }
+#wbHero.nbSwR svg .nbUpper{ animation:nbBodyR .44s cubic-bezier(.3,.8,.28,1); }
+#wbHero.nbSwL svg .nbUpper{ animation:nbBodyL .44s cubic-bezier(.3,.8,.28,1); }
+#wbHero.nbSwBig.nbSwR svg .nbUpper{ animation:nbBodyRb .48s cubic-bezier(.3,.8,.28,1); }
+#wbHero.nbSwBig.nbSwL svg .nbUpper{ animation:nbBodyLb .48s cubic-bezier(.3,.8,.28,1); }
+#wbHero svg #armG{ transform-box:view-box; transform-origin:64px 64px; }
+#wbHero.nbSwR svg #armG{ animation:nbArmR .44s cubic-bezier(.28,.82,.26,1); }
+#wbHero.nbSwL svg #armG{ animation:nbArmL .44s cubic-bezier(.28,.82,.26,1); }
+#wbHero.nbSwBig.nbSwR svg #armG{ animation:nbArmRb .48s cubic-bezier(.28,.82,.26,1); }
+#wbHero.nbSwBig.nbSwL svg #armG{ animation:nbArmLb .48s cubic-bezier(.28,.82,.26,1); }
+#wbHero svg #swordG{ transform-box:view-box; transform-origin:0 0; }
+#wbHero.nbSwR svg #swordG{ animation:nbBladeR .44s cubic-bezier(.3,.85,.28,1); }
+#wbHero.nbSwL svg #swordG{ animation:nbBladeL .44s cubic-bezier(.3,.85,.28,1); }
+#wbHero svg #slashTrail{ opacity:0; }
+#wbHero.nbSwR svg #slashTrail,#wbHero.nbSwL svg #slashTrail{ animation:nbTrail .44s ease-out; }
+
+/* arena boss (sağ) */
+#wbBoss{ position:absolute; right:5%; bottom:18%; width:clamp(150px,46vw,260px); z-index:9;
+  filter:drop-shadow(0 14px 22px rgba(0,0,0,.6)); transform-origin:50% 90%; animation:wbBossIdle 3.4s ease-in-out infinite; }
+#wbBoss svg{ width:100%; display:block; }
+@keyframes wbBossIdle{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-9px) scale(1.012); } }
+#wbBoss.hit{ animation:wbBossHit .18s; }
+@keyframes wbBossHit{ 0%{ transform:translate(0,0); filter:brightness(2.4) drop-shadow(0 14px 22px rgba(0,0,0,.6)); } 40%{ transform:translate(-9px,2px); } 100%{ transform:translate(0,0); filter:none; } }
+#wbBoss.enrage{ animation:wbBossRage .5s ease-in-out infinite; }
+@keyframes wbBossRage{ 0%,100%{ filter:drop-shadow(0 0 0 transparent) drop-shadow(0 14px 22px rgba(0,0,0,.6)); } 50%{ filter:drop-shadow(0 0 14px #ff3b4d) drop-shadow(0 14px 22px rgba(0,0,0,.6)); } }
+#wbBoss.dying{ animation:wbBossDie 1s cubic-bezier(.4,0,.2,1) forwards; }
+@keyframes wbBossDie{ 0%{ transform:translateY(0) scale(1) rotate(0); opacity:1; } 30%{ transform:translateY(-6px) scale(1.06); filter:brightness(3); } 100%{ transform:translateY(60px) scale(.5) rotate(14deg); opacity:0; } }
+
+/* arena HUD */
+#wbScene .wbTop{ position:absolute; top:10px; left:50%; transform:translateX(-50%); width:min(560px,92%); z-index:11; text-align:center; }
+#wbScene .wbBossName{ font:900 17px/1.1 'Orbitron',system-ui,sans-serif; letter-spacing:.05em; color:#fff;
+  text-shadow:0 0 12px rgba(255,59,77,.6),0 2px 4px #000; display:flex; align-items:center; justify-content:center; gap:8px; }
+#wbScene .wbBossName .wbTierTag{ font:800 9px/1 ui-monospace,monospace; padding:2px 7px; border-radius:7px;
+  background:rgba(255,59,77,.2); border:1px solid rgba(255,59,77,.4); color:#ffb0b8; letter-spacing:.05em; }
+#wbScene .wbHpWrap{ margin-top:7px; height:18px; border-radius:10px; background:rgba(0,0,0,.55);
+  border:1.5px solid rgba(255,59,77,.45); overflow:hidden; position:relative; box-shadow:0 0 14px -4px #ff3b4d; }
+#wbScene .wbHpFill{ height:100%; width:100%; border-radius:8px;
+  background:linear-gradient(90deg,#ff3b4d 0%,#ff7a3a 60%,#ffd24a 100%); transition:width .14s ease; box-shadow:0 0 10px rgba(255,90,60,.6) inset; }
+#wbScene .wbHpTxt{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font:800 11px/1 ui-monospace,monospace; color:#fff; text-shadow:0 1px 3px #000; letter-spacing:.04em; }
+
+/* circular timer */
+#wbScene .wbTimer{ position:absolute; top:64px; right:14px; z-index:12; width:74px; height:74px; }
+#wbScene .wbTimer svg{ width:100%; height:100%; transform:rotate(-90deg); }
+#wbScene .wbTimer .wbTimerTxt{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font:900 19px/1 ui-monospace,monospace; color:#fff; text-shadow:0 1px 4px #000; }
+#wbScene .wbTimer .wbTimerTxt small{ font:700 7.5px/1 ui-monospace,monospace; color:#ffb0b8; letter-spacing:.1em; margin-top:2px; }
+#wbScene .wbTimer.warn .wbTimerTxt{ color:#ff5666; animation:wbWarn .5s steps(2) infinite; }
+@keyframes wbWarn{ 50%{ opacity:.45; } }
+
+/* DPS / burst hint */
+#wbScene .wbHint{ position:absolute; left:50%; bottom:13%; transform:translateX(-50%); z-index:11;
+  font:800 12px/1.3 system-ui,sans-serif; color:#ffd9de; text-align:center; text-shadow:0 1px 3px #000;
+  background:rgba(20,6,12,.6); padding:7px 14px; border-radius:11px; border:1px solid rgba(255,59,77,.3); }
+#wbScene .wbHint b{ color:#ff8a3a; }
+#wbScene .wbTapHint{ position:absolute; left:50%; bottom:7%; transform:translateX(-50%); z-index:11;
+  font:700 11px/1 ui-monospace,monospace; color:#ff8a96; letter-spacing:.08em; text-shadow:0 1px 3px #000; animation:wbTapPulse 1.1s ease-in-out infinite; }
+@keyframes wbTapPulse{ 0%,100%{ opacity:.5; } 50%{ opacity:1; } }
+
+/* flee */
+#wbScene .wbFlee{ position:absolute; top:12px; left:12px; z-index:12; padding:8px 14px; border-radius:11px;
+  border:1px solid rgba(255,255,255,.18); background:rgba(0,0,0,.45); color:#cfd6e2; font:800 12px/1 system-ui; cursor:pointer; }
+#wbScene .wbFlee:active{ transform:scale(.94); }
+
+/* floating combat numbers */
+.wbDmg{ position:absolute; z-index:13; pointer-events:none; font:900 19px/1 ui-monospace,monospace; color:#fff;
+  text-shadow:0 2px 5px #000,0 0 8px rgba(255,90,60,.5); transform:translate(-50%,-50%); animation:wbDmgFloat .72s ease-out forwards; }
+.wbDmg.crit{ font-size:28px; color:#ffd24a; text-shadow:0 2px 6px #000,0 0 12px #ff7a3a; }
+@keyframes wbDmgFloat{ 0%{ opacity:0; transform:translate(-50%,-50%) scale(.5); } 18%{ opacity:1; transform:translate(-50%,-66%) scale(1.15); } 100%{ opacity:0; transform:translate(-50%,-150%) scale(.9); } }
+
+/* slash arc on tap */
+.wbSlash{ position:absolute; z-index:12; pointer-events:none; transform:translate(-50%,-50%); }
+.wbSlash svg{ overflow:visible; }
+.wbSlash path{ stroke-dasharray:200; stroke-dashoffset:200; animation:wbSlashDraw .26s ease-out forwards; }
+@keyframes wbSlashDraw{ to{ stroke-dashoffset:-200; opacity:0; } }
+
+/* impact ring */
+.wbRing{ position:absolute; z-index:11; pointer-events:none; border-radius:50%; transform:translate(-50%,-50%) scale(.3);
+  border:3px solid #fff; opacity:.9; animation:wbRingExp .42s ease-out forwards; }
+@keyframes wbRingExp{ to{ transform:translate(-50%,-50%) scale(1.8); opacity:0; border-width:1px; } }
+
+/* screen shake */
+@keyframes wbShake{ 0%,100%{ transform:translate(0,0); } 20%{ transform:translate(-5px,3px); } 40%{ transform:translate(5px,-2px); } 60%{ transform:translate(-3px,-3px); } 80%{ transform:translate(3px,2px); } }
+#wbScene.shake{ animation:wbShake .26s; }
+
+/* result popup */
+#wbResult{ position:fixed; inset:0; z-index:130; display:flex; align-items:center; justify-content:center;
+  background:rgba(4,3,8,.78); opacity:0; transition:opacity .25s; padding:16px; }
+#wbResult.show{ opacity:1; }
+#wbResult .wbResCard{ width:min(380px,92vw); border-radius:18px; padding:24px 22px; text-align:center;
+  background:linear-gradient(180deg,#160a12,#0b0610); border:1px solid #3a1622; box-shadow:0 24px 60px -16px #000;
+  transform:scale(.9); transition:transform .28s cubic-bezier(.3,1.5,.5,1); }
+#wbResult.show .wbResCard{ transform:none; }
+#wbResult.win .wbResCard{ border-color:#7a2236; box-shadow:0 0 0 1px rgba(255,59,77,.2),0 24px 60px -16px #000,0 0 40px -10px #ff3b4d; }
+#wbResult h2{ margin:0 0 4px; font:900 24px/1 'Orbitron',system-ui,sans-serif; letter-spacing:.04em; }
+#wbResult.win h2{ color:#ffd24a; text-shadow:0 0 18px rgba(255,210,74,.5); }
+#wbResult.lose h2{ color:#8a8f9c; }
+#wbResult .wbResSub{ margin:6px 0 16px; font-size:12.5px; color:#b58c99; }
+#wbResult .wbRewards{ display:flex; flex-direction:column; gap:9px; margin-bottom:18px; }
+#wbResult .wbRewItem{ display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:12px;
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); text-align:left; }
+#wbResult .wbRewItem .ic{ width:34px; height:34px; flex:0 0 34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:19px; }
+#wbResult .wbRewItem .tx{ flex:1; }
+#wbResult .wbRewItem .tx b{ display:block; font:800 14px/1.1 system-ui; color:#fff; }
+#wbResult .wbRewItem .tx span{ font-size:11px; color:#a89; }
+#wbResult .wbResBtn{ width:100%; padding:13px; border-radius:12px; border:0; cursor:pointer;
+  font:800 14px/1 system-ui; background:linear-gradient(180deg,#ff4658,#c41f30); color:#fff; box-shadow:0 6px 16px -6px #ff3b4d; }
+#wbResult.lose .wbResBtn{ background:linear-gradient(180deg,#3a4150,#262b34); box-shadow:none; }
+#wbResult .wbResBtn:active{ transform:scale(.97); }

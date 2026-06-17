@@ -1,0 +1,105 @@
+/* =============================================================================
+   NOVA BLADE · ARTIFACT + MINI LEAP + MILESTONE — stiller
+   Mevcut tema değişkenleri: --panel --gold --cyan --purple --dim --line2 --rad
+   ============================================================================= */
+
+/* ---- panel başlık ---- */
+.artiHead{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.artiBal{ display:flex; gap:10px; font:800 14px/1 ui-monospace,monospace; }
+.artiBal .artiCcy{ background:rgba(255,255,255,.05); padding:6px 11px; border-radius:10px; border:1px solid var(--line2,#2a2f3e); }
+.artiDisc{ font-size:12px; color:var(--dim,#8893a7); } .artiDisc b{ color:#fff; }
+
+/* ---- mini leap kartı ---- */
+.miniLeapCard{ display:flex; align-items:center; gap:12px; padding:12px; border-radius:var(--rad,12px); margin-bottom:10px;
+  background:linear-gradient(180deg,#10231f,#0c1a17); border:1px solid #1f4a40; }
+.miniLeapCard.lk{ filter:grayscale(.5) brightness(.8); }
+.miniLeapCard .mlIco{ font-size:28px; filter:drop-shadow(0 0 8px #35e0d2); }
+.miniLeapCard .mlInfo{ flex:1; min-width:0; }
+.miniLeapCard .mlName{ font:800 15px/1.1 system-ui,sans-serif; color:#7fffd0; display:flex; align-items:center; gap:8px; }
+.miniLeapCard .mlName .mlSub{ font:700 9px/1 ui-monospace,monospace; color:#5fae9c; background:rgba(127,255,208,.12); padding:3px 6px; border-radius:6px; }
+.miniLeapCard .mlDesc{ font-size:11.5px; color:#9fc4ba; margin-top:4px; line-height:1.5; }
+.miniLeapCard .mlBtn{ flex:0 0 auto; min-height:48px; padding:0 16px; border:0; border-radius:11px; cursor:pointer;
+  font:800 13px/1.1 system-ui,sans-serif; text-align:center; color:#04140f;
+  background:linear-gradient(180deg,#7fffd0,#2bbf97); box-shadow:0 5px 14px -5px #35e0d2; }
+.miniLeapCard .mlBtn span{ font:700 10px/1 ui-monospace,monospace; opacity:.8; }
+.miniLeapCard .mlBtn:active{ transform:scale(.95); }
+.miniLeapCard .mlLock{ font-size:22px; opacity:.6; }
+.artiNote{ font-size:11.5px; color:var(--dim,#8893a7); line-height:1.55; margin-bottom:12px; padding:0 2px; }
+
+/* ---- artifact grid ---- */
+.artiGrid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.artiCard{ position:relative; padding:12px 12px 12px; border-radius:var(--rad,12px); overflow:hidden;
+  background:linear-gradient(180deg,#161a27,#10131d); border:1px solid var(--line2,#2a2f3e); }
+.artiCard::before{ content:''; position:absolute; inset:0 0 auto 0; height:3px;
+  background:linear-gradient(90deg,transparent,var(--ac,#8fa0ff),transparent); opacity:.7; }
+.artiCard[data-stat="tapDmg"]{ --ac:#ff7a6a; } .artiCard[data-stat="autoDmg"]{ --ac:#8fe9ff; }
+.artiCard[data-stat="goldMult"]{ --ac:#ffd24a; } .artiCard[data-stat="critChance"]{ --ac:#7fd0ff; }
+.artiCard[data-stat="critMult"]{ --ac:#ff5666; } .artiCard[data-stat="bossTime"]{ --ac:#c89bff; }
+.artiCard[data-stat="offlineRate"]{ --ac:#ffae6a; } .artiCard[data-stat="allDmg"]{ --ac:#a0ffb8; }
+.artiCard[data-stat="forceXp"]{ --ac:#9b8bff; } .artiCard[data-stat="allyDmg"]{ --ac:#6affd0; }
+.artiTop{ display:flex; align-items:center; justify-content:space-between; }
+.artiIco{ font-size:26px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+.artiLvl{ font:800 12px/1 ui-monospace,monospace; color:#fff; background:rgba(0,0,0,.35); padding:4px 8px; border-radius:8px; }
+.artiLvl small{ color:var(--dim,#8893a7); font-size:9px; }
+.artiName{ font:800 13.5px/1.15 system-ui,sans-serif; color:#fff; margin-top:7px; }
+.artiStat{ font:700 10px/1 ui-monospace,monospace; letter-spacing:.04em; color:var(--ac,#8fa0ff); margin-top:4px; text-transform:uppercase; }
+.artiBonus{ font:800 14px/1 ui-monospace,monospace; color:#fff; margin-top:6px; }
+.artiBonus .artiNext{ font-size:11px; color:#6dd98f; font-weight:700; }
+.artiLore{ font-size:10.5px; color:var(--dim,#8893a7); line-height:1.45; margin-top:7px; min-height:30px; }
+.artiBtns{ display:flex; gap:6px; margin-top:9px; }
+.artiUp{ flex:1; min-height:44px; border:0; border-radius:10px; cursor:pointer; font:800 12px/1 ui-monospace,monospace; }
+.artiUp.cr{ background:linear-gradient(180deg,#7a4fd0,#4f2c9a); color:#fff; }
+.artiUp.sh{ background:linear-gradient(180deg,#2bbf97,#1a8068); color:#04140f; }
+.artiUp.dim{ opacity:.4; cursor:not-allowed; }
+.artiUp:not(.dim):active{ transform:scale(.95); }
+.artiMax{ margin-top:9px; min-height:44px; display:flex; align-items:center; justify-content:center;
+  border-radius:10px; font:800 13px/1 system-ui; color:var(--gold,#ffb547); background:rgba(255,181,71,.1); border:1px solid rgba(255,181,71,.3); }
+.artiCard.myst{ opacity:.7; border-style:dashed; }
+.artiCard.myst .artiIco{ filter:grayscale(1) brightness(1.4); opacity:.7; }
+.artiCard.myst .artiName{ color:var(--dim,#8893a7); }
+
+/* ---- mini leap onay ---- */
+#mlConfirm{ position:fixed; inset:0; z-index:130; display:flex; align-items:center; justify-content:center;
+  background:rgba(4,8,7,.74); opacity:0; transition:opacity .2s; padding:16px; }
+#mlConfirm.show{ opacity:1; }
+#mlConfirm .mlcCard{ width:min(360px,92vw); padding:22px; border-radius:18px; text-align:center;
+  background:linear-gradient(180deg,#102320,#0a1614); border:1px solid #1f4a40; transform:scale(.92); transition:transform .22s; }
+#mlConfirm.show .mlcCard{ transform:none; }
+#mlConfirm h3{ margin:0 0 8px; font:900 20px/1 system-ui; color:#7fffd0; }
+#mlConfirm p{ margin:0 0 14px; font-size:12.5px; color:#9fc4ba; line-height:1.55; }
+#mlConfirm .mlcGain{ font:900 26px/1 ui-monospace,monospace; color:#fff; margin-bottom:16px; }
+#mlConfirm .mlcGain span{ font-size:13px; color:#7fffd0; }
+#mlConfirm .mlcBtns{ display:flex; gap:10px; }
+#mlConfirm .mlcBtns button{ flex:1; min-height:48px; border:0; border-radius:12px; cursor:pointer; font:800 14px/1 system-ui; }
+#mlConfirm .mlcNo{ background:#2a2f3a; color:#cfd6e2; }
+#mlConfirm .mlcYes{ background:linear-gradient(180deg,#7fffd0,#2bbf97); color:#04140f; }
+#mlConfirm .mlcBtns button:active{ transform:scale(.96); }
+
+/* ---- MILESTONE kutlama ---- */
+#msCelebrate{ position:fixed; inset:0; z-index:140; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 50% 45%, rgba(40,20,70,.7), rgba(3,4,10,.88)); opacity:0; transition:opacity .3s; padding:16px; }
+#msCelebrate.show{ opacity:1; }
+#msCelebrate .msBurst{ position:absolute; width:10px; height:10px; left:50%; top:45%;
+  background:radial-gradient(circle, #ffd24a, transparent 70%); border-radius:50%; }
+#msCelebrate.show .msBurst{ animation:msBurst 1s ease-out forwards; }
+@keyframes msBurst{ 0%{ transform:translate(-50%,-50%) scale(1); opacity:.9; box-shadow:0 0 0 0 rgba(255,210,74,.6); }
+  100%{ transform:translate(-50%,-50%) scale(40); opacity:0; box-shadow:0 0 60px 30px rgba(255,210,74,0); } }
+#msCelebrate .msCard{ position:relative; width:min(380px,92vw); padding:26px 24px; border-radius:20px; text-align:center;
+  background:linear-gradient(180deg,#1a1330,#0c0818); border:1px solid #3a2a66;
+  box-shadow:0 0 0 1px rgba(255,210,74,.2),0 30px 70px -20px #000,0 0 50px -8px #ffb547;
+  transform:scale(.7) translateY(20px); transition:transform .4s cubic-bezier(.2,1.5,.4,1); }
+#msCelebrate.show .msCard{ transform:none; }
+#msCelebrate .msKick{ font:800 11px/1 ui-monospace,monospace; letter-spacing:.34em; color:#ffd24a; }
+#msCelebrate .msWave{ font:900 40px/1 'Orbitron',system-ui,sans-serif; color:#fff; margin:6px 0 2px;
+  text-shadow:0 0 24px rgba(255,181,71,.6); letter-spacing:.03em; }
+#msCelebrate .msTxt{ font-size:13px; color:#c9b8e6; margin-bottom:16px; }
+#msCelebrate .msRewards{ display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
+#msCelebrate .msRew{ display:flex; align-items:center; gap:9px; padding:10px 13px; border-radius:11px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); font:800 13px/1 system-ui; color:#fff; }
+#msCelebrate .msRew span{ font-size:17px; }
+#msCelebrate .msBtn{ width:100%; min-height:50px; border:0; border-radius:13px; cursor:pointer;
+  font:800 15px/1 system-ui; color:#1a1200; background:linear-gradient(180deg,#ffe08a,#ffb547); box-shadow:0 8px 20px -8px #ffb547; }
+#msCelebrate .msBtn:active{ transform:scale(.97); }
+
+/* tek sütun dar ekranda */
+@media (max-width:380px){ .artiGrid{ grid-template-columns:1fr; } }

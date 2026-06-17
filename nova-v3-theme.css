@@ -1,0 +1,1057 @@
+/* ============================================================
+   NOVA BLADE v3 — tema (GÖREV 5: UI/UX revizyonu)
+   Koyu arkaplan #0a0a1a · amber vurgu #FFB547 · 375–430px optimize
+   ============================================================ */
+:root{
+  --bg:#0a0a1a; --bg2:#0e1226; --panel:#10142a; --panel2:#161b36;
+  --line:rgba(255,181,71,.16); --line2:rgba(140,160,220,.14);
+  --gold:#FFB547; --gold2:#ffd28a; --cyan:#35e0d2; --purple:#a86bff;
+  --red:#ff4d5e; --green:#54e08a; --blue:#4db8ff;
+  --txt:#e8ecff; --dim:#8b93b8;
+  --shadow:0 4px 14px rgba(0,0,0,.45);
+  --rad:10px;
+  font-size:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  display:flex; flex-direction:column; height:100dvh; overflow:hidden;
+  user-select:none; -webkit-user-select:none; touch-action:manipulation;
+  max-width:520px; margin:0 auto; position:relative;
+}
+button{font-family:inherit; color:inherit; background:none; border:none; cursor:pointer; touch-action:manipulation}
+.caps{text-transform:uppercase; letter-spacing:.12em; font-weight:700; font-size:12px; color:var(--gold)}
+
+/* ================= TOPBAR ================= */
+#topbar{
+  flex:0 0 auto; display:flex; align-items:center; gap:8px;
+  padding:8px 10px; background:linear-gradient(180deg,#0d1128,#0a0d20);
+  border-bottom:1px solid var(--line); box-shadow:var(--shadow); z-index:30;
+}
+.resource{
+  display:flex; align-items:center; gap:5px; background:var(--panel);
+  border:1px solid var(--line2); border-radius:8px; padding:5px 9px 5px 6px;
+  font-weight:800; font-size:14px; min-height:30px;
+}
+.resource .ico{width:17px;height:17px;display:flex}
+.resource .ico svg{width:100%;height:100%}
+#zoneInfo{flex:1; text-align:center; min-width:0}
+#zoneName{font-size:12px; font-weight:800; color:var(--gold); letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+#waveInfo{font-size:11px; color:var(--dim); margin-top:1px}
+#settingsBtn{
+  width:38px;height:38px; border-radius:9px; background:var(--panel);
+  border:1px solid var(--line2); font-size:17px; color:var(--dim);
+  display:flex;align-items:center;justify-content:center;
+}
+#settingsBtn:active{background:var(--panel2)}
+
+/* ================= SCENE ================= */
+#scene{flex:1 1 auto; position:relative; overflow:hidden; background:#06081a; min-height:170px}
+#bgWrap{position:absolute; inset:0}
+#bgWrap svg{width:100%; height:100%; display:block}
+.pl{animation:plDrift linear infinite}
+@keyframes plDrift{from{transform:translateX(0)}to{transform:translateX(-1200px)}}
+#particleLayer,#fxLayer,#forceFxLayer{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+#fxLayer{z-index:8}
+#alarmLayer{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(255,59,77,.35),transparent 65%);opacity:0}
+#flashLayer{position:absolute;inset:0;pointer-events:none;background:#dff0ff;opacity:0}
+#forceVignette{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:radial-gradient(ellipse at center,transparent 52%,rgba(53,224,210,.28))}
+body.sith #forceVignette{background:radial-gradient(ellipse at center,transparent 52%,rgba(255,68,85,.28))}
+body.forceSlow #forceVignette{opacity:1}
+#frenzyGlow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(ellipse at center,transparent 45%,rgba(255,181,71,.30));}
+body.frenzy #frenzyGlow{opacity:1; animation:frzPulse 1s infinite}
+@keyframes frzPulse{50%{opacity:.55}}
+
+/* ---- actors ---- */
+#actors{position:absolute; inset:0; pointer-events:none}
+#heroWrap{
+  position:absolute; left:11%; bottom:4%; width:clamp(86px,26vw,118px); z-index:6;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));
+  transform-origin:50% 90%;
+}
+#heroWrap svg{width:100%; display:block}
+#allyRow{position:absolute; left:0; bottom:5%; width:42%; display:flex; align-items:flex-end; justify-content:flex-start;
+  gap:3%; z-index:5; padding-left:2%}
+.allyChar{flex:1 1 0; min-width:0; opacity:.92; filter:brightness(.92) drop-shadow(0 5px 8px rgba(0,0,0,.5)); transform-origin:50% 100%}
+.allyChar svg{width:100%; display:block}
+/* sahnedeki kahraman say\u0131s\u0131na g\u00f6re geni\u015flik \u2014 \u00e7ok kahramanda k\u00fc\u00e7\u00fcl\u00fcp s\u0131k\u0131\u015fmas\u0131nlar */
+#allyRow[data-n="1"]{width:19%}
+#allyRow[data-n="2"]{width:30%}
+#allyRow[data-n="3"]{width:40%}
+#allyRow[data-n="4"]{width:50%}
+/* derinlik basamaklamas\u0131: arkadakiler hafif a\u015fa\u011f\u0131da/k\u00fc\u00e7\u00fck, \u00f6ndekiler net */
+.allyChar:nth-child(2){transform:translateY(5px) scale(.95); opacity:.86}
+.allyChar:nth-child(3){transform:translateY(10px) scale(.9); opacity:.8}
+.allyChar:nth-child(4){transform:translateY(14px) scale(.86); opacity:.74}
+@keyframes allyStrikeK{
+  0%{transform:translateX(0) rotate(0)} 30%{transform:translateX(14px) rotate(-7deg)}
+  60%{transform:translateX(4px) rotate(3deg)} 100%{transform:translateX(0) rotate(0)}}
+.allyStrike{animation:allyStrikeK .5s ease-out}
+.allyBolt{position:absolute; height:3px; border-radius:2px; z-index:7;
+  background:linear-gradient(90deg,transparent,#9fd6ff,#fff); pointer-events:none;
+  box-shadow:0 0 8px #9fd6ff; transform-origin:0 50%; animation:boltFly .22s linear forwards}
+@keyframes boltFly{from{opacity:0;scale:.2 1}30%{opacity:1}to{opacity:0;scale:1 1}}
+
+@keyframes swingK{0%{transform:rotate(0)}35%{transform:rotate(-7deg)}70%{transform:rotate(4deg)}100%{transform:rotate(0)}}
+.swing{animation:swingK .42s ease-out}
+@keyframes tapSwingK{0%{transform:rotate(0) scale(1)}30%{transform:rotate(-11deg) scale(1.04)}65%{transform:rotate(5deg)}100%{transform:rotate(0) scale(1)}}
+.tapSwing{animation:tapSwingK .3s ease-out}
+@keyframes drawK{0%{transform:scale(.92);filter:brightness(2.2) drop-shadow(0 0 18px #fff)}100%{transform:scale(1);filter:brightness(1)}}
+.drawAnim{animation:drawK .55s ease-out}
+.heroFlare{position:absolute; inset:-12%; pointer-events:none; border-radius:50%;
+  background:radial-gradient(circle,var(--flc,#35e0d2) 0%,transparent 65%);
+  opacity:0; animation:flareK .95s ease-out}
+@keyframes flareK{0%{opacity:.85;transform:scale(.4)}100%{opacity:0;transform:scale(1.5)}}
+
+/* ---- enemy ---- */
+#enemyWrap{
+  position:absolute; right:7%; bottom:5%; width:clamp(96px,30vw,138px); z-index:6;
+  pointer-events:none; transition:opacity .2s;
+}
+#enemyWrap.boss{width:clamp(120px,38vw,176px)}
+/* iki katman: #enemyArt = bekleme/sendeleme (gövde) · #enemySvg = vuruş/ölüm + nefes (silüet) */
+#enemyArt{width:100%; display:block; transform-origin:50% 92%; animation:enIdle 3.1s ease-in-out infinite}
+#enemySvg{width:100%; display:block; filter:drop-shadow(0 6px 10px rgba(0,0,0,.5)); transform-origin:50% 85%; animation:enBreathe 2.7s ease-in-out infinite}
+/* canlı bekleme: hafif salınım + zıplama */
+@keyframes enIdle{
+  0%{transform:translateY(0) rotate(0deg)}
+  22%{transform:translateY(-3px) rotate(-1.4deg)}
+  50%{transform:translateY(-5px) rotate(.3deg)}
+  74%{transform:translateY(-2px) rotate(1.6deg)}
+  100%{transform:translateY(0) rotate(0deg)}
+}
+@keyframes enBreathe{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.045) scaleX(.982)}}
+#enemyWrap.boss #enemyArt{animation-duration:3.9s}
+#enemyWrap.boss #enemySvg{animation-duration:3.3s}
+
+/* === düşük can (<%30): hırpalanmış, sendeleyen, dumanlı === */
+#enemyArt.lowHp{animation:enLowIdle .82s ease-in-out infinite}
+@keyframes enLowIdle{
+  0%{transform:translateY(0) rotate(-5deg)}
+  18%{transform:translateY(1px) rotate(-7deg) translateX(-1px)}
+  37%{transform:translateY(-1px) rotate(-3.5deg) translateX(1px)}
+  55%{transform:translateY(1px) rotate(-6.5deg) translateX(-1px)}
+  73%{transform:translateY(0) rotate(-4deg) translateX(1px)}
+  100%{transform:translateY(0) rotate(-5deg)}
+}
+#enemySvg.lowHp{animation:enBreatheHurt 1.05s ease-in-out infinite, enDmgTint 2.4s ease-in-out infinite}
+/* kritik can (<%12): patlamaya yakın — daha hızlı sendeleme */
+#enemyArt.lowHp.crit{animation:enLowIdle .46s ease-in-out infinite}
+@keyframes enBreatheHurt{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.075) scaleX(.965)}}
+@keyframes enDmgTint{
+  0%,86%,100%{filter:brightness(.74) saturate(1.5) sepia(.22) drop-shadow(0 0 6px rgba(255,70,30,.55))}
+  89%{filter:brightness(2.1) saturate(.5) drop-shadow(0 0 9px rgba(255,180,80,.85))}
+  92%{filter:brightness(.58) saturate(1.5)}
+  95%{filter:brightness(1.7) saturate(.6)}
+}
+
+/* vuruş tepkisi: geri sekme — transform-only (parlama ayrı .hitGlow katmanında, hızlı vuruşta bile okunur) */
+@keyframes hitK{
+  0%{transform:translateX(0) rotate(0deg) scaleX(1)}
+  18%{transform:translateX(12px) rotate(5deg) scaleX(.9)}
+  46%{transform:translateX(-4px) rotate(-2.4deg) scaleX(1.04)}
+  72%{transform:translateX(4px) rotate(1deg) scaleX(1)}
+  100%{transform:translateX(0) rotate(0deg) scaleX(1)}
+}
+#enemySvg.hitFx{animation:hitK .2s cubic-bezier(.3,.7,.3,1)}
+/* her vuruşta eklenen parlama — üst üste binebilir, hızlı vuruşta net görünür */
+.hitGlow{position:absolute; z-index:9; width:84px; height:84px; margin:-42px 0 0 -42px; border-radius:50%;
+  pointer-events:none; mix-blend-mode:screen;
+  background:radial-gradient(circle, rgba(255,255,255,.92), rgba(255,235,180,.32) 45%, transparent 70%);
+  animation:hitGlowK .2s ease-out forwards}
+@keyframes hitGlowK{0%{opacity:0; transform:scale(.5)}25%{opacity:.95; transform:scale(1)}100%{opacity:0; transform:scale(1.18)}}
+
+/* ölüm: patlama (pop + parlama) */
+@keyframes dieK{0%{opacity:1;transform:scale(1);filter:brightness(1)}18%{opacity:1;transform:scale(1.24);filter:brightness(4.5) saturate(.3)}100%{opacity:0;transform:scale(.3) rotate(14deg);filter:brightness(2)}}
+#enemySvg.die{animation:dieK .4s ease-in forwards}
+/* patlama parçacıkları */
+.boomFlash{position:absolute; z-index:10; width:var(--bsz,150px); height:var(--bsz,150px);
+  margin:calc(var(--bsz,150px)/-2) 0 0 calc(var(--bsz,150px)/-2); border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, #fff 0%, #ffe6b0 20%, #ff8a2a 44%, rgba(255,90,30,0) 70%);
+  animation:boomFlashK .44s ease-out forwards}
+@keyframes boomFlashK{0%{opacity:0; transform:scale(.2)}12%{opacity:1; transform:scale(.78)}100%{opacity:0; transform:scale(1.28)}}
+.debris{position:absolute; z-index:9; width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:2px; pointer-events:none;
+  animation:debrisK .72s cubic-bezier(.2,.55,.4,1) forwards}
+@keyframes debrisK{0%{opacity:1; transform:translate(0,0) scale(1) rotate(0)}100%{opacity:0; transform:translate(var(--dx,0),var(--dy,0)) scale(.3) rotate(240deg)}}
+.miniFlare{position:absolute; z-index:9; width:40px; height:40px; margin:-20px 0 0 -20px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, #fff, #ffd28a 35%, #ff7a2a 60%, transparent 75%); animation:miniFlareK .26s ease-out forwards}
+@keyframes miniFlareK{0%{opacity:0; transform:scale(.3)}30%{opacity:1; transform:scale(.9)}100%{opacity:0; transform:scale(1.1)}}
+
+/* düşük can parçacıkları: yükselen duman + sıçrayan közler */
+.smokeP{position:absolute; z-index:8; width:16px; height:16px; margin:-8px 0 0 -8px; border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, rgba(86,86,92,.85), rgba(40,40,46,0) 70%);
+  pointer-events:none; animation:smokeRise 1.05s ease-out forwards}
+@keyframes smokeRise{0%{opacity:0; transform:translate(0,0) scale(.4)}18%{opacity:.65}100%{opacity:0; transform:translate(var(--sx,0),-46px) scale(2.2)}}
+.emberP{position:absolute; z-index:9; width:5px; height:5px; margin:-2.5px 0 0 -2.5px; border-radius:50%;
+  background:#ffb347; box-shadow:0 0 6px #ff7a2a; pointer-events:none; animation:emberFly .72s ease-out forwards}
+@keyframes emberFly{0%{opacity:1; transform:translate(0,0) scale(1)}100%{opacity:0; transform:translate(var(--ex,0),var(--ey,-30px)) scale(.2)}}
+#enemyHud{position:absolute; bottom:101%; left:50%; transform:translateX(-50%); width:130%; max-width:190px; text-align:center; z-index:7}
+#enemyName{font-size:11px; font-weight:800; letter-spacing:.04em; color:#fff; text-shadow:0 1px 3px #000;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+#hpOuter{height:7px; margin-top:3px; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.25); border-radius:4px; overflow:hidden}
+#hpFill{height:100%; width:100%; background:linear-gradient(90deg,#ff4d5e,#ff8a3a); transition:width .12s}
+#hpText{font-size:10px; color:#ffd9d9; text-shadow:0 1px 2px #000; margin-top:2px; font-variant-numeric:tabular-nums}
+#bossTimer{height:4px; margin-top:3px; background:rgba(0,0,0,.6); border-radius:3px; overflow:hidden; display:none}
+#bossTimer i{display:block; height:100%; background:var(--gold)}
+#bossTimerTxt{font-size:10px; font-weight:800; color:var(--gold); text-shadow:0 1px 2px #000; display:none}
+#enemyWrap.boss #enemyName{color:var(--gold)}
+
+/* mini-boss rozeti */
+#enemyWrap.mini #enemyName{color:#ff8a3a}
+
+/* ---- combat fx ---- */
+.dmg{position:absolute; z-index:9; font-weight:900; font-size:15px; color:#fff;
+  text-shadow:0 1px 3px #000,0 0 8px rgba(255,255,255,.3); pointer-events:none;
+  animation:dmgFloat .85s ease-out forwards; font-variant-numeric:tabular-nums; white-space:nowrap}
+.dmg.crit{color:var(--gold); font-size:19px}
+.dmg.sync{color:var(--cyan); font-size:12px; opacity:.9}
+@keyframes dmgFloat{0%{transform:translateY(0) scale(.7);opacity:0}15%{opacity:1;transform:translateY(-8px) scale(1.06)}100%{transform:translateY(-46px) scale(1);opacity:0}}
+.slashFx{position:absolute; width:54px; height:8px; margin:-4px 0 0 -27px; border-radius:4px;
+  background:linear-gradient(90deg,transparent,var(--slc,#fff),transparent);
+  box-shadow:0 0 12px var(--slc,#fff); animation:slashK .28s ease-out forwards; pointer-events:none}
+.slashFx.big{width:78px; height:10px; margin:-5px 0 0 -39px}
+@keyframes slashK{0%{opacity:0;scale:.3 1}25%{opacity:1}100%{opacity:0;scale:1.25 1}}
+.sparkFx{position:absolute; width:5px; height:5px; margin:-2px; border-radius:50%;
+  transition:transform .4s ease-out,opacity .4s; pointer-events:none}
+.tapRing{position:absolute; width:34px; height:34px; margin:-17px; border-radius:50%;
+  border:2px solid rgba(255,181,71,.8); animation:ringK .4s ease-out forwards; pointer-events:none}
+@keyframes ringK{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.shockwave{position:absolute; width:60px; height:60px; margin:-30px; border-radius:50%;
+  border:3px solid rgba(53,224,210,.8); box-shadow:0 0 16px rgba(53,224,210,.5);
+  animation:shockK .5s ease-out forwards; pointer-events:none}
+@keyframes shockK{0%{transform:scale(.2);opacity:1}100%{transform:scale(2.2);opacity:0}}
+.coin{position:absolute; width:13px; height:13px; border-radius:50%; z-index:9;
+  background:radial-gradient(circle at 35% 30%,#fff0b8,#ffd24a 45%,#b8860b);
+  border:1px solid #b8860b; transition:transform .65s cubic-bezier(.5,-.2,.7,1),opacity .65s; pointer-events:none}
+
+/* ---- combo / boss btn / buffs ---- */
+#comboBox{position:absolute; top:10px; right:10px; z-index:10; text-align:center; display:none;
+  background:rgba(10,12,30,.75); border:1px solid var(--line); border-radius:9px; padding:5px 11px; backdrop-filter:blur(3px)}
+#comboBox b{font-size:19px; color:#fff; display:block; font-variant-numeric:tabular-nums}
+#comboBox span{font-size:9px; color:var(--dim); letter-spacing:.08em}
+#comboBox.frenzy{border-color:var(--gold)} #comboBox.frenzy b{color:var(--gold)}
+#bossBtn{position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:10; display:none;
+  background:linear-gradient(180deg,#3a1418,#22090c); color:var(--gold); border:1px solid var(--gold);
+  border-radius:9px; padding:10px 16px; font-weight:800; font-size:13px; box-shadow:var(--shadow); min-height:44px}
+#buffRow{position:absolute; top:8px; left:8px; z-index:10; display:flex; flex-direction:column; gap:4px; align-items:flex-start}
+.buffTag{background:rgba(10,12,30,.78); border:1px solid var(--line2); border-radius:7px;
+  padding:3px 8px; font-size:10.5px; font-weight:700; color:var(--gold2)}
+#luckyShip{position:absolute; width:62px; z-index:11; display:none; cursor:pointer; filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+#zoneBanner{position:absolute; inset:0; z-index:14; display:flex; flex-direction:column; justify-content:center; align-items:center;
+  background:rgba(5,6,18,.82); opacity:0; pointer-events:none; transition:opacity .4s}
+#zoneBanner.show{opacity:1}
+#zoneBanner .arrow{font-size:11px; letter-spacing:.3em; color:var(--cyan); font-weight:700}
+#zoneBanner h2{font-size:24px; margin:8px 0 4px; color:#fff; letter-spacing:.04em; text-transform:uppercase; text-align:center; padding:0 16px}
+#zoneBanner .tier{font-size:12px; color:var(--gold)}
+
+/* ================= COMBAT DOCK ================= */
+#combatDock{flex:0 0 auto; background:linear-gradient(180deg,#0c102a,#0a0d20);
+  border-top:1px solid var(--line2); padding:6px 8px 4px; z-index:25}
+#dockRow{display:flex; gap:8px; align-items:center; justify-content:space-between}
+#skillbar,#forceBar{display:flex; gap:7px}
+.skillBtn,.forceBtn{position:relative; width:46px; height:46px; border-radius:11px; flex:0 0 auto;
+  background:var(--panel); border:1px solid var(--line2); font-size:19px;
+  display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow)}
+.skillBtn.ready,.forceBtn.ready{border-color:var(--cyan); box-shadow:0 0 9px rgba(53,224,210,.35)}
+body.sith .forceBtn.ready{border-color:var(--red); box-shadow:0 0 9px rgba(255,68,85,.35)}
+.skillBtn.active{border-color:var(--gold); box-shadow:0 0 10px rgba(255,181,71,.4)}
+.skillBtn.locked,.forceBtn.locked{opacity:.4; filter:grayscale(.8)}
+.skillBtn .lockLv,.forceBtn .flvl{position:absolute; bottom:-1px; right:-1px; font-size:8.5px; font-weight:800;
+  background:#000; border:1px solid var(--line2); color:var(--dim); border-radius:5px; padding:1px 4px}
+.forceBtn .flvl{color:var(--cyan)}
+.cdRing,.fcd{position:absolute; inset:-2px; width:calc(100% + 4px); height:calc(100% + 4px); pointer-events:none}
+#forceMeter{display:flex; align-items:center; gap:7px; margin-bottom:5px}
+#forceMeterInner{flex:1; height:7px; background:rgba(0,0,0,.55); border:1px solid var(--line2); border-radius:4px; overflow:hidden}
+#forceFill{height:100%; width:0%; background:linear-gradient(90deg,var(--cyan),#9ff3ea); transition:width .25s}
+body.sith #forceFill{background:linear-gradient(90deg,#ff4455,#ff9aa4)}
+#forceLvlBadge{font-size:10px; font-weight:800; color:var(--cyan); white-space:nowrap}
+body.sith #forceLvlBadge{color:var(--red)}
+#forceXpTxt{font-size:10px; color:var(--dim); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* force cast fx */
+.forceOrb{position:absolute; width:26px; height:26px; margin:-13px; border-radius:50%; z-index:9; pointer-events:none;
+  background:radial-gradient(circle,#fff,var(--cyan) 60%,transparent); box-shadow:0 0 18px var(--cyan); animation:orbFly .5s ease-in forwards}
+body.sith .forceOrb{background:radial-gradient(circle,#fff,var(--red) 60%,transparent); box-shadow:0 0 18px var(--red)}
+@keyframes orbFly{0%{transform:translate(0,0) scale(.5);opacity:0}25%{opacity:1}100%{transform:translate(var(--ox,120px),var(--oy,-20px)) scale(1.15);opacity:0}}
+.forceRing{position:absolute; width:90px; height:90px; margin:-45px; border-radius:50%; z-index:9; pointer-events:none;
+  border:3px solid var(--cyan); box-shadow:0 0 22px var(--cyan); animation:shockK .65s ease-out forwards}
+body.sith .forceRing{border-color:var(--red); box-shadow:0 0 22px var(--red)}
+.forceWaveCrescent{position:absolute; width:70px; height:70px; margin:-35px; z-index:9; pointer-events:none;
+  border-radius:50%; border:4px solid transparent; border-right-color:var(--cyan);
+  box-shadow:0 0 14px rgba(53,224,210,.5); animation:waveFly .45s linear forwards}
+@keyframes waveFly{0%{transform:translateX(0) rotate(-15deg);opacity:1}100%{transform:translateX(150px) rotate(15deg);opacity:0}}
+.forceGroundCrack{position:absolute; width:120px; height:16px; margin:-8px 0 0 -60px; z-index:9; pointer-events:none;
+  background:radial-gradient(ellipse,rgba(255,68,85,.8),transparent 70%); animation:crackK .7s ease-out forwards}
+@keyframes crackK{0%{transform:scaleX(.2);opacity:1}100%{transform:scaleX(1.5);opacity:0}}
+.forceCrushHit{animation:crushK .5s ease-in-out}
+@keyframes crushK{0%{transform:scale(1)}40%{transform:scale(.86) translateY(7px)}100%{transform:scale(1)}}
+.forceCastName{position:absolute; top:22%; left:50%; transform:translateX(-50%); z-index:13; pointer-events:none;
+  font-size:17px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; color:#fff;
+  text-shadow:0 0 14px var(--cyan),0 2px 4px #000; animation:castNameK 1.3s ease-out forwards; white-space:nowrap}
+body.sith .forceCastName{text-shadow:0 0 14px var(--red),0 2px 4px #000}
+@keyframes castNameK{0%{opacity:0;transform:translateX(-50%) scale(.8)}18%{opacity:1;transform:translateX(-50%) scale(1.05)}75%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(1)}}
+
+/* ================= BOTTOM NAV + PANEL ================= */
+#bottom{flex:0 0 auto; background:#0a0d20; border-top:1px solid var(--line); z-index:30; display:flex; flex-direction:column}
+#tabs{display:flex; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding:4px 4px 2px}
+#tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 56px; min-width:56px; min-height:48px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; border-radius:9px; color:var(--dim); position:relative}
+.tab .tIco{font-style:normal; font-size:17px; line-height:1}
+.tab span{font-size:9px; font-weight:700; letter-spacing:.03em; white-space:nowrap}
+.tab.on{color:var(--gold); background:rgba(255,181,71,.09)}
+.tab.on::after{content:""; position:absolute; top:0; left:22%; right:22%; height:2px; background:var(--gold); border-radius:2px}
+#panelHead{display:none; align-items:center; gap:8px; padding:8px 10px 4px}
+body.drawerOpen #panelHead{display:flex}
+#panelHead .caps{flex:0 0 auto}
+#buyMult{display:flex; gap:4px; margin-left:auto}
+.bm{min-width:38px; min-height:30px; padding:4px 7px; border-radius:7px; font-size:11px; font-weight:800;
+  background:var(--panel); border:1px solid var(--line2); color:var(--dim)}
+.bm.on{color:#0a0a1a; background:var(--gold); border-color:var(--gold)}
+#panelGrow,#panelClose{width:32px; height:32px; border-radius:8px; background:var(--panel);
+  border:1px solid var(--line2); color:var(--dim); font-size:14px; display:flex; align-items:center; justify-content:center}
+#panelGrow.on{color:var(--gold); border-color:var(--gold)}
+#panel{display:none; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px 10px 12px; overscroll-behavior:contain}
+body.drawerOpen #panel{display:block; height:44dvh}
+body.drawerOpen.panelMax #panel{height:64dvh}
+
+/* ---- panel rows ---- */
+.row{display:flex; gap:10px; align-items:center; background:var(--panel); border:1px solid var(--line2);
+  border-radius:var(--rad); padding:9px; margin-bottom:8px; box-shadow:var(--shadow)}
+.row.equipped{border-color:var(--gold); background:linear-gradient(180deg,rgba(255,181,71,.06),var(--panel))}
+.row.lockedRow{opacity:.55}
+.row.lootLegendary{border-color:var(--gold); box-shadow:0 0 10px rgba(255,181,71,.25)}
+.rIco{flex:0 0 46px; width:46px; height:46px; border-radius:9px; background:var(--bg2);
+  border:1px solid var(--line2); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden}
+.rIco svg{width:84%; height:84%}
+.rIco .bladeIco{width:100%; height:100%}
+.holoBase{position:absolute; inset:auto 6% 8%; height:3px; border-radius:50%;
+  background:radial-gradient(ellipse,var(--ig,transparent) 0%,transparent 80%); opacity:.8; filter:blur(1px)}
+.allyIco{width:100%; height:100%; display:flex}
+.allyIco svg{width:100%; height:100%}
+.rMain{flex:1; min-width:0}
+.rName{font-size:13.5px; font-weight:800; display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.rLvl{font-size:10px; font-weight:800; color:var(--cyan); background:rgba(53,224,210,.1);
+  border:1px solid rgba(53,224,210,.3); border-radius:5px; padding:1px 5px}
+.eqBadge{font-size:9px; font-weight:800; color:var(--gold); background:rgba(255,181,71,.12);
+  border:1px solid rgba(255,181,71,.4); border-radius:5px; padding:1px 5px; letter-spacing:.04em}
+.rDesc{font-size:11.5px; color:var(--dim); margin-top:2px; line-height:1.35}
+.rFx{font-size:11px; color:var(--cyan); margin-top:2px; line-height:1.3}
+.buyBtn{flex:0 0 auto; min-width:78px; min-height:46px; border-radius:9px; padding:5px 9px;
+  background:linear-gradient(180deg,#243054,#18203c); border:1px solid #3a4a7a;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px}
+.buyBtn:disabled{opacity:.45}
+.buyBtn .bAct{font-size:11.5px; font-weight:800; color:#fff; white-space:nowrap}
+.buyBtn .bCost{font-size:11px; font-weight:700; color:var(--gold); font-variant-numeric:tabular-nums; white-space:nowrap}
+.buyBtn.owned{background:var(--panel); border-color:var(--line2)}
+.btnCol{display:flex; flex-direction:column; gap:5px}
+.btnCol .buyBtn{min-height:40px}
+.bigBtn{display:block; width:100%; min-height:48px; border-radius:var(--rad); margin:8px 0;
+  background:linear-gradient(180deg,#3a2a10,#241806); border:1px solid var(--gold); color:var(--gold);
+  font-size:14px; font-weight:800; letter-spacing:.03em}
+.bigBtn:disabled{opacity:.45}
+.lootBtns{display:flex; flex-direction:column; gap:5px; flex:0 0 auto}
+.lootBtns .buyBtn{min-height:38px; min-width:64px}
+.sectionTitle{font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--gold); margin:14px 2px 7px; display:flex; align-items:center; gap:8px}
+.sectionTitle::after{content:""; flex:1; height:1px; background:var(--line)}
+.note{font-size:11.5px; color:var(--dim); line-height:1.45; margin:6px 2px}
+.statGrid{display:grid; grid-template-columns:1fr 1fr; gap:7px; margin:6px 0}
+.statCell{background:var(--panel); border:1px solid var(--line2); border-radius:9px; padding:8px 10px}
+.statCell b{font-size:14px; display:block; font-variant-numeric:tabular-nums}
+.statCell span{font-size:10px; color:var(--dim)}
+.achRow{display:flex; gap:9px; align-items:center; background:var(--panel); border:1px solid var(--line2);
+  border-radius:9px; padding:7px 9px; margin-bottom:6px; opacity:.6}
+.achRow.done{opacity:1; border-color:rgba(84,224,138,.35)}
+.achRow .mark{flex:0 0 22px; width:22px; height:22px; border-radius:50%; border:1px solid var(--line2);
+  display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--green); font-weight:900}
+.achRow.done .mark{border-color:var(--green); background:rgba(84,224,138,.1)}
+.achName{font-size:12.5px; font-weight:800}
+.achDesc{font-size:10.5px; color:var(--dim)}
+
+/* alt sekmeler (Loot: Karakter | Gemi vb.) */
+.subTabs{display:flex; gap:6px; margin:6px 0}
+.subTab{flex:1; min-height:38px; border-radius:8px; font-size:12px; font-weight:800;
+  background:var(--panel); border:1px solid var(--line2); color:var(--dim)}
+.subTab.on{color:#0a0a1a; background:var(--gold); border-color:var(--gold)}
+
+/* ekipman slotları */
+.eqGrid{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin:6px 0}
+.eqSlot{background:var(--panel); border:1px dashed var(--line2); border-radius:10px; min-height:74px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:6px 4px; text-align:center}
+.eqSlot.filled{border-style:solid; border-color:var(--cyan)}
+.eqSlot .sIcoBig{font-size:21px; line-height:1}
+.eqSlot .sLbl{font-size:9px; font-weight:800; letter-spacing:.05em; color:var(--dim); text-transform:uppercase}
+.eqSlot .sVal{font-size:9.5px; color:var(--cyan); line-height:1.25}
+.charPick{display:flex; gap:6px; margin:6px 0}
+.charPick button{flex:1; min-height:40px; border-radius:8px; font-size:11.5px; font-weight:800;
+  background:var(--panel); border:1px solid var(--line2); color:var(--dim)}
+.charPick button.on{color:var(--cyan); border-color:var(--cyan); background:rgba(53,224,210,.08)}
+
+/* loot uçuş animasyonu */
+.lootFly{position:fixed; z-index:80; width:30px; height:30px; pointer-events:none;
+  transition:transform .7s cubic-bezier(.45,-.15,.65,1),opacity .7s}
+
+/* ================= UZAY ================= */
+#spaceScene{position:absolute; inset:0; display:none; overflow:hidden; z-index:4}
+body.spaceMode #spaceScene{display:block}
+body.spaceMode #bgWrap, body.spaceMode #actors, body.spaceMode #bossBtn, body.spaceMode #particleLayer{display:none}
+#spaceBg{position:absolute; inset:0}
+#spaceBg svg{width:100%; height:100%; display:block}
+#playerShip{position:absolute; left:8%; bottom:34%; width:clamp(84px,25vw,120px); z-index:6;
+  filter:drop-shadow(0 5px 9px rgba(0,0,0,.55)); transform-origin:50% 50%; animation:shipHover 3.2s ease-in-out infinite}
+#playerShip svg{width:100%; display:block}
+@keyframes shipHover{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes shipFireK{0%{transform:translateX(0)}30%{transform:translateX(9px)}100%{transform:translateX(0)}}
+#playerShip.fire{animation:shipFireK .2s ease-out, shipHover 3.2s ease-in-out infinite}
+#spaceEnemyWrap{position:absolute; right:7%; top:24%; width:clamp(90px,29vw,140px); z-index:6; transition:opacity .2s}
+#spaceEnemyWrap.boss{width:clamp(124px,40vw,190px)}
+#spaceEnemySvg{width:100%; display:block; filter:drop-shadow(0 5px 9px rgba(0,0,0,.55)); animation:enemyHover 2.6s ease-in-out infinite}
+@keyframes enemyHover{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+#spaceEnemySvg.die{animation:dieK .4s ease-in forwards}
+#spaceEnemySvg.hitFx{animation:hitK .18s ease-out}
+#spaceEnemyHud{position:absolute; bottom:101%; left:50%; transform:translateX(-50%); width:130%; max-width:190px; text-align:center}
+.laserBolt{position:absolute; height:4px; width:34px; border-radius:2px; z-index:7; pointer-events:none;
+  background:linear-gradient(90deg,transparent,#ff5b5b,#fff); box-shadow:0 0 9px #ff5b5b;
+  animation:laserFly .18s linear forwards}
+.laserBolt.green{background:linear-gradient(90deg,transparent,#54e08a,#fff); box-shadow:0 0 9px #54e08a}
+@keyframes laserFly{from{opacity:.4}30%{opacity:1}to{opacity:0}}
+
+/* uzay patlaması — düşman gemisi ölünce */
+.expDebris{position:absolute; z-index:9; pointer-events:none; transition:transform .72s cubic-bezier(.2,.7,.35,1),opacity .72s ease-out}
+.expFlash{position:absolute; z-index:9; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle,#fff 0%,#ffe9a8 35%,transparent 70%); animation:expFlashK .42s ease-out forwards}
+@keyframes expFlashK{0%{transform:scale(.2);opacity:1}100%{transform:scale(2.6);opacity:0}}
+.expCore{position:absolute; z-index:9; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle,#fff 0%,#ff9b3a 45%,#b8860b 78%,transparent); animation:expCoreK .55s ease-out forwards}
+@keyframes expCoreK{0%{transform:scale(.3);opacity:1}55%{opacity:1}100%{transform:scale(1.7);opacity:0}}
+.expRing{position:absolute; z-index:9; border-radius:50%; pointer-events:none;
+  border:3px solid #ffcf6a; box-shadow:0 0 20px #ffae3a; animation:expRingK .6s ease-out forwards}
+@keyframes expRingK{0%{transform:scale(.2);opacity:1}100%{transform:scale(2.8);opacity:0}}
+.shipCard .rIco{flex:0 0 58px; width:58px; height:46px}
+#spaceHudTag{position:absolute; top:10px; left:10px; z-index:10; background:rgba(10,12,30,.78);
+  border:1px solid var(--line2); border-radius:8px; padding:4px 9px; font-size:10.5px; font-weight:800; color:var(--cyan)}
+
+/* ================= MODALLAR ================= */
+.modalBg{position:fixed; inset:0; z-index:60; background:rgba(4,5,14,.8); backdrop-filter:blur(3px);
+  display:none; align-items:center; justify-content:center; padding:16px}
+.modalBg.show{display:flex}
+.modal{width:100%; max-width:420px; max-height:86dvh; overflow-y:auto; background:linear-gradient(180deg,#141936,#0e1226);
+  border:1px solid var(--line); border-radius:14px; padding:18px 16px; box-shadow:0 18px 50px rgba(0,0,0,.6)}
+.modal h2{font-size:17px; letter-spacing:.05em; color:var(--gold); margin-bottom:8px; text-transform:uppercase}
+.modal .big{font-size:26px; font-weight:900; color:var(--gold); text-align:center; margin:12px 0}
+.mRow{display:flex; gap:8px; margin-top:10px}
+.mBtn{flex:1; min-height:46px; border-radius:9px; font-size:13px; font-weight:800;
+  background:var(--panel2); border:1px solid var(--line2); color:var(--txt); padding:8px}
+.mBtn.accent{background:linear-gradient(180deg,#3a2a10,#241806); border-color:var(--gold); color:var(--gold)}
+.mBtn.danger{border-color:rgba(255,77,94,.5); color:var(--red)}
+.switchRow{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:8px 0; font-size:13px}
+#saveBox{width:100%; min-height:64px; margin-top:8px; background:#080a18; border:1px solid var(--line2);
+  border-radius:8px; color:var(--dim); font-size:10.5px; padding:8px; resize:vertical; font-family:ui-monospace,monospace}
+.sideCards{display:flex; gap:10px; margin-top:12px}
+.sideCard{flex:1; border-radius:12px; padding:16px 10px; text-align:center; border:1px solid var(--line2);
+  background:var(--panel); min-height:140px}
+.sideCard .sIco{font-size:26px; display:block; margin-bottom:6px}
+.sideCard h3{font-size:13px; letter-spacing:.08em; margin-bottom:6px}
+.sideCard p{font-size:10.5px; color:var(--dim); line-height:1.45}
+.jediCard h3{color:var(--cyan)} .jediCard:active{border-color:var(--cyan)}
+.sithCard h3{color:var(--red)} .sithCard:active{border-color:var(--red)}
+
+/* ================= TOAST ================= */
+#toasts{position:fixed; top:54px; left:50%; transform:translateX(-50%); z-index:70; width:min(92vw,380px);
+  display:flex; flex-direction:column; gap:6px; pointer-events:none}
+.toast{background:linear-gradient(180deg,#161b36,#10142a); border:1px solid var(--line2); border-left:3px solid var(--cyan);
+  border-radius:10px; padding:9px 12px; box-shadow:var(--shadow); animation:toastK 3.4s ease forwards}
+.toast.gold{border-left-color:var(--gold)}
+.toast b{font-size:12.5px; display:block}
+.toast div, .toast span{font-size:11px; color:var(--dim)}
+@keyframes toastK{0%{opacity:0;transform:translateY(-9px)}8%{opacity:1;transform:translateY(0)}85%{opacity:1}100%{opacity:0;transform:translateY(-6px)}}
+
+/* ================= PARÇACIKLAR ================= */
+.pt{position:absolute; pointer-events:none; will-change:transform}
+.pt-sand{width:3px;height:2px;background:#e0c188;border-radius:1px;animation:ptSide linear forwards;opacity:.7}
+.pt-sand.puff{width:9px;height:6px;filter:blur(2px);opacity:.4}
+.pt-spark{width:3px;height:3px;background:#ffae3a;border-radius:50%;animation:ptUp linear forwards;box-shadow:0 0 5px #ffae3a}
+.pt-rain{width:1.5px;height:13px;background:linear-gradient(#9fd6ff,transparent);animation:ptDown linear forwards;opacity:.6}
+.pt-snow{background:#fff;border-radius:50%;animation:ptSnow linear forwards;opacity:.85}
+.pt-snow.far{filter:blur(1px);opacity:.5}
+.pt-snow.near{box-shadow:0 0 5px rgba(255,255,255,.7)}
+.pt-snow.s2{animation-name:ptSnow2}
+.pt-fire{width:4px;height:4px;background:#aaff4a;border-radius:50%;animation:ptUp linear forwards;box-shadow:0 0 6px #aaff4a;opacity:.8}
+.pt-dust{width:3px;height:3px;background:#9aa3ad;border-radius:50%;animation:ptUp linear forwards;opacity:.4}
+.pt-ember{width:4px;height:4px;background:#ff7b2d;border-radius:50%;animation:ptUp linear forwards;box-shadow:0 0 7px #ff7b2d}
+.pt-mist{width:30px;height:9px;background:#a86bff;border-radius:50%;filter:blur(5px);opacity:.18;animation:ptSide linear forwards}
+.pt-star{width:2px;height:2px;background:#fff;border-radius:50%;animation:ptTw linear forwards}
+.pt-fall{width:2.5px;height:9px;background:linear-gradient(#ffd24a,transparent);animation:ptDown linear forwards;opacity:.7}
+@keyframes ptDown{from{transform:translateY(-6vh)}to{transform:translateY(108vh)}}
+@keyframes ptUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-40vh);opacity:0}}
+@keyframes ptSide{from{transform:translateX(-5vw)}to{transform:translateX(108vw)}}
+@keyframes ptSnow{from{transform:translate(0,-4vh)}to{transform:translate(7vw,106vh)}}
+@keyframes ptSnow2{from{transform:translate(0,-4vh)}to{transform:translate(-7vw,106vh)}}
+@keyframes ptTw{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
+
+/* küçük ekran ayarı */
+@media (max-height:640px){
+  body.drawerOpen #panel{height:40dvh}
+  #heroWrap{width:clamp(74px,22vw,96px)}
+  #enemyWrap{width:clamp(82px,26vw,112px)}
+}
+
+/* ============================================================
+   ===== GÖREV 2/3/4/5: MAĞAZA · LOOT · ETKİNLİK · POLİSH =====
+   ============================================================ */
+
+/* ---- topbar rozetleri ---- */
+#vipBadge,#tourBadge{flex:0 0 auto; display:none; align-items:center; gap:3px; height:30px; padding:0 8px;
+  border-radius:8px; font-size:11px; font-weight:900; letter-spacing:.04em; white-space:nowrap}
+#vipBadge{background:linear-gradient(180deg,#3a2a10,#241806); border:1px solid var(--gold); color:var(--gold2);
+  box-shadow:0 0 8px rgba(255,181,71,.3)}
+#tourBadge{background:var(--panel); border:1px solid var(--line2); color:var(--cyan); font-variant-numeric:tabular-nums}
+
+/* ---- GÖREV 5: tab bar polish (daha büyük ikon, parlamalı aktif) ---- */
+.tab .tIco{font-size:20px; transition:transform .18s}
+.tab span{font-size:9.5px}
+.tab.on .tIco{transform:translateY(-1px) scale(1.12); filter:drop-shadow(0 0 6px rgba(255,181,71,.7))}
+.tab.on::after{height:3px; left:18%; right:18%; box-shadow:0 0 8px var(--gold),0 0 3px var(--gold)}
+.tab:active .tIco{transform:scale(.9)}
+
+/* ---- alt navigasyon (sub-nav) ---- */
+.subNav{display:flex; gap:6px; margin:4px 0 8px; position:sticky; top:0; z-index:5;
+  background:linear-gradient(180deg,var(--bg) 70%,transparent); padding-bottom:2px}
+.subBtn{flex:1; min-height:40px; border-radius:9px; font-size:12px; font-weight:800; letter-spacing:.02em;
+  background:var(--panel); border:1px solid var(--line2); color:var(--dim); transition:all .15s}
+.subBtn.on{color:#0a0a1a; background:linear-gradient(180deg,var(--gold2),var(--gold)); border-color:var(--gold);
+  box-shadow:0 2px 10px rgba(255,181,71,.3)}
+
+/* ---- countdown etiketi ---- */
+.cdTag{font-size:10px; font-weight:800; color:var(--cyan); background:rgba(53,224,210,.1);
+  border:1px solid rgba(53,224,210,.28); border-radius:5px; padding:1px 6px; letter-spacing:.02em;
+  font-variant-numeric:tabular-nums; margin-left:auto; text-transform:none}
+
+/* ============ MAĞAZA ============ */
+.shopGrid{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin:4px 0 8px}
+.packCard,.crystalCard,.offerCard{position:relative; display:flex; flex-direction:column; gap:6px;
+  background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line2);
+  border-radius:13px; padding:12px 11px 11px; box-shadow:var(--shadow); overflow:hidden; animation:cardIn .3s ease}
+@keyframes cardIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.packCard.popular{border-color:var(--cyan); box-shadow:0 0 14px rgba(53,224,210,.22)}
+.packCard.gold{grid-column:1/-1; border:1.5px solid var(--gold);
+  background:linear-gradient(135deg,#241806,#2e2009 55%,#1a1204);
+  box-shadow:0 0 18px rgba(255,181,71,.35),inset 0 0 30px rgba(255,181,71,.06)}
+.packCard.gold::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(120deg,transparent 40%,rgba(255,210,138,.14) 50%,transparent 60%);
+  background-size:300% 100%; animation:goldShine 4.5s linear infinite}
+@keyframes goldShine{from{background-position:120% 0}to{background-position:-120% 0}}
+.packBadge{position:absolute; top:9px; right:-30px; transform:rotate(38deg); width:120px; text-align:center;
+  font-size:8.5px; font-weight:900; letter-spacing:.08em; padding:3px 0; color:#0a0a1a;
+  background:var(--cyan); box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.packBadge.goldBadge{background:linear-gradient(90deg,var(--gold2),var(--gold))}
+.packCard.popular .packBadge{background:var(--cyan)}
+.packName{font-size:14px; font-weight:900; letter-spacing:.02em; color:var(--txt); padding-right:30px}
+.packCard.gold .packName{color:var(--gold2); font-size:16px}
+.packContents{font-size:11px; color:var(--dim); line-height:1.45; flex:1}
+.packBuy{margin-top:4px; min-height:46px; border-radius:10px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:1px; font-weight:900;
+  background:linear-gradient(180deg,#2a6fdb,#1d4fa0); border:1px solid #4d8ae8; color:#fff; transition:transform .12s,filter .12s}
+.packBuy:active{transform:scale(.96)}
+.packBuy:disabled{opacity:.5; filter:grayscale(.5)}
+.packBuy.goldBuy{background:linear-gradient(180deg,var(--gold2),var(--gold)); border-color:#ffe6b0; color:#1a1204}
+.packBuy .pPrice{font-size:14px; line-height:1}
+.packBuy .pLbl{font-size:9px; font-weight:800; opacity:.85; letter-spacing:.06em; text-transform:uppercase}
+
+/* kristal mağazası */
+.crystalCard{align-items:center; text-align:center}
+.crystalAmt{display:flex; align-items:center; gap:6px; font-size:22px; font-weight:900; color:var(--purple)}
+.crystalAmt .cIco{width:22px; height:22px; display:flex}
+.crystalAmt .cIco svg{width:100%;height:100%}
+.crystalBonus{font-size:10.5px; font-weight:800; color:var(--green)}
+
+/* günlük teklif */
+.offerCard{align-items:center; text-align:center}
+.offerDisc{position:absolute; top:8px; left:8px; font-size:11px; font-weight:900; color:#fff;
+  background:var(--red); border-radius:6px; padding:2px 7px; box-shadow:0 2px 6px rgba(255,77,94,.4)}
+.offerIco{height:42px; display:flex; align-items:center; justify-content:center; margin-top:6px}
+.offerIco .cIco{width:36px;height:36px;display:flex}
+.offerIco .cIco svg{width:100%;height:100%}
+.offerLabel{font-size:11.5px; font-weight:800; color:var(--txt); line-height:1.3; flex:1; display:flex; align-items:center}
+
+/* season pass */
+.seasonBarWrap{position:relative; height:22px; background:var(--panel); border:1px solid var(--line2);
+  border-radius:11px; overflow:hidden; margin:6px 0 10px}
+.seasonBar{height:100%; background:linear-gradient(90deg,var(--purple),#c89cff); transition:width .4s}
+.seasonBarWrap span{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:800; color:#fff; text-shadow:0 1px 2px #000}
+.seasonTrack{display:flex; flex-direction:column; gap:6px; margin-top:6px}
+.seasonRow{display:grid; grid-template-columns:30px 1fr 1fr; gap:6px; align-items:stretch; opacity:.5}
+.seasonRow.unlocked{opacity:1}
+.seasonRow.cur .seasonLvl{background:var(--gold); color:#0a0a1a; border-color:var(--gold)}
+.seasonLvl{display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900;
+  background:var(--panel); border:1px solid var(--line2); border-radius:8px; color:var(--dim)}
+.seasonCell{min-height:40px; border-radius:8px; font-size:10px; font-weight:700; padding:5px 6px; line-height:1.25;
+  display:flex; align-items:center; justify-content:center; text-align:center}
+.seasonCell.free{background:var(--panel); border:1px solid var(--line2); color:var(--txt)}
+.seasonCell.prem{background:rgba(255,181,71,.07); border:1px solid rgba(255,181,71,.35); color:var(--gold2)}
+.seasonCell.locked{opacity:.55}
+.seasonCell.claimed{opacity:.55; border-style:dashed; color:var(--green)}
+.seasonCell:disabled{opacity:.4}
+
+/* ============ ETKİNLİK ============ */
+.questRow{display:flex; gap:10px; align-items:center; background:var(--panel); border:1px solid var(--line2);
+  border-radius:11px; padding:9px 10px; margin-bottom:7px}
+.questRow.ready{border-color:var(--gold); box-shadow:0 0 10px rgba(255,181,71,.2)}
+.questRow.claimed{opacity:.6; border-color:rgba(84,224,138,.35)}
+.questMark{flex:0 0 26px; width:26px; height:26px; border-radius:50%; border:1px solid var(--line2);
+  display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; color:var(--gold)}
+.questRow.claimed .questMark{border-color:var(--green); color:var(--green); background:rgba(84,224,138,.1)}
+.questMain{flex:1; min-width:0}
+.questName{font-size:13px; font-weight:800}
+.questBarWrap{height:6px; background:rgba(0,0,0,.45); border-radius:4px; overflow:hidden; margin:4px 0 3px}
+.questBar{height:100%; background:linear-gradient(90deg,var(--cyan),#9ff3ea); transition:width .3s}
+.questProg{font-size:10px; color:var(--dim); font-variant-numeric:tabular-nums}
+.questBtn{flex:0 0 auto; min-width:52px; min-height:42px; border-radius:9px; font-size:12px; font-weight:800;
+  background:linear-gradient(180deg,#3a2a10,#241806); border:1px solid var(--gold); color:var(--gold)}
+.questBtn:disabled{opacity:.4; background:var(--panel); border-color:var(--line2); color:var(--dim)}
+.questBtn.done{display:flex; align-items:center; justify-content:center; color:var(--green); border-color:rgba(84,224,138,.35); background:var(--panel)}
+
+.tourBoard{display:flex; flex-direction:column; gap:4px; margin:4px 0}
+.tourRow{display:grid; grid-template-columns:38px 1fr auto; gap:8px; align-items:center;
+  background:var(--panel); border:1px solid var(--line2); border-radius:9px; padding:7px 10px}
+.tourRow.top{border-color:rgba(255,181,71,.3)}
+.tourRow.you{border-color:var(--cyan); background:rgba(53,224,210,.08); box-shadow:0 0 8px rgba(53,224,210,.18)}
+.tourRank{font-size:14px; font-weight:900; text-align:center}
+.tourName{font-size:12.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.tourRow.you .tourName{color:var(--cyan)}
+.tourWave{font-size:11px; font-weight:800; color:var(--gold); font-variant-numeric:tabular-nums}
+
+.vipTrack{display:flex; flex-direction:column; gap:5px; margin:4px 0}
+.vipRow{display:grid; grid-template-columns:54px 1fr 24px; gap:9px; align-items:center;
+  background:var(--panel); border:1px solid var(--line2); border-radius:9px; padding:8px 10px; opacity:.55}
+.vipRow.on{opacity:1; border-color:rgba(255,181,71,.35)}
+.vipLv{font-size:11px; font-weight:900; color:var(--gold); letter-spacing:.04em}
+.vipPerk{font-size:11.5px; color:var(--txt)}
+.vipChk{text-align:center; font-size:13px}
+.vipRow.on .vipChk{color:var(--green)}
+
+/* ============ GANİMET GRID ============ */
+.filterRow{display:flex; gap:6px; flex-wrap:wrap; margin:4px 0 8px; align-items:center}
+.sortRow{margin-top:-2px}
+.sortLbl{font-size:10px; font-weight:800; color:var(--dim); text-transform:uppercase; letter-spacing:.06em}
+.chip{min-height:34px; padding:5px 12px; border-radius:18px; font-size:11.5px; font-weight:800;
+  background:var(--panel); border:1px solid var(--line2); color:var(--dim); transition:all .15s}
+.chip.sm{min-height:30px; padding:4px 11px; font-size:11px}
+.chip.on{color:#0a0a1a; background:var(--chc,var(--gold)); border-color:var(--chc,var(--gold)); box-shadow:0 0 8px color-mix(in srgb,var(--chc,var(--gold)) 50%,transparent)}
+.chip.sm.on{background:var(--cyan); border-color:var(--cyan); color:#0a0a1a; box-shadow:0 0 7px rgba(53,224,210,.4)}
+
+.lootGrid{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin:4px 0 8px}
+.lootCard{position:relative; display:flex; flex-direction:column; align-items:center; gap:3px; text-align:center;
+  background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line2);
+  border-radius:12px; padding:11px 9px 9px; box-shadow:var(--shadow); overflow:hidden;
+  border-top:2px solid var(--lc,var(--line2)); animation:cardIn .25s ease}
+.lootCard.eq{border-color:var(--lc); box-shadow:0 0 11px color-mix(in srgb,var(--lg,#fff) 45%,transparent)}
+.lootCard.lootEpic{box-shadow:0 0 10px rgba(184,107,255,.28)}
+.lootCard.lootLeg{box-shadow:0 0 14px rgba(255,210,74,.4)}
+.lootCard.lootLeg::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(120deg,transparent 42%,rgba(255,240,184,.18) 50%,transparent 58%);
+  background-size:300% 100%; animation:goldShine 3.5s linear infinite}
+.stackBadge{position:absolute; top:7px; right:7px; font-size:10px; font-weight:900; color:#fff;
+  background:rgba(0,0,0,.6); border:1px solid var(--lc); border-radius:8px; padding:1px 6px; z-index:2}
+.lootCardIco{width:46px; height:46px; border-radius:10px; background:rgba(0,0,0,.3);
+  display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px color-mix(in srgb,var(--lg,#fff) 35%,transparent)}
+.lootCardIco svg{width:80%; height:80%}
+.lootRar{font-size:8.5px; font-weight:900; letter-spacing:.1em; color:var(--lc)}
+.lootCardName{font-size:11.5px; font-weight:800; line-height:1.2; color:var(--txt)}
+.lootCardStat{font-size:10.5px; color:var(--dim); line-height:1.3; min-height:13px}
+.lootCardBtns{display:flex; gap:5px; width:100%; margin-top:3px}
+.lootBtn{flex:1; min-height:38px; border-radius:8px; font-size:11px; font-weight:800; padding:4px 6px; line-height:1.2;
+  background:linear-gradient(180deg,#243054,#18203c); border:1px solid #3a4a7a; color:#fff; transition:transform .12s}
+.lootBtn:active{transform:scale(.95)}
+.lootBtn:disabled{opacity:.4}
+.lootBtn.on{background:var(--lc); border-color:var(--lc); color:#0a0a1a}
+.lootBtn.sell{flex:0 0 auto; min-width:62px; background:var(--panel); border-color:var(--line2); color:var(--red)}
+
+/* fusion */
+.fuseSlots{display:flex; gap:10px; justify-content:center; margin:8px 0}
+.fuseSlot{width:64px; height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  position:relative; font-size:26px; font-weight:300}
+.fuseSlot.empty{background:var(--panel); border:2px dashed var(--line2); color:var(--dim)}
+.fuseSlot.filled{background:rgba(0,0,0,.3); border:2px solid var(--lc); box-shadow:0 0 10px color-mix(in srgb,var(--lc) 40%,transparent)}
+.fuseSlot.filled svg{width:62%; height:62%}
+.fuseX{position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%;
+  background:var(--red); color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; border:1px solid #fff}
+.bigBtn.gold{background:linear-gradient(180deg,var(--gold2),var(--gold)); color:#1a1204; border-color:#ffe6b0}
+.bigBtn.gold.dim{opacity:.45; filter:grayscale(.4)}
+.bigBtn.alt{background:linear-gradient(180deg,#243a5a,#16243c); border-color:var(--cyan); color:var(--cyan)}
+
+/* loot kutusu paneli */
+.boxPanel{display:flex; flex-direction:column; align-items:center; gap:8px; padding:14px;
+  background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line2); border-radius:14px}
+.boxBig{font-size:54px; filter:drop-shadow(0 0 14px rgba(255,181,71,.5)); animation:boxFloat 3s ease-in-out infinite}
+@keyframes boxFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
+.boxInfo{font-size:13px; color:var(--dim)}.boxInfo b{color:var(--gold); font-size:18px}
+.boxBtns{display:flex; flex-direction:column; gap:7px; width:100%}
+.boxBtns .bigBtn{margin:0}
+
+/* hero equip slotları */
+.heroEquipCard{display:flex; gap:11px; align-items:flex-start; background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line2); border-radius:13px; padding:11px; margin-bottom:9px; border-left:3px solid var(--hc);
+  flex-wrap:wrap}
+.heCharWrap{flex:0 0 64px; text-align:center}
+.heChar{width:64px; height:80px; border-radius:10px; background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--hc) 25%,transparent),transparent 70%);
+  display:flex; align-items:flex-end; justify-content:center; overflow:hidden}
+.heChar svg{width:100%; height:100%}
+.heName{font-size:10px; font-weight:900; color:var(--hc); margin-top:3px; letter-spacing:.02em}
+.heSlots{flex:1; min-width:170px; display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.heSlot{min-height:78px; border-radius:10px; padding:6px 4px; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:3px; background:var(--panel); border:1px dashed var(--line2); text-align:center}
+.heSlot.filled{border-style:solid; border-color:var(--lc); background:rgba(0,0,0,.25)}
+.heSlot.active{border-color:var(--gold); box-shadow:0 0 8px rgba(255,181,71,.35)}
+.heSlot:disabled{opacity:.4}
+.heSlotLbl{font-size:8.5px; font-weight:900; letter-spacing:.05em; text-transform:uppercase; color:var(--dim)}
+.heSlotIco{width:30px; height:30px; display:flex}.heSlotIco svg{width:100%;height:100%}
+.heSlotStat{font-size:9px; color:var(--lc); line-height:1.2}
+.heSlotEmpty{font-size:10px; color:var(--dim)}
+.heChooser{flex:1 1 100%; margin-top:4px; border-top:1px dashed var(--line2); padding-top:6px}
+.heChooserTitle{font-size:11px; font-weight:800; color:var(--gold); margin-bottom:4px}
+
+/* ============ EKİP — portre kartları ============ */
+.heroGrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:4px 0 8px}
+.heroCard{position:relative; display:flex; flex-direction:column; background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line2); border-radius:14px; overflow:hidden; box-shadow:var(--shadow); animation:cardIn .28s ease}
+.heroCard.locked{opacity:.86}
+.heroPortrait{position:relative; height:118px; display:flex; align-items:flex-end; justify-content:center;
+  background:radial-gradient(ellipse at 50% 35%,color-mix(in srgb,var(--hc) 30%,transparent),transparent 68%),linear-gradient(180deg,#0c1024,#0a0d1e);
+  overflow:hidden}
+.heroCard.locked .heroArt{filter:grayscale(.85) brightness(.5)}
+.heroArt{width:78px; height:108px}
+.heroArt svg{width:100%; height:100%}
+.heroLvlBadge{position:absolute; top:7px; left:7px; font-size:9px; font-weight:900; letter-spacing:.04em;
+  background:rgba(0,0,0,.6); border:1px solid var(--hc); color:var(--hc); border-radius:7px; padding:2px 7px; z-index:2}
+.dmgTag{position:absolute; top:7px; right:7px; font-size:8.5px; font-weight:800; color:#fff;
+  background:rgba(0,0,0,.55); border:1px solid var(--line2); border-radius:7px; padding:2px 6px; z-index:2}
+.heroBody{padding:9px 10px 10px; display:flex; flex-direction:column; gap:3px; flex:1}
+.heroNm{font-size:14px; font-weight:900; letter-spacing:.01em; color:var(--txt)}
+.heroTitle{font-size:10px; color:var(--hc); font-weight:700}
+.heroDps{font-size:11px; color:var(--dim); margin-top:2px}.heroDps b{color:#fff}.heroDps.dim{opacity:.7}
+.heroPassive{font-size:10.5px; color:var(--gold2); line-height:1.35; margin-top:3px}
+.heroPassive b{color:var(--gold)}
+.heroLoot{font-size:10px; color:var(--cyan); line-height:1.3; margin-top:1px}
+.heroMile{font-size:9.5px; color:var(--dim); margin-top:2px; font-style:italic}
+.heroBuy{margin-top:7px; min-height:46px; border-radius:10px; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:1px; font-weight:900; background:linear-gradient(180deg,#3a2a10,#241806);
+  border:1px solid var(--gold); color:var(--gold); transition:transform .12s}
+.heroBuy:active{transform:scale(.96)}
+.heroBuy:disabled{opacity:.5; background:var(--panel); border-color:var(--line2); color:var(--dim)}
+.heroBuy .hbAct{font-size:12.5px; line-height:1}
+.heroBuy .hbCost{font-size:11px; opacity:.9; font-variant-numeric:tabular-nums}
+.achRow.hidden{opacity:.45} .achRow.hidden .mark{color:var(--dim)}
+
+/* ============ LOOT KUTUSU AÇILIŞ ANİMASYONU ============ */
+.boxOverlay{position:fixed; inset:0; z-index:90; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:radial-gradient(ellipse at center,color-mix(in srgb,var(--bc,#fff) 14%,rgba(4,5,14,.94)),rgba(4,5,14,.96));
+  opacity:0; transition:opacity .25s; cursor:pointer; padding:24px}
+.boxOverlay.show{opacity:1}
+.boxOverlay.closing{opacity:0}
+.boxOverlay.legBurst{background:radial-gradient(ellipse at center,rgba(255,210,74,.3),rgba(20,12,2,.96))}
+.boxRing{position:absolute; width:220px; height:220px; border-radius:50%; border:3px solid var(--bc,#fff);
+  box-shadow:0 0 40px var(--bg2,#fff); opacity:0}
+.boxOverlay.show .boxRing{animation:boxRingK 1s ease-out .15s}
+@keyframes boxRingK{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(2.2)}}
+.boxBurst{position:absolute; width:300px; height:300px; border-radius:50%; opacity:0;
+  background:radial-gradient(circle,var(--bg2,#fff) 0%,var(--bc,#fff) 30%,transparent 65%)}
+.boxOverlay.opened .boxBurst{animation:boxBurstK .7s ease-out}
+.boxOverlay.legBurst.opened .boxBurst{animation:boxBurstLegK 1.1s ease-out}
+@keyframes boxBurstK{0%{opacity:0;transform:scale(.2)}40%{opacity:.85}100%{opacity:0;transform:scale(2.4)}}
+@keyframes boxBurstLegK{0%{opacity:0;transform:scale(.2)}30%{opacity:1}100%{opacity:0;transform:scale(3.2)}}
+.boxChest{font-size:90px; filter:drop-shadow(0 0 22px var(--bc,#fff)); transition:transform .3s}
+.boxOverlay.show .boxChest{animation:boxShake .7s ease-in-out}
+.boxOverlay.opened .boxChest{display:none}
+@keyframes boxShake{0%,100%{transform:rotate(0) scale(1)}15%{transform:rotate(-9deg) scale(1.05)}30%{transform:rotate(8deg)}45%{transform:rotate(-7deg)}60%{transform:rotate(6deg) scale(1.1)}80%{transform:rotate(-4deg)}}
+.boxReveal{display:none; flex-wrap:wrap; gap:12px; justify-content:center; max-width:340px; z-index:2}
+.boxOverlay.opened .boxReveal{display:flex}
+.boxItem{width:120px; display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center;
+  background:linear-gradient(180deg,rgba(20,25,54,.9),rgba(14,18,38,.9)); border:1px solid var(--ic,#fff);
+  border-top:3px solid var(--ic,#fff); border-radius:13px; padding:13px 10px;
+  box-shadow:0 0 18px color-mix(in srgb,var(--ic,#fff) 45%,transparent); animation:boxItemK .5s ease-out backwards}
+.boxOverlay.opened .boxItem{animation-delay:.35s}
+@keyframes boxItemK{0%{opacity:0;transform:translateY(20px) scale(.7)}60%{transform:translateY(-4px) scale(1.06)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.boxItemIco{width:54px; height:54px; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.3); border-radius:11px; box-shadow:0 0 12px color-mix(in srgb,var(--ic,#fff) 50%,transparent)}
+.boxItemIco svg{width:82%;height:82%}
+.boxItemRar{font-size:9px; font-weight:900; letter-spacing:.12em}
+.boxItemName{font-size:12px; font-weight:800; color:#fff; line-height:1.2}
+.boxItemStat{font-size:10.5px; color:#b9c2e0}
+.boxTap{display:none; position:absolute; bottom:34px; font-size:11px; font-weight:800; letter-spacing:.06em;
+  color:var(--dim); animation:tapPulse 1.4s ease-in-out infinite}
+.boxOverlay.opened .boxTap{display:block}
+@keyframes tapPulse{50%{opacity:.4}}
+
+/* ============ EVENT BANNER ============ */
+.eventBanner{position:fixed; inset:0; z-index:88; display:flex; align-items:center; justify-content:center;
+  background:rgba(4,5,14,.82); backdrop-filter:blur(4px); opacity:0; transition:opacity .25s; padding:18px}
+.eventBanner.show{opacity:1}
+.ebCard{position:relative; width:100%; max-width:380px; border-radius:18px; padding:22px 18px 18px;
+  background:linear-gradient(150deg,#2e2009,#1a1204 60%,#241806); border:1.5px solid var(--gold);
+  box-shadow:0 0 30px rgba(255,181,71,.4),inset 0 0 40px rgba(255,181,71,.06); overflow:hidden;
+  animation:ebPop .4s cubic-bezier(.2,1.3,.5,1)}
+@keyframes ebPop{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.ebCard::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(120deg,transparent 40%,rgba(255,220,150,.16) 50%,transparent 60%);
+  background-size:300% 100%; animation:goldShine 4s linear infinite}
+.ebTag{display:inline-block; font-size:10px; font-weight:900; letter-spacing:.06em; color:#1a1204;
+  background:var(--red); border-radius:6px; padding:3px 9px; margin-bottom:10px; animation:tapPulse 1.6s infinite;
+  color:#fff}
+.ebTitle{font-size:24px; font-weight:900; color:var(--gold2); letter-spacing:.02em; text-shadow:0 0 16px rgba(255,181,71,.4)}
+.ebSub{font-size:12px; color:#d8c79c; line-height:1.5; margin:8px 0 12px}
+.ebPrice{font-size:15px; font-weight:800; color:#fff; margin-bottom:14px}
+.ebPrice s{color:var(--dim); font-size:13px; margin-right:6px}
+.ebPrice b{font-size:22px; color:var(--gold)}
+.ebBuy{display:block; width:100%; min-height:50px; border-radius:11px; font-size:15px; font-weight:900;
+  background:linear-gradient(180deg,var(--gold2),var(--gold)); border:1px solid #ffe6b0; color:#1a1204; position:relative; z-index:2}
+.ebBuy:active{transform:scale(.97)}
+.ebClose{display:block; width:100%; min-height:40px; margin-top:8px; font-size:12px; font-weight:700;
+  color:var(--dim); background:none; position:relative; z-index:2}
+
+@media (max-width:360px){
+  .shopGrid,.lootGrid,.heroGrid{gap:7px}
+  .packName{font-size:13px}
+  .heroArt{width:68px;height:96px}
+}
+
+/* ============================================================
+   ===== v3.2 FIX: Star Wars ikonlar · yeni mağaza · bottom sheet
+   ============================================================ */
+@property --ang{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
+
+/* tab ikonları SVG */
+.tab .tIco{display:flex; align-items:center; justify-content:center; width:23px; height:23px; font-size:0; transition:transform .18s,filter .18s}
+.tab .tIco svg{width:100%; height:100%}
+.tab.on .tIco{transform:translateY(-1px) scale(1.1); filter:drop-shadow(0 0 6px rgba(255,181,71,.75))}
+.tab:active .tIco{transform:scale(.88)}
+
+/* mağaza hero banner */
+.shopHero{position:relative; border-radius:16px; padding:15px 15px 14px; margin:4px 0 6px; overflow:hidden;
+  background:linear-gradient(125deg,#2a0e3a,#3a1648 48%,#1a0a2a); border:1px solid rgba(255,181,71,.45);
+  box-shadow:0 6px 22px rgba(0,0,0,.5)}
+.shopHero::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(120deg,transparent 38%,rgba(255,220,150,.16) 50%,transparent 62%);
+  background-size:300% 100%; animation:goldShine 4.5s linear infinite}
+.shopHeroTag{display:inline-block; font-size:9.5px; font-weight:900; letter-spacing:.08em; color:#fff;
+  background:var(--red); border-radius:6px; padding:3px 9px; animation:tapPulse 1.6s infinite}
+.shopHeroTitle{font-size:23px; font-weight:900; color:var(--gold2); margin-top:8px; letter-spacing:.02em;
+  text-shadow:0 0 16px rgba(255,181,71,.4)}
+.shopHeroSub{font-size:11.5px; color:#d8c79c; margin:4px 0 11px; line-height:1.4}
+.shopHeroBtnRow{display:flex; align-items:center; gap:12px; position:relative; z-index:2}
+.shopHeroPrice{font-size:18px; font-weight:900; color:#fff}
+.shopHeroPrice s{font-size:13px; color:var(--dim); margin-right:5px}
+.shopHeroBuy{flex:1; min-height:46px; border-radius:11px; font-size:14px; font-weight:900; letter-spacing:.04em;
+  background:linear-gradient(180deg,var(--gold2),var(--gold)); border:1px solid #ffe6b0; color:#1a1204; transition:transform .12s}
+.shopHeroBuy:active{transform:scale(.96)}
+
+/* dikey paket kartları */
+.packCardV{position:relative; display:flex; flex-direction:column; gap:9px; border-radius:16px; padding:14px;
+  margin-bottom:11px; overflow:hidden; border:1px solid var(--line2); box-shadow:0 4px 16px rgba(0,0,0,.45);
+  transition:transform .25s ease,box-shadow .25s ease; animation:cardIn .3s ease}
+.packCardV:active{transform:scale(.99)}
+.packCardV.tier-blue{background:linear-gradient(125deg,#0e2440,#103352)}
+.packCardV.tier-purple{background:linear-gradient(125deg,#2a1248,#3c1a56)}
+.packCardV.popular{border-color:var(--cyan); box-shadow:0 0 20px rgba(53,224,210,.3); padding-top:16px}
+.packCardV.tier-gold{background:#0b0a14; border:none; padding:16px}
+.packCardV.tier-gold::after{content:""; position:absolute; inset:0; border-radius:16px; padding:2px;
+  background:conic-gradient(from var(--ang),#ffd24a,#a86bff,#ffd24a,#a86bff,#ffd24a);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); mask-composite:exclude;
+  animation:angSpin 5s linear infinite; pointer-events:none}
+@keyframes angSpin{to{--ang:360deg}}
+.pcvName{font-size:16px; font-weight:900; color:var(--txt); position:relative; z-index:1}
+.packCardV.tier-gold .pcvName{color:var(--gold2)}
+.pcvItems{display:flex; flex-direction:column; gap:7px; position:relative; z-index:1}
+.pcvItem{display:flex; align-items:center; gap:10px; font-size:12.5px; color:#d6dbec}
+.pcvIco{flex:0 0 24px; width:24px; height:24px; display:flex; color:var(--gold2)}
+.pcvIco svg{width:100%; height:100%}
+.pcvBuy{position:relative; z-index:1; align-self:stretch; min-height:48px; border-radius:12px; display:flex;
+  align-items:center; justify-content:center; gap:9px; font-weight:900;
+  background:linear-gradient(180deg,#2a6fdb,#1d4fa0); border:1px solid #4d8ae8; color:#fff; transition:transform .12s,filter .12s}
+.pcvBuy:active{transform:scale(.96)}
+.pcvBuy:disabled{opacity:.5; filter:grayscale(.5)}
+.packCardV.tier-purple .pcvBuy{background:linear-gradient(180deg,#b148e0,#7022b8); border-color:#cf78f5}
+.packCardV.tier-gold .pcvBuy{background:linear-gradient(180deg,var(--gold2),var(--gold)); border-color:#ffe6b0; color:#1a1204}
+.pcvBuy .pcvPrice{font-size:16px; line-height:1}
+.pcvBuy .pcvLbl{font-size:10px; opacity:.88; letter-spacing:.08em}
+.pcvBuy.small{min-height:42px; flex-direction:column; gap:0}
+.pcvBuy.small .pcvPrice{font-size:14px}
+.pcvBuy.blue{background:linear-gradient(180deg,#2a6fdb,#1d4fa0); border-color:#4d8ae8}
+.pcvBuy.gold{background:linear-gradient(180deg,var(--gold2),var(--gold)); border-color:#ffe6b0; color:#1a1204}
+
+/* 45° köşe şeridi */
+.ribbon{position:absolute; top:12px; right:-32px; transform:rotate(40deg); width:124px; text-align:center;
+  font-size:8.5px; font-weight:900; letter-spacing:.06em; padding:3px 0; color:#0a0a1a; background:var(--cyan);
+  box-shadow:0 2px 6px rgba(0,0,0,.45); z-index:4}
+.ribbon.goldR{background:linear-gradient(90deg,#ffe6b0,var(--gold))}
+.ribbon.popR{background:var(--cyan)}
+
+/* loot kutusu satın alma kartları */
+.boxBuyCard{position:relative; display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center;
+  border-radius:14px; padding:13px 10px; background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line2)}
+.boxBuyCard.standard{border-color:rgba(77,184,255,.4)}
+.boxBuyCard.legendary{border-color:rgba(255,210,74,.45); box-shadow:0 0 13px rgba(255,210,74,.18)}
+.boxChestShop{width:62px; height:62px; animation:boxFloat 3s ease-in-out infinite}
+.boxChestShop svg{width:100%; height:100%}
+.boxBuyName{font-size:13px; font-weight:900}
+.boxBuyDesc{font-size:10px; color:var(--dim); min-height:24px; line-height:1.3}
+
+/* loot kutusu paneli (Ganimet sekmesi) — SVG */
+.boxBig{width:86px; height:86px; font-size:0; filter:drop-shadow(0 0 14px rgba(255,181,71,.5))}
+.boxBig svg{width:100%; height:100%}
+.boxChest svg{width:112px; height:112px; filter:drop-shadow(0 0 20px var(--bc,#fff))}
+.goldRain{position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1}
+.goldRain i{position:absolute; top:-10%; width:6px; height:13px; border-radius:2px;
+  background:linear-gradient(#fff6cf,#ffd24a); box-shadow:0 0 8px #ffd24a; animation:goldFall linear infinite}
+@keyframes goldFall{to{transform:translateY(118vh) rotate(220deg)}}
+
+/* kristal floating text */
+.floatGain{position:fixed; z-index:95; font-size:15px; font-weight:900; pointer-events:none;
+  text-shadow:0 1px 4px #000; animation:floatUp .9s ease-out forwards}
+@keyframes floatUp{0%{opacity:0; transform:translate(-50%,4px) scale(.8)}20%{opacity:1}100%{opacity:0; transform:translate(-50%,-28px) scale(1.12)}}
+
+/* bottom sheet (kahraman ekipman) */
+.sheetBg{position:fixed; inset:0; z-index:92; background:rgba(4,5,14,.72); backdrop-filter:blur(3px);
+  display:flex; align-items:flex-end; opacity:0; transition:opacity .25s}
+.sheetBg.show{opacity:1}
+.bottomSheet{width:100%; max-width:520px; margin:0 auto; max-height:72dvh; overflow-y:auto;
+  background:linear-gradient(180deg,#141936,#0e1226); border:1px solid var(--line); border-bottom:none;
+  border-radius:20px 20px 0 0; padding:16px 14px 24px; box-shadow:0 -12px 44px rgba(0,0,0,.6);
+  transform:translateY(100%); transition:transform .3s cubic-bezier(.34,1.3,.64,1)}
+.sheetBg.show .bottomSheet{transform:translateY(0)}
+.sheetHead{position:relative; display:flex; align-items:center; gap:10px; margin-bottom:10px}
+.sheetHead::before{content:""; position:absolute; top:-9px; left:50%; transform:translateX(-50%);
+  width:42px; height:4px; border-radius:2px; background:var(--line2)}
+.sheetTitle{flex:1; display:flex; flex-direction:column; gap:1px}
+.sheetTitle b{font-size:15px; font-weight:900}
+.sheetTitle span{font-size:11px; color:var(--dim)}
+.sheetX{flex:0 0 auto; width:38px; height:38px; border-radius:10px; background:var(--panel);
+  border:1px solid var(--line2); color:var(--dim); font-size:15px}
+.sheetGrid{margin-top:2px}
+
+/* ============================================================
+   GÖREV 6: GALAKTİK SANDIKLAR — kartlar + Clash Royale açılışı
+   ============================================================ */
+/* --- Sandık satın-alma kartları (Ganimet & Mağaza) --- */
+.chestGrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:6px 0 10px}
+.chestGrid.oneCol{grid-template-columns:minmax(0,210px); justify-content:center}
+.chestCount{position:absolute; top:8px; right:8px; z-index:3; min-width:30px; padding:2px 8px; border-radius:10px;
+  font-size:13px; font-weight:900; color:#fff; background:color-mix(in srgb,var(--cc) 38%, #0a0f1c);
+  border:1px solid var(--cc); box-shadow:0 0 12px -3px var(--cc)}
+.chestCardBuy{position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center;
+  padding:12px 10px 12px; border-radius:16px; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 22%, color-mix(in srgb,var(--cc) 20%, transparent), transparent 64%), linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid color-mix(in srgb,var(--cc) 50%, var(--line2)); box-shadow:0 4px 16px rgba(0,0,0,.4), inset 0 0 22px color-mix(in srgb,var(--cc) 9%, transparent);
+  animation:cardIn .28s ease}
+.chestCardBuy::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(120deg,transparent 40%, color-mix(in srgb,var(--cg) 22%,transparent) 50%, transparent 60%);
+  background-size:300% 100%; animation:goldShine 4.5s linear infinite}
+.chestCardArt{width:84px; height:84px; filter:drop-shadow(0 4px 14px color-mix(in srgb,var(--cc) 60%,transparent));
+  animation:boxFloat 3.2s ease-in-out infinite}
+.chestCardArt svg{width:100%; height:100%}
+.chestCardTtl{font-size:13.5px; font-weight:900; letter-spacing:.01em; text-shadow:0 0 10px color-mix(in srgb,var(--cc) 55%,transparent)}
+.chestCardSub{font-size:10px; color:var(--dim); line-height:1.3; min-height:26px; display:flex; align-items:center}
+.chestCardMeta{font-size:9.5px; font-weight:800; letter-spacing:.04em; color:color-mix(in srgb,var(--cc) 75%,#fff); opacity:.85}
+.chestOpenBtn{margin-top:5px; width:100%; min-height:44px; border-radius:11px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:1px; font-weight:900; cursor:pointer; transition:transform .12s, filter .12s;
+  background:linear-gradient(180deg, color-mix(in srgb,var(--cc) 32%, #0c1322), #0a0f1c);
+  border:1px solid var(--cc); color:#fff; box-shadow:0 0 14px -5px var(--cc)}
+.chestOpenBtn:active{transform:scale(.96)}
+.chestOpenBtn.dim{opacity:.5; filter:grayscale(.5)}
+.chestOpenBtn .cob-c{font-size:13px; color:var(--cg); text-shadow:0 0 8px var(--cc)}
+.chestOpenBtn .cob-l{font-size:10px; letter-spacing:.1em; opacity:.85}
+.ownedChestBar{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:6px 0 10px;
+  padding:10px 14px; border-radius:13px; background:linear-gradient(180deg,#2e2009,#1a1204);
+  border:1px solid rgba(255,210,74,.45); box-shadow:inset 0 0 22px rgba(255,181,71,.07)}
+.ownedChestBar .ocbTxt{font-size:12px; color:#e7d6a8}
+.ownedChestBar .ocbTxt b{color:var(--gold2); font-size:17px}
+.ownedChestBar .bigBtn{width:auto; min-width:118px; margin:0}
+
+/* --- Clash Royale tarzı açılış overlay --- */
+.chestOv{position:fixed; inset:0; z-index:120; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:16px; padding:24px; cursor:pointer; opacity:0; transition:opacity .3s; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 40%, color-mix(in srgb,var(--cc) 18%, rgba(3,4,12,.95)), rgba(3,4,12,.98))}
+.chestOv.show{opacity:1}
+.chestOv.closing{opacity:0}
+.chestTitle{position:absolute; top:20px; left:0; right:0; text-align:center; font-size:18px; font-weight:900; letter-spacing:.04em; text-shadow:0 0 16px var(--cc);
+  animation:chTitleIn .5s ease-out}
+@keyframes chTitleIn{from{opacity:0; transform:translateY(-10px)}to{opacity:1; transform:none}}
+.chestOv.opened .chestTitle{opacity:.55}
+
+.chestStage{position:absolute; top:46%; left:50%; transform:translate(-50%,-50%); width:min(74vw,300px); height:min(74vw,300px); display:flex; align-items:center; justify-content:center}
+.chestAura{position:absolute; width:82%; height:82%; border-radius:50%;
+  background:radial-gradient(circle, color-mix(in srgb,var(--cc) 55%, transparent) 0%, transparent 62%);
+  filter:blur(7px); animation:chAura 2.4s ease-in-out infinite}
+@keyframes chAura{0%,100%{transform:scale(.9); opacity:.55}50%{transform:scale(1.1); opacity:1}}
+.chestOv.opened .chestAura{animation:chFlash .6s ease-out forwards}
+@keyframes chFlash{0%{transform:scale(1); opacity:1}100%{transform:scale(2.8); opacity:0}}
+
+.chestBeams{position:absolute; width:150%; height:150%; opacity:0; z-index:1;
+  background:repeating-conic-gradient(from 0deg, color-mix(in srgb,var(--cg) 78%,transparent) 0deg 5deg, transparent 5deg 16deg);
+  -webkit-mask:radial-gradient(circle, #000 8%, transparent 66%); mask:radial-gradient(circle, #000 8%, transparent 66%);
+  animation:chSpin 9s linear infinite}
+@keyframes chSpin{to{transform:rotate(360deg)}}
+.chestOv.opening .chestBeams{opacity:.5; animation:chSpin 5s linear infinite}
+.chestOv.opened .chestBeams{opacity:.6; animation:chSpin 12s linear infinite}
+
+.chestObj{position:relative; z-index:2; width:66%; height:66%;
+  filter:drop-shadow(0 10px 24px color-mix(in srgb,var(--cd) 75%,transparent));
+  animation:chFloat 3s ease-in-out infinite}
+.chestObj svg{width:100%; height:100%}
+@keyframes chFloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
+.chestOv.opening .chestObj{animation:chShake .15s linear 7}
+@keyframes chShake{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-3px,1px) rotate(-5deg)}50%{transform:translate(3px,-1px) rotate(5deg)}75%{transform:translate(-2px,1px) rotate(-3deg)}}
+.chestOv.opened .chestObj{animation:chPop .5s ease-out forwards}
+@keyframes chPop{0%{transform:scale(1)}38%{transform:scale(1.28)}100%{transform:scale(.25); opacity:0}}
+
+.chestHint{position:absolute; bottom:-2px; font-size:13px; font-weight:900; letter-spacing:.08em;
+  color:var(--cg); text-shadow:0 0 12px var(--cc); animation:chPulse 1.1s ease-in-out infinite}
+@keyframes chPulse{0%,100%{opacity:.5; transform:translateY(0)}50%{opacity:1; transform:translateY(-3px)}}
+.chestOv.opening .chestHint,.chestOv.opened .chestHint{display:none}
+
+.chestSparks{position:absolute; inset:0; pointer-events:none; z-index:3; overflow:hidden}
+.chestSparks i{position:absolute; top:-14px; width:7px; height:14px; border-radius:2px;
+  box-shadow:0 0 9px currentColor; animation:chRain linear forwards}
+@keyframes chRain{to{transform:translateY(112vh) rotate(300deg); opacity:0}}
+
+.chestLoot{display:none; order:2; flex-wrap:wrap; gap:10px; justify-content:center; align-content:center; max-width:380px; max-height:62vh; z-index:4}
+.chestOv.opened .chestLoot{display:flex}
+.chestCard{position:relative; width:96px; display:flex; flex-direction:column; align-items:center; gap:3px; text-align:center;
+  padding:12px 9px 11px; border-radius:14px; overflow:hidden;
+  background:linear-gradient(180deg, rgba(20,25,54,.94), rgba(12,16,34,.94));
+  border:1px solid var(--ic); border-top:3px solid var(--ic);
+  box-shadow:0 0 20px color-mix(in srgb,var(--ic) 45%, transparent);
+  animation:chCardIn .55s cubic-bezier(.2,1.25,.3,1) backwards; animation-delay:calc(var(--d) + .12s)}
+@keyframes chCardIn{0%{opacity:0; transform:translateY(46px) scale(.5) rotate(-8deg)}68%{transform:translateY(-7px) scale(1.09) rotate(2deg)}100%{opacity:1; transform:none}}
+.chestCardGlow{position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(circle at 50% 26%, color-mix(in srgb,var(--ig) 35%,transparent), transparent 62%)}
+.chestCardIco{position:relative; width:50px; height:50px; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.32); border-radius:11px; box-shadow:0 0 13px color-mix(in srgb,var(--ic) 55%,transparent)}
+.chestCardIco svg{width:82%; height:82%}
+.chestCardRar{position:relative; font-size:9px; font-weight:900; letter-spacing:.12em; color:var(--ic)}
+.chestCardName{position:relative; font-size:11.5px; font-weight:800; color:#fff; line-height:1.2}
+.chestCardStat{position:relative; font-size:10px; color:#b9c2e0; line-height:1.2}
+
+.chestBanner{display:none; order:1; font-size:30px; font-weight:900; letter-spacing:.05em; z-index:4}
+.chestOv.opened .chestBanner{display:block; animation:chBannerIn .55s cubic-bezier(.2,1.4,.4,1) backwards; animation-delay:.1s}
+@keyframes chBannerIn{0%{opacity:0; transform:scale(.4)}70%{transform:scale(1.18)}100%{opacity:1; transform:scale(1)}}
+
+.chestDone{position:absolute; bottom:18px; left:0; right:0; text-align:center; display:none; font-size:12px; font-weight:700; letter-spacing:.05em; color:var(--dim); z-index:4}
+.chestOv.opened .chestDone{display:block; animation:chPulse 1.5s ease-in-out infinite; animation-delay:.7s}
+
+@media (prefers-reduced-motion:reduce){
+  .chestObj,.chestAura,.chestBeams,.chestCardArt{animation:none !important}
+}
+@media (max-width:360px){
+  .chestGrid{gap:7px}
+  .chestCardArt{width:72px; height:72px}
+  .chestCard{width:86px}
+}
+
