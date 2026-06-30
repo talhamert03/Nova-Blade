@@ -1,17 +1,18 @@
 {
-  "background_color": "#000000",
-  "dir": "ltr",
-  "display": "standalone",
-  "name": "NovaBlade",
-  "orientation": "portrait",
-  "scope": "./",
-  "short_name": "NovaBlade",
-  "start_url": "index.html",
-  "theme_color": "#ffffff",
-  "id": "com.alphawolfgames.novablade",
-  "description": "An action-packed survival game. Fight enemies and upgrade your hero!\"",
-  "lang": "en",
-  "categories": [
-    "games"
-  ]
+    "name": "Nova Blade",
+    "short_name": "Nova Blade",
+    "start_url": "./",
+    "display": "fullscreen",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "orientation": "portrait",
+    "scope": "./",
+    "lang": "en",
+    "icons": [
+        {
+            "src": "icon512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
 }
