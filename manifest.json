@@ -1,6 +1,7 @@
 {
   "name": "Nova Blade",
   "short_name": "Nova Blade",
+  "description": "An action-packed survival game. Fight enemies and upgrade your hero!",
   "start_url": "index.html",
   "display": "fullscreen",
   "background_color": "#000000",
@@ -8,7 +9,7 @@
   "orientation": "portrait",
   "scope": "./",
   "lang": "en",
- "icons": [
+  "icons": [
     {
       "src": "icon-512.png",
       "sizes": "512x512",
@@ -20,5 +21,4 @@
       "type": "image/png"
     }
   ]
-  
 }
