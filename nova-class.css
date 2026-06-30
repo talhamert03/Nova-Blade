@@ -1,0 +1,126 @@
+/* =============================================================================
+   NOVA BLADE · CLASS (Blaster) + SKILL TREE — UI & FX
+   ============================================================================= */
+
+/* ---------- sınıf alt-sekmesi (Weapons içinde) ---------- */
+.subNav.clsSub{display:flex;gap:8px;margin-bottom:12px}
+.subNav.clsSub .subBtn{flex:1}
+
+/* ---------- blaster galeri butonları ---------- */
+.swGallery .swBtns{display:flex;gap:8px;margin-top:10px}
+.swGallery .swBtns .lootBtn{flex:1;min-height:42px;font-size:11.5px}
+.swGallery .lootBtn.up{background:linear-gradient(180deg,#1e3a2a,#13241a);border-color:#3aa06a}
+.swGallery .lootBtn.buy{background:linear-gradient(180deg,#3a2f12,#241d0a);border-color:var(--gold)}
+.swGallery .lootBtn.dim{opacity:.45}
+.swLv{position:absolute;bottom:8px;right:8px;font:800 9px/1 ui-monospace,monospace;letter-spacing:.05em;
+  color:#fff;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);padding:3px 6px;border-radius:5px}
+
+/* ---------- yer-yoldaşı vuruşu: kılıç dalgası + güçlü hamle ---------- */
+.allyWave{position:absolute;width:24px;height:24px;margin:-12px;z-index:7;pointer-events:none;border-radius:50%;
+  border:3px solid var(--awc,#fff);border-right-color:transparent;border-bottom-color:transparent;
+  box-shadow:0 0 10px var(--awc,#fff);opacity:.95;transition:transform .2s linear,opacity .18s ease-out .04s}
+.allyStrikeG{animation:allyStrikeGK .42s ease-out}
+@keyframes allyStrikeGK{0%{transform:translateX(0) rotate(0)}26%{transform:translateX(22px) rotate(-10deg)}58%{transform:translateX(6px) rotate(3deg)}100%{transform:translateX(0) rotate(0)}}
+
+/* ---------- zengin yer/hava yoldaşı vuruş efektleri (spawn-edilen katmanlar — animation çakışması yok) ---------- */
+.allyArc{position:absolute;z-index:8;pointer-events:none;transform-origin:left center;
+  transition:transform .2s cubic-bezier(.3,.7,.3,1),opacity .2s ease-out .04s}
+.allyArc svg{display:block;overflow:visible}
+.allyMuzzle{position:absolute;z-index:8;width:24px;height:24px;margin:-12px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,#fff 0%,var(--awc,#9fd6ff) 44%,transparent 72%);
+  box-shadow:0 0 12px var(--awc,#9fd6ff);animation:allyMuzK .26s ease-out forwards}
+@keyframes allyMuzK{0%{opacity:0;transform:scale(.25)}28%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.4)}}
+.allySpark{position:absolute;z-index:9;width:4px;height:4px;border-radius:50%;pointer-events:none;
+  background:#fff;box-shadow:0 0 7px var(--awc,#fff);animation:allySparkK .42s ease-out forwards}
+@keyframes allySparkK{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.3)}}
+.allyImpactRing{position:absolute;z-index:8;border-radius:50%;pointer-events:none;border:2.5px solid var(--awc,#fff);
+  box-shadow:0 0 10px var(--awc,#fff);animation:allyRingK .4s ease-out forwards}
+@keyframes allyRingK{0%{opacity:.95;width:8px;height:8px;margin:-4px}100%{opacity:0;width:60px;height:60px;margin:-30px}}
+@media (prefers-reduced-motion:reduce){
+  .allyGround{animation:none !important}
+  .allyArc,.allyMuzzle,.allySpark,.allyImpactRing{display:none !important}
+}
+
+/* ---------- pet companion vuruşu — stiller nova-pets.css'te (arketipe özel) ---------- */
+
+/* ===================== ATEŞ EFEKTLERİ ===================== */
+/* AAA geri tepme — tüm gövde namlu geri tepkisini emer (ayaktan döner, geri savrulur, toparlanır) */
+/* AAA geri tepme — gövde namlu tepkisini emer: kısa geri kayma + hafif yaslanma,
+   ayaklar yere yakın sabit (langırt salınımı yok), gergin toparlanma */
+#heroWrap.nbRecoil{animation:nbRecoil .3s cubic-bezier(.2,.85,.3,1); transform-origin:50% 100%}
+@keyframes nbRecoil{
+  0%{transform:translate(0,0) rotate(0)}
+  12%{transform:translate(4px,-1px) rotate(1.5deg)}
+  30%{transform:translate(-13px,-3px) rotate(-4.6deg)}
+  52%{transform:translate(-4px,1px) rotate(-1.6deg)}
+  72%{transform:translate(2.5px,-.5px) rotate(.8deg)}
+  88%{transform:translate(-1px,0) rotate(-.3deg)}
+  100%{transform:translate(0,0) rotate(0)}
+}
+/* sahada uçan/yer yoldaşları için de hafif geri tepme */
+.allyChar.nbRecoil{animation:nbRecoilAlly .24s cubic-bezier(.2,.85,.3,1)}
+@keyframes nbRecoilAlly{0%{transform:translate(0,0)}22%{transform:translate(-8px,-2px) rotate(-3.6deg)}55%{transform:translate(-2px,0) rotate(-1deg)}100%{transform:translate(0,0)}}
+
+.nbMuzzle{position:absolute;width:26px;height:26px;margin:-13px;border-radius:50%;z-index:9;pointer-events:none;
+  background:radial-gradient(circle,#ffffff 0%,var(--mc,#fff) 42%,var(--mc2,#7fe0ff) 60%,transparent 72%);
+  animation:nbMuzzleK .19s ease-out forwards;filter:drop-shadow(0 0 6px var(--mc,#fff))}
+@keyframes nbMuzzleK{0%{transform:scale(.3);opacity:.25}30%{transform:scale(calc(1.25*var(--ms,1)));opacity:1}100%{transform:scale(calc(1.6*var(--ms,1)));opacity:0}}
+
+.nbBolt{position:absolute;height:5px;margin-top:-2.5px;border-radius:3px;z-index:9;pointer-events:none;
+  transform-origin:left center;
+  background:linear-gradient(90deg,var(--bc,#7fe0ff) 0%,var(--bg,#fff) 55%,#ffffff 100%);
+  box-shadow:0 0 8px var(--bg,#7fe0ff),0 0 3px #fff}
+.nbBolt.big{height:6px;margin-top:-3px}
+.nbBolt.pierce{height:7px;margin-top:-3.5px;box-shadow:0 0 12px var(--bg,#fff),0 0 4px #fff}
+
+/* ===================== SKILL TREE ===================== */
+.stHead{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--panel2),var(--panel));
+  border:1px solid var(--line2);border-radius:14px;padding:14px;margin-bottom:12px}
+.stPts{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:80px;height:72px;border-radius:12px;background:radial-gradient(circle at 50% 30%,rgba(255,181,71,.18),rgba(0,0,0,.25));
+  border:1px solid var(--gold);box-shadow:0 0 16px rgba(255,181,71,.2)}
+.stPtsNum{font-size:30px;font-weight:900;color:var(--gold2);line-height:1;font-variant-numeric:tabular-nums}
+.stPtsLbl{font-size:8.5px;font-weight:800;letter-spacing:.12em;color:var(--gold);margin-top:3px}
+.stEarn{font-size:13px;color:var(--txt);line-height:1.5}
+.stEarn b{color:var(--cyan)}
+.stHint{font-size:11px;color:var(--dim)}
+
+.stActiveNote{font-size:12px;line-height:1.5;padding:9px 12px;border-radius:10px;margin:10px 0 14px;
+  background:rgba(255,181,71,.08);border:1px solid rgba(255,181,71,.3);color:var(--gold2)}
+.stActiveNote.on{background:rgba(53,224,210,.08);border-color:rgba(53,224,210,.35);color:var(--cyan)}
+.stActiveNote b{color:#fff}
+
+.stTier{margin-bottom:16px;border-left:2px solid var(--ac,var(--cyan));padding-left:12px;position:relative}
+.stTier.locked{opacity:.55;border-left-color:var(--line2)}
+.stTierHd{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.stTierHd>span:first-child{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ac,var(--cyan))}
+.stTierLock{font-size:10.5px;color:var(--dim);font-weight:700}
+.stNodes{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+
+.stNode{background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:11px 10px;position:relative;
+  border-top:2px solid var(--line2);display:flex;flex-direction:column;gap:3px}
+.stNode.owned{border-top-color:var(--ac);box-shadow:0 0 10px -2px var(--ac)}
+.stNode.cap{background:linear-gradient(180deg,rgba(255,181,71,.07),var(--panel))}
+.stNode.cap.owned{border-top-color:var(--gold);box-shadow:0 0 12px -1px rgba(255,181,71,.4)}
+.stNode.maxed{border-top-color:var(--gold)}
+.stNodeTop{display:flex;align-items:center;justify-content:space-between}
+.stNodeIco{font-size:18px}
+.stNodeLvl{font-size:12px;font-weight:800;color:var(--txt);font-variant-numeric:tabular-nums}
+.stNodeLvl small{color:var(--dim);font-weight:700}
+.stNodeName{font-size:13px;font-weight:800;line-height:1.15}
+.stCap{color:var(--gold)}
+.stNodeStat{font-size:10.5px;color:var(--dim);letter-spacing:.02em}
+.stNodeBonus{font-size:11.5px;color:var(--ac,var(--cyan));font-weight:700;line-height:1.35;min-height:15px}
+.stNext{color:var(--dim);font-weight:600}
+.stNodeBtn{margin-top:6px;min-height:34px;border-radius:8px;font-weight:800;font-size:12px;letter-spacing:.03em;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 22%,var(--panel2)),var(--panel2));
+  border:1px solid var(--ac);color:#fff}
+.stNodeBtn:active{transform:translateY(1px)}
+.stNodeBtn.dim{opacity:.45;border-color:var(--line2);background:var(--panel2);color:var(--dim)}
+.stNodeBtn.maxed{background:transparent;border:1px dashed var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center}
+
+/* ---------- nav rozeti (kullanılabilir puan) ---------- */
+.tab .tabBadge{position:absolute;top:1px;right:6px;min-width:15px;height:15px;padding:0 3px;border-radius:8px;
+  background:var(--gold);color:#0a0a1a;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 6px rgba(255,181,71,.6);animation:tabBadgeP 1.6s ease-in-out infinite}
+@keyframes tabBadgeP{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}

@@ -20,6 +20,8 @@ body{
   display:flex; flex-direction:column; height:100dvh; overflow:hidden;
   user-select:none; -webkit-user-select:none; touch-action:manipulation;
   max-width:520px; margin:0 auto; position:relative;
+  /* Yan çentik/kavisli kenar boşlukları (yatay/landscape) — dikeyde 0 olur */
+  padding-left:env(safe-area-inset-left); padding-right:env(safe-area-inset-right);
 }
 button{font-family:inherit; color:inherit; background:none; border:none; cursor:pointer; touch-action:manipulation}
 .caps{text-transform:uppercase; letter-spacing:.12em; font-weight:700; font-size:12px; color:var(--gold)}
@@ -27,7 +29,10 @@ button{font-family:inherit; color:inherit; background:none; border:none; cursor:
 /* ================= TOPBAR ================= */
 #topbar{
   flex:0 0 auto; display:flex; align-items:center; gap:8px;
-  padding:8px 10px; background:linear-gradient(180deg,#0d1128,#0a0d20);
+  /* Üst kaynak çubuğu çentiğin altına sıkışmasın diye güvenli alan kadar aşağı itilir;
+     gradient arkaplan çentik bölgesini de doldurur. */
+  padding:calc(8px + env(safe-area-inset-top)) 10px 8px;
+  background:linear-gradient(180deg,#0d1128,#0a0d20);
   border-bottom:1px solid var(--line); box-shadow:var(--shadow); z-index:30;
 }
 .resource{
@@ -69,24 +74,44 @@ body.frenzy #frenzyGlow{opacity:1; animation:frzPulse 1s infinite}
 /* ---- actors ---- */
 #actors{position:absolute; inset:0; pointer-events:none}
 #heroWrap{
-  position:absolute; left:11%; bottom:4%; width:clamp(86px,26vw,118px); z-index:6;
-  filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));
+  position:absolute; left:20%; bottom:4%; width:clamp(86px,26vw,118px); z-index:7;
   transform-origin:50% 90%;
 }
-#heroWrap svg{width:100%; display:block}
-#allyRow{position:absolute; left:0; bottom:5%; width:42%; display:flex; align-items:flex-end; justify-content:flex-start;
-  gap:3%; z-index:5; padding-left:2%}
-.allyChar{flex:1 1 0; min-width:0; opacity:.92; filter:brightness(.92) drop-shadow(0 5px 8px rgba(0,0,0,.5)); transform-origin:50% 100%}
-.allyChar svg{width:100%; display:block}
-/* sahnedeki kahraman say\u0131s\u0131na g\u00f6re geni\u015flik \u2014 \u00e7ok kahramanda k\u00fc\u00e7\u00fcl\u00fcp s\u0131k\u0131\u015fmas\u0131nlar */
-#allyRow[data-n="1"]{width:19%}
-#allyRow[data-n="2"]{width:30%}
-#allyRow[data-n="3"]{width:40%}
-#allyRow[data-n="4"]{width:50%}
-/* derinlik basamaklamas\u0131: arkadakiler hafif a\u015fa\u011f\u0131da/k\u00fc\u00e7\u00fck, \u00f6ndekiler net */
-.allyChar:nth-child(2){transform:translateY(5px) scale(.95); opacity:.86}
-.allyChar:nth-child(3){transform:translateY(10px) scale(.9); opacity:.8}
-.allyChar:nth-child(4){transform:translateY(14px) scale(.86); opacity:.74}
+/* NOT: kahraman sarmalına (heroWrap) DOĞRUDAN CSS filter UYGULANMAZ.
+   CSS filter, taşan SVG içeriğini (uzun kılıç ucunu, savurma yayını) kutuya
+   kırparak "yarım kılıç" sorununa yol açar. Gölge ve parlama artık kırpmayan
+   ::after / ::before pseudo-katmanlarıyla çizilir. */
+#heroWrap svg{width:100%; display:block; overflow:visible}
+/* yumuşak yer gölgesi (kırpmaz — sadece kendi pseudo'sunu bulanıklaştırır) */
+#heroWrap::after{ content:''; position:absolute; left:50%; bottom:5%; width:74%; height:6%;
+  transform:translateX(-50%); border-radius:50%; z-index:-2; pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.55) 0%,rgba(0,0,0,.28) 45%,transparent 72%);
+  filter:blur(2.5px); }
+/* parlama katmanı (çekim/şarj efektleri burada — figuru değil halka glow'u parlatır) */
+#heroWrap::before{ content:''; position:absolute; inset:-14%; border-radius:50%; z-index:-1;
+  pointer-events:none; opacity:0; }
+#heroWrap.drawAnim::before{ background:radial-gradient(circle,rgba(255,255,255,.85) 0%,transparent 60%);
+  animation:nbDrawGlow .55s ease-out; }
+@keyframes nbDrawGlow{0%{opacity:.85;transform:scale(.5)}100%{opacity:0;transform:scale(1.3)}}
+/* Yer yoldaşları ana kahramanın SOLUNDA, derinlik-basamaklı bir formasyonda durur.
+   Kahramanla İÇ İÇE GİRMEZ: öndeki yoldaş kahramanın hemen solunda (neredeyse onun
+   boyunda); ikinci yoldaş bir tık daha küçük + yukarıda = sahnenin biraz UZAĞINDA.
+   Mutlak konum kullanılır; satır akışı yerine sabit derinlik slotları. */
+#allyRow{position:absolute; inset:0; width:auto; z-index:6; pointer-events:none; display:block}
+.allyChar{position:absolute; transform-origin:50% 100%; opacity:1}
+.allyChar svg{width:100%; display:block; overflow:visible}
+/* ÖN yoldaş — kahramanın hemen solunda, onunla aynı ölçek, net */
+#allyRow .allyChar:nth-child(1){left:1%; bottom:5%; width:clamp(80px,24vw,110px); z-index:6;
+  filter:drop-shadow(0 7px 10px rgba(0,0,0,.5))}
+/* ARKA yoldaş — daha küçük + yukarıda + hafif soluk = sahnede daha uzakta */
+#allyRow .allyChar:nth-child(2){left:10.5%; bottom:13%; width:clamp(54px,16.5vw,78px); z-index:5;
+  filter:brightness(.9) saturate(.93) drop-shadow(0 6px 9px rgba(0,0,0,.5))}
+/* SAVASA HAZIR idle — squad asla kukla gibi sabit durmaz */
+@keyframes allyReady{0%,100%{transform:translateY(0) rotate(-1.1deg)} 50%{transform:translateY(-3px) rotate(1.5deg)}}
+.allyGround{animation:allyReady 2.9s ease-in-out infinite}
+#allyRow .allyChar:nth-child(2).allyGround{animation-duration:3.6s; animation-delay:-1.2s}
+/* satır genişliği yoldaş boyutunu etkilemez */
+#allyRow[data-n="1"], #allyRow[data-n="2"], #allyRow[data-n="3"], #allyRow[data-n="4"]{width:auto}
 @keyframes allyStrikeK{
   0%{transform:translateX(0) rotate(0)} 30%{transform:translateX(14px) rotate(-7deg)}
   60%{transform:translateX(4px) rotate(3deg)} 100%{transform:translateX(0) rotate(0)}}
@@ -100,7 +125,9 @@ body.frenzy #frenzyGlow{opacity:1; animation:frzPulse 1s infinite}
 .swing{animation:swingK .42s ease-out}
 @keyframes tapSwingK{0%{transform:rotate(0) scale(1)}30%{transform:rotate(-11deg) scale(1.04)}65%{transform:rotate(5deg)}100%{transform:rotate(0) scale(1)}}
 .tapSwing{animation:tapSwingK .3s ease-out}
-@keyframes drawK{0%{transform:scale(.92);filter:brightness(2.2) drop-shadow(0 0 18px #fff)}100%{transform:scale(1);filter:brightness(1)}}
+/* kırpmayan forge animasyonu: filter yok (taşan kılıç ucunu keserdi) —
+   parlama #heroWrap::before glow'u tarafından sağlanır. */
+@keyframes drawK{0%{transform:scale(.92)}55%{transform:scale(1.03)}100%{transform:scale(1)}}
 .drawAnim{animation:drawK .55s ease-out}
 .heroFlare{position:absolute; inset:-12%; pointer-events:none; border-radius:50%;
   background:radial-gradient(circle,var(--flc,#35e0d2) 0%,transparent 65%);
@@ -190,10 +217,14 @@ body.frenzy #frenzyGlow{opacity:1; animation:frzPulse 1s infinite}
   background:#ffb347; box-shadow:0 0 6px #ff7a2a; pointer-events:none; animation:emberFly .72s ease-out forwards}
 @keyframes emberFly{0%{opacity:1; transform:translate(0,0) scale(1)}100%{opacity:0; transform:translate(var(--ex,0),var(--ey,-30px)) scale(.2)}}
 #enemyHud{position:absolute; bottom:101%; left:50%; transform:translateX(-50%); width:130%; max-width:190px; text-align:center; z-index:7}
+/* boss: dev gövde HUD'u sahne dışına taşıyordu — drawer küçültüldü, sprite üstünde kalır; biraz büyüt */
+#enemyWrap.boss #enemyHud{bottom:97%; width:148%; max-width:220px}
+#enemyWrap.boss #enemyName{font-size:12px}
+#enemyWrap.boss #hpOuter{height:9px}
 #enemyName{font-size:11px; font-weight:800; letter-spacing:.04em; color:#fff; text-shadow:0 1px 3px #000;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 #hpOuter{height:7px; margin-top:3px; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.25); border-radius:4px; overflow:hidden}
-#hpFill{height:100%; width:100%; background:linear-gradient(90deg,#ff4d5e,#ff8a3a); transition:width .12s}
+#hpFill{height:100%; width:100%; background:linear-gradient(90deg,#ff4d5e,#ff8a3a); transition:width .05s linear; will-change:width}
 #hpText{font-size:10px; color:#ffd9d9; text-shadow:0 1px 2px #000; margin-top:2px; font-variant-numeric:tabular-nums}
 #bossTimer{height:4px; margin-top:3px; background:rgba(0,0,0,.6); border-radius:3px; overflow:hidden; display:none}
 #bossTimer i{display:block; height:100%; background:var(--gold)}
@@ -295,8 +326,32 @@ body.sith .forceRing{border-color:var(--red); box-shadow:0 0 22px var(--red)}
 body.sith .forceCastName{text-shadow:0 0 14px var(--red),0 2px 4px #000}
 @keyframes castNameK{0%{opacity:0;transform:translateX(-50%) scale(.8)}18%{opacity:1;transform:translateX(-50%) scale(1.05)}75%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(1)}}
 
+/* ---- yeni Force FX (10+10 yetenek) — hepsi kısa ömürlü, sonsuz döngü yok ---- */
+.fxSunArc{position:absolute; width:120px; height:120px; margin:-60px; z-index:10; pointer-events:none;
+  animation:fxSunArcK .5s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes fxSunArcK{0%{opacity:0; transform:rotate(-40deg) scale(.5)}30%{opacity:1}100%{opacity:0; transform:rotate(20deg) scale(1.15)}}
+.fxPillar{position:absolute; width:64px; height:300px; margin:-300px 0 0 -32px; z-index:9; pointer-events:none;
+  background:linear-gradient(180deg,transparent,currentColor 60%,#fff); opacity:0;
+  border-radius:40px; filter:drop-shadow(0 0 18px currentColor); animation:fxPillarK .6s ease-out forwards}
+@keyframes fxPillarK{0%{opacity:0; transform:scaleY(.3) scaleX(1.4)}25%{opacity:.95; transform:scaleY(1) scaleX(1)}100%{opacity:0; transform:scaleY(1) scaleX(.5)}}
+.fxMeteor{position:absolute; width:18px; height:120px; margin:-130px 0 0 -9px; z-index:10; pointer-events:none;
+  background:linear-gradient(180deg,transparent,currentColor); border-radius:9px;
+  filter:drop-shadow(0 0 12px currentColor); transform-origin:50% 100%; animation:fxMeteorK .38s ease-in forwards}
+@keyframes fxMeteorK{0%{opacity:0; transform:translate(-90px,-160px) rotate(34deg) scaleY(1.6)}40%{opacity:1}100%{opacity:1; transform:translate(0,0) rotate(34deg) scaleY(.6)}}
+.fxTendrilSvg{position:absolute; inset:0; width:100%; height:100%; z-index:9; pointer-events:none; overflow:visible}
+@keyframes fxTendrilK{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+#enemyWrap.nbStunned{animation:nbStunK 1s ease-in-out infinite}
+@keyframes nbStunK{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35) saturate(.6)}}
+.abReq{font-size:9px; font-weight:800; letter-spacing:.06em; color:var(--gold,#ffb547);
+  background:rgba(255,181,71,.14); border:1px solid rgba(255,181,71,.36); border-radius:5px; padding:1px 5px; vertical-align:middle}
+#forceBar{overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; flex:1 1 auto; justify-content:flex-end}
+#forceBar::-webkit-scrollbar{display:none}
+body.nb-lowfx .fxPillar,body.nb-lowfx .fxMeteor{filter:none}
+
 /* ================= BOTTOM NAV + PANEL ================= */
-#bottom{flex:0 0 auto; background:#0a0d20; border-top:1px solid var(--line); z-index:30; display:flex; flex-direction:column}
+#bottom{flex:0 0 auto; background:#0a0d20; border-top:1px solid var(--line); z-index:30; display:flex; flex-direction:column; position:relative;
+  /* Alt sekme çubuğu Android jest/navigasyon çubuğunun üstüne çıkarılır */
+  padding-bottom:env(safe-area-inset-bottom)}
 #tabs{display:flex; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding:4px 4px 2px}
 #tabs::-webkit-scrollbar{display:none}
 .tab{flex:1 0 56px; min-width:56px; min-height:48px; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -316,8 +371,28 @@ body.drawerOpen #panelHead{display:flex}
   border:1px solid var(--line2); color:var(--dim); font-size:14px; display:flex; align-items:center; justify-content:center}
 #panelGrow.on{color:var(--gold); border-color:var(--gold)}
 #panel{display:none; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px 10px 12px; overscroll-behavior:contain}
-body.drawerOpen #panel{display:block; height:44dvh}
-body.drawerOpen.panelMax #panel{height:64dvh}
+body.drawerOpen #panel{display:block}
+/* Drawer artık akışı itmeyen OVERLAY — sahne tam boyda kalır, panel tabların üstüne kayar */
+#drawer{display:contents}
+body.drawerOpen #drawer{
+  display:flex; flex-direction:column;
+  position:absolute; left:0; right:0; bottom:100%; z-index:42;
+  /* RESPONSIVE FIX: drawer position:absolute olduğundan % değeri konumlanmış
+     ata olan #bottom'un (yalnızca tab çubuğu ~72px) yüksekliğine göre çözülüyordu
+     → menü neredeyse sıfır yükseklikte açılıyordu. Çözüm: çerçeve yüksekliği
+     --appH üzerinden hesapla. */
+  max-height:calc(var(--appH,860px) * 0.5);
+  background:linear-gradient(180deg, rgba(12,16,38,.97), #0a0d20);
+  border-top:1px solid var(--gold); border-radius:16px 16px 0 0;
+  box-shadow:0 -16px 44px rgba(0,0,0,.6);
+  animation:drawerUp .2s ease-out;
+}
+@keyframes drawerUp{from{transform:translateY(14px);opacity:.4}to{transform:translateY(0);opacity:1}}
+body.drawerOpen #panel{flex:1 1 auto; min-height:0; height:auto}
+body.drawerOpen.panelMax #drawer{max-height:calc(var(--appH,860px) * 0.7)}
+/* drawer açıkken sahneyi hafif karart (odak menüde) */
+#sceneDim{position:absolute; inset:0; z-index:24; background:rgba(4,5,14,.34); opacity:0; pointer-events:none; transition:opacity .2s}
+body.drawerOpen #sceneDim{opacity:1}
 
 /* ---- panel rows ---- */
 .row{display:flex; gap:10px; align-items:center; background:var(--panel); border:1px solid var(--line2);
@@ -437,7 +512,7 @@ body.spaceMode #bgWrap, body.spaceMode #actors, body.spaceMode #bossBtn, body.sp
   border:1px solid var(--line2); border-radius:8px; padding:4px 9px; font-size:10.5px; font-weight:800; color:var(--cyan)}
 
 /* ================= MODALLAR ================= */
-.modalBg{position:fixed; inset:0; z-index:60; background:rgba(4,5,14,.8); backdrop-filter:blur(3px);
+.modalBg{position:fixed; inset:0; z-index:60; background:rgba(4,5,14,.88);
   display:none; align-items:center; justify-content:center; padding:16px}
 .modalBg.show{display:flex}
 .modal{width:100%; max-width:420px; max-height:86dvh; overflow-y:auto; background:linear-gradient(180deg,#141936,#0e1226);
@@ -462,7 +537,7 @@ body.spaceMode #bgWrap, body.spaceMode #actors, body.spaceMode #bossBtn, body.sp
 .sithCard h3{color:var(--red)} .sithCard:active{border-color:var(--red)}
 
 /* ================= TOAST ================= */
-#toasts{position:fixed; top:54px; left:50%; transform:translateX(-50%); z-index:70; width:min(92vw,380px);
+#toasts{position:fixed; top:calc(54px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:70; width:min(92vw,380px);
   display:flex; flex-direction:column; gap:6px; pointer-events:none}
 .toast{background:linear-gradient(180deg,#161b36,#10142a); border:1px solid var(--line2); border-left:3px solid var(--cyan);
   border-radius:10px; padding:9px 12px; box-shadow:var(--shadow); animation:toastK 3.4s ease forwards}
@@ -496,7 +571,7 @@ body.spaceMode #bgWrap, body.spaceMode #actors, body.spaceMode #bossBtn, body.sp
 
 /* küçük ekran ayarı */
 @media (max-height:640px){
-  body.drawerOpen #panel{height:40dvh}
+  body.drawerOpen #drawer{max-height:calc(var(--appH,860px) * 0.56)}
   #heroWrap{width:clamp(74px,22vw,96px)}
   #enemyWrap{width:clamp(82px,26vw,112px)}
 }
@@ -732,6 +807,12 @@ body.spaceMode #bgWrap, body.spaceMode #actors, body.spaceMode #bossBtn, body.sp
   background:rgba(0,0,0,.6); border:1px solid var(--hc); color:var(--hc); border-radius:7px; padding:2px 7px; z-index:2}
 .dmgTag{position:absolute; top:7px; right:7px; font-size:8.5px; font-weight:800; color:#fff;
   background:rgba(0,0,0,.55); border:1px solid var(--line2); border-radius:7px; padding:2px 6px; z-index:2}
+/* damage-type rengi (element başına) — Squad kartlarında tek, renkli rozet */
+.heroCard.dt-physical .dmgTag{color:#dbe3f2; border-color:rgba(180,196,224,.5)}
+.heroCard.dt-energy   .dmgTag{color:#7fe0ff; border-color:rgba(86,200,255,.5)}
+.heroCard.dt-dark     .dmgTag{color:#ff7480; border-color:rgba(255,90,106,.5)}
+.heroCard.dt-light    .dmgTag{color:#ffd27a; border-color:rgba(255,200,90,.55)}
+.heroCard.dt-poison   .dmgTag{color:#7ee69a; border-color:rgba(90,224,138,.5)}
 .heroBody{padding:9px 10px 10px; display:flex; flex-direction:column; gap:3px; flex:1}
 .heroNm{font-size:14px; font-weight:900; letter-spacing:.01em; color:var(--txt)}
 .heroTitle{font-size:10px; color:var(--hc); font-weight:700}
@@ -791,7 +872,7 @@ body.spaceMode #bgWrap, body.spaceMode #actors, body.spaceMode #bossBtn, body.sp
 
 /* ============ EVENT BANNER ============ */
 .eventBanner{position:fixed; inset:0; z-index:88; display:flex; align-items:center; justify-content:center;
-  background:rgba(4,5,14,.82); backdrop-filter:blur(4px); opacity:0; transition:opacity .25s; padding:18px}
+  background:rgba(4,5,14,.9); opacity:0; transition:opacity .25s; padding:18px}
 .eventBanner.show{opacity:1}
 .ebCard{position:relative; width:100%; max-width:380px; border-radius:18px; padding:22px 18px 18px;
   background:linear-gradient(150deg,#2e2009,#1a1204 60%,#241806); border:1.5px solid var(--gold);
@@ -918,7 +999,7 @@ body.spaceMode #bgWrap, body.spaceMode #actors, body.spaceMode #bossBtn, body.sp
 @keyframes floatUp{0%{opacity:0; transform:translate(-50%,4px) scale(.8)}20%{opacity:1}100%{opacity:0; transform:translate(-50%,-28px) scale(1.12)}}
 
 /* bottom sheet (kahraman ekipman) */
-.sheetBg{position:fixed; inset:0; z-index:92; background:rgba(4,5,14,.72); backdrop-filter:blur(3px);
+.sheetBg{position:fixed; inset:0; z-index:92; background:rgba(4,5,14,.82);
   display:flex; align-items:flex-end; opacity:0; transition:opacity .25s}
 .sheetBg.show{opacity:1}
 .bottomSheet{width:100%; max-width:520px; margin:0 auto; max-height:72dvh; overflow-y:auto;
@@ -1054,4 +1135,217 @@ body.spaceMode #bgWrap, body.spaceMode #actors, body.spaceMode #bossBtn, body.sp
   .chestCardArt{width:72px; height:72px}
   .chestCard{width:86px}
 }
+
+/* ============================================================
+   MOBİL PERFORMANS — GPU katman terfisi + repaint izolasyonu
+   Android WebView'de fps düşüşlerini ve kasmayı azaltır. Sürekli
+   animasyonlu / sahnede sık güncellenen katmanlar kendi GPU
+   katmanlarına alınır; böylece her karede tüm sayfa yeniden boyanmak
+   yerine yalnızca compositor çalışır.
+   ============================================================ */
+#scene{ transform:translateZ(0); contain:layout paint; }
+#bgWrap,#fxLayer,#particleLayer,#forceFxLayer,#actors{
+  transform:translateZ(0); -webkit-backface-visibility:hidden; backface-visibility:hidden;
+}
+/* Kahraman ve düşman sürekli savurma/sarsıntı ile transform anımasyonu alır —
+   kalıcı olarak compositor katmanında tutulur. */
+#heroWrap,#enemyWrap{
+  will-change:transform; -webkit-backface-visibility:hidden; backface-visibility:hidden;
+}
+/* Kaydırılan panel kendi katmanında; kaydırma sırasında topbar/dock yeniden boyanmaz. */
+#panel{ transform:translateZ(0); contain:layout paint style; }
+/* En sık spawn olan kısa ömürlü FX node'ları (hasar yazısı, kesik yayı, halkalar)
+   baştan compositor'a alınır; JS bittiklerinde DOM'dan zaten siliyor. */
+.dmg,.saberArc,.shockwave,.tapRing,.hitGlow,.forceRing,.forceWaveCrescent,
+.forceOrb,.nbNova,.heroFlare{ will-change:transform,opacity; }
+
+/* ============================================================
+   MOBİL GPU YÜKÜ AZALTMA — her-kare pahalı filtre temizliği
+   Android WebView'de blur + backdrop-filter compositor'ı en çok yoran
+   işlemler. Oyun sırasında SÜREKLİ görünür/animasyonlu olanlar kaldırılır;
+   nadir açılan overlay'lerin (modal/sheet/sandık) bulanıklığına dokunulmaz.
+   ============================================================ */
+/* 1) Parçacıklar saniyede onlarca spawn olur — her birine blur GPU'yu kilitler.
+   Blur'suz hafif opaklikla aynı atmosfer korunur. */
+.pt-sand.puff{ filter:none; opacity:.32; }
+.pt-snow.far{ filter:none; opacity:.42; }
+.pt-mist{ filter:none; opacity:.12; }
+/* 2) Drawer panel kaydırılırken backdrop-filter her karede arkayı yeniden
+   bulanıklaştırır — zaten opak gradient arkaplan var, blur gereksiz. */
+body.drawerOpen #drawer{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+/* 3) Combo kutusu dövüş boyunca ekranda kalır; backdrop blur yerine düz panel. */
+#comboBox{ backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(10,12,30,.92); }
+/* 4) Kahraman gölge halkası sahnede sürekli; blur yarıçapını hafiflet. */
+#heroWrap::after{ filter:blur(1.5px); }
+
+/* ============================================================
+   AAA UI POLISH v10 — dokunsal, mobil-oyun hissi veren kontroller.
+   Sadece UCUZ özellikler: gradient + box-shadow + GPU transform.
+   backdrop-filter / sonsuz animasyon / pahalı filtre YOK; bu yüzden
+   nb-lowfx modunda bile bedava (statik boya, basışta transform).
+   ============================================================ */
+
+/* ---------- Birincil satın-alma / aksiyon butonu ---------- */
+.buyBtn{
+  position:relative; overflow:hidden;
+  border:1px solid #4a68aa; border-radius:12px;
+  background:linear-gradient(180deg,#39538f 0%,#27406c 52%,#1c2c4c 100%);
+  box-shadow:0 3px 0 -1px #0d1428, 0 5px 12px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(180,205,255,.4), inset 0 -3px 7px rgba(0,0,0,.28);
+  transition:transform .08s ease, box-shadow .08s ease, filter .12s ease;
+}
+.buyBtn::before{ content:""; position:absolute; inset:1px 1px 50% 1px; border-radius:11px 11px 8px 8px;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0)); pointer-events:none; }
+.buyBtn .bAct{ text-shadow:0 1px 2px rgba(0,0,0,.5); position:relative; }
+.buyBtn .bCost{ position:relative; text-shadow:0 1px 1px rgba(0,0,0,.45); }
+.buyBtn:not(:disabled):active{ transform:translateY(3px);
+  box-shadow:0 0 0 0 #0d1428, 0 2px 5px rgba(0,0,0,.4), inset 0 1px 3px rgba(0,0,0,.4); filter:brightness(1.04); }
+.buyBtn:disabled{ opacity:1; filter:grayscale(.55) brightness(.62);
+  border-color:#2a3552; background:linear-gradient(180deg,#222a44,#171d33);
+  box-shadow:0 2px 0 -1px #0a0e1c, inset 0 1px 0 rgba(255,255,255,.06); }
+.buyBtn:disabled::before{ opacity:.4; }
+.buyBtn:disabled .bCost{ color:#c79a5a; }
+/* sahip olunan / kuşanılmış: sakin onaylı yeşil */
+.buyBtn.owned{ border-color:rgba(84,224,138,.5);
+  background:linear-gradient(180deg,#1a3328,#13251d);
+  box-shadow:0 2px 0 -1px #08160f, inset 0 1px 0 rgba(120,255,180,.25); }
+.buyBtn.owned .bAct{ color:#9af7c2; } .buyBtn.owned .bCost{ color:#54e08a; }
+
+/* ---------- Drawer başlık kontrolleri (kapat / büyüt) ---------- */
+#panelClose,#panelGrow{ width:36px; height:36px; border-radius:11px;
+  background:linear-gradient(180deg,#1d2645,#141b34); border:1px solid rgba(150,172,232,.26);
+  color:#d2ddf8; font-size:15px; font-weight:800;
+  box-shadow:0 2px 0 -1px #0a0e22, inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .09s ease, box-shadow .09s ease, color .12s, border-color .12s; }
+#panelClose:active,#panelGrow:active{ transform:translateY(2px);
+  box-shadow:0 0 0 0 #0a0e22, inset 0 1px 3px rgba(0,0,0,.45); }
+#panelClose{ font-size:13px; }
+#panelClose:hover{ color:#ff9aa8; border-color:rgba(255,120,140,.45); }
+#panelGrow.on{ color:var(--gold); border-color:rgba(255,181,71,.55);
+  box-shadow:0 2px 0 -1px #0a0e22, inset 0 1px 0 rgba(255,210,140,.3), 0 0 10px rgba(255,181,71,.25); }
+
+/* ---------- Ayar dişlisi ---------- */
+#settingsBtn{ border-radius:11px;
+  background:linear-gradient(180deg,#1d2645,#141b34); border:1px solid rgba(150,172,232,.26);
+  color:#d2ddf8; box-shadow:0 2px 0 -1px #0a0e22, inset 0 1px 0 rgba(255,255,255,.1);
+  transition:transform .15s ease, box-shadow .1s; }
+#settingsBtn:active{ transform:translateY(1px) rotate(35deg);
+  box-shadow:0 0 0 0 #0a0e22, inset 0 1px 3px rgba(0,0,0,.4); }
+
+/* ---------- Çarpan çipleri (x1 / x10 / MAX) ---------- */
+.bm{ border-radius:10px;
+  background:linear-gradient(180deg,#1b2342,#141a33); border:1px solid rgba(150,172,232,.22);
+  box-shadow:0 2px 0 -1px #0a0e1f, inset 0 1px 0 rgba(255,255,255,.1);
+  transition:transform .08s ease, box-shadow .08s ease, background .12s; }
+.bm:active{ transform:translateY(2px); box-shadow:0 0 0 0 #0a0e1f, inset 0 1px 3px rgba(0,0,0,.4); }
+.bm.on{ color:#2a1c04; background:linear-gradient(180deg,#ffd991,#f0a92e); border-color:#ffe6b0;
+  box-shadow:0 2px 0 -1px #9b6510, inset 0 1px 0 rgba(255,255,255,.5), 0 0 10px rgba(240,170,46,.3); }
+
+/* ---------- Modal butonları ---------- */
+.mBtn{ border-radius:11px;
+  background:linear-gradient(180deg,#1f2848,#161d39); border:1px solid rgba(150,172,232,.24);
+  box-shadow:0 3px 0 -1px #0a0e22, inset 0 1px 0 rgba(255,255,255,.1);
+  transition:transform .08s ease, box-shadow .08s ease, filter .12s; }
+.mBtn:active{ transform:translateY(3px); box-shadow:0 0 0 0 #0a0e22, inset 0 1px 3px rgba(0,0,0,.45); }
+.mBtn.accent{ background:linear-gradient(180deg,#ffd684,#f0a52e); border-color:#ffe6b0; color:#2a1c04;
+  box-shadow:0 3px 0 -1px #9b6510, 0 5px 12px rgba(240,165,46,.28), inset 0 1px 0 rgba(255,255,255,.5); }
+.mBtn.danger{ background:linear-gradient(180deg,#3a1620,#280f17); border-color:rgba(255,77,94,.5); color:#ff8a98;
+  box-shadow:0 3px 0 -1px #1a070c, inset 0 1px 0 rgba(255,120,140,.18); }
+
+/* ---------- quest / claim butonları ---------- */
+.questBtn{ border-radius:10px;
+  box-shadow:0 3px 0 -1px #1a1204, inset 0 1px 0 rgba(255,225,160,.3);
+  background:linear-gradient(180deg,#ffd684,#e8a634); border-color:#ffe6b0; color:#2a1c04;
+  transition:transform .08s ease, box-shadow .08s ease; }
+.questBtn:active:not(:disabled){ transform:translateY(3px); box-shadow:0 0 0 0 #1a1204, inset 0 1px 3px rgba(0,0,0,.35); }
+.questBtn:disabled{ background:linear-gradient(180deg,#1a2038,#12182c); border-color:rgba(150,172,232,.18);
+  box-shadow:none; color:var(--dim); }
+
+/* ---------- alt-nav + chip basış geri bildirimi ---------- */
+.subBtn,.chip{ transition:transform .09s ease, background .14s, color .14s, box-shadow .14s, border-color .14s; }
+.subBtn:active,.chip:active{ transform:scale(.95); }
+
+/* ---------- genel: düz/yazı butonlarına ince basış geri bildirimi ---------- */
+button:active{ -webkit-tap-highlight-color:transparent; }
+.ebClose:active,.note button:active{ opacity:.6; transform:scale(.97); }
+
+/* erişilebilir dokunma alanı: küçük metin-butonları en az 40px yükseklikte */
+#closeSettings{ min-height:46px; }
+
+@media (prefers-reduced-motion:reduce){
+  .buyBtn,.mBtn,.bm,#panelClose,#panelGrow,#settingsBtn,.questBtn{ transition:none; }
+}
+
+/* ---------- Üst menü: dar telefonlarda sığsın ----------
+   Sıralama rozeti kaldırıldı; kalan kaynak çipleri kompaktlaştırılır ki
+   bölge adı (zone) ezilmeden sığsın. 360px'te bile taşma olmaz. */
+#topbar{ gap:5px; }
+.resource{ padding:4px 7px 4px 5px; font-size:12.5px; gap:4px; min-height:28px; border-radius:8px; }
+.resource .ico{ width:15px; height:15px; }
+#settingsBtn{ width:34px; height:34px; font-size:16px; }
+#zoneName{ font-size:11px; }
+#waveInfo{ font-size:10px; margin-top:0; }
+
+/* ============================================================
+   RESPONSIVE "FIT-FRAME" — her cihaza (telefon/tablet/emulator) uyum.
+   ESKİ SORUN: body max-width:520px ile kilitliydi → geniş tablet/Nox
+   ekranında iki yanı kocaman siyah olan ince bir şerit görünüyordu.
+   ÇÖZÜM: body artık SABİT tasarım çerçevesi (440px geniş, ekran oranına
+   göre yükseklik); JS hesapladığı --appS ile transform:scale yapılır →
+   içerik daima ekranı doldurur, dikey/yatay tablette ortalanır.
+   html, çevredeki pillarbox'ı dolduran dekoratif uzay backdrop'u olur.
+   Tüm fixed overlay'ler body içinde olduğundan birlikte ölçeklenir.
+   ============================================================ */
+html{
+  height:100%; overflow:hidden;
+  background:
+    radial-gradient(1.4px 1.4px at 12% 22%,rgba(200,224,255,.5),transparent),
+    radial-gradient(1.3px 1.3px at 78% 14%,rgba(180,210,255,.45),transparent),
+    radial-gradient(1.2px 1.2px at 36% 70%,rgba(200,224,255,.4),transparent),
+    radial-gradient(1.5px 1.5px at 88% 64%,rgba(170,205,255,.4),transparent),
+    radial-gradient(1.2px 1.2px at 58% 40%,rgba(220,235,255,.35),transparent),
+    radial-gradient(125% 90% at 50% 16%,#0d1730 0%,#080b18 55%,#03040b 100%);
+}
+body{
+  max-width:none !important; margin:0 !important;
+  position:fixed; left:50%; top:50%;
+  width:var(--appW,440px); height:var(--appH,860px);
+  height:var(--appH,860px);   /* dvh değil sabit px → tablette dvh zıplaması olmaz */
+  transform-origin:50% 50%;
+  transform:translate(-50%,-50%) scale(var(--appS,1));
+  box-shadow:0 0 0 1px rgba(120,170,255,.06), 0 24px 80px -20px #000;
+  will-change:transform;
+}
+
+/* ============================================================
+   HUD CİLA (v2) — "çok sade" geri bildirimi: derinlik, parıltı, ayrışma.
+   Salt CSS; layout/işlev değişmez, yalnızca görsel zenginlik.
+   ============================================================ */
+#topbar{
+  background:linear-gradient(180deg,#141a38 0%,#0c1024 70%,#0a0d20 100%) !important;
+  box-shadow:0 2px 0 rgba(0,0,0,.4), 0 6px 18px -8px #000, inset 0 1px 0 rgba(150,190,255,.08) !important;
+  border-bottom:1px solid rgba(120,160,255,.16) !important;
+}
+.resource{
+  background:linear-gradient(180deg,#1a2244,#10162e) !important;
+  border:1px solid rgba(130,165,255,.18) !important;
+  box-shadow:inset 0 1px 0 rgba(160,195,255,.14), 0 2px 6px -2px rgba(0,0,0,.5) !important;
+  position:relative;
+}
+.resource .ico{ filter:drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+#zoneName{ text-shadow:0 0 10px rgba(255,181,71,.35); }
+/* tab bar: cam panel hissi + üst accent çizgisi */
+#bottom{ background:linear-gradient(180deg,#0c1024,#080a18) !important;
+  box-shadow:0 -2px 0 rgba(0,0,0,.5), inset 0 1px 0 rgba(140,180,255,.07) !important; }
+.tab{ transition:color .16s, background .16s, transform .12s; }
+.tab .tIco{ filter:drop-shadow(0 1px 2px rgba(0,0,0,.55)); transition:transform .14s, filter .16s; }
+.tab:active .tIco{ transform:scale(.86); }
+.tab.on{ background:linear-gradient(180deg,rgba(255,181,71,.16),rgba(255,181,71,.04)) !important; }
+.tab.on .tIco{ filter:drop-shadow(0 0 7px rgba(255,181,71,.6)); transform:translateY(-1px) scale(1.06); }
+.tab.on::after{ box-shadow:0 0 8px var(--gold); }
+/* yükseltme/satın-al butonlarına dokunsal derinlik */
+.buyBtn{ box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 3px 8px -3px rgba(0,0,0,.6); transition:transform .1s, filter .14s; }
+.buyBtn:active:not(:disabled){ transform:translateY(1px) scale(.985); filter:brightness(1.08); }
+.bigBtn{ box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 6px 16px -6px rgba(0,0,0,.7); }
+.bigBtn:active:not(:disabled){ transform:translateY(1px) scale(.99); }
 

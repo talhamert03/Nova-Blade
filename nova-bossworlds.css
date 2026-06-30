@@ -1,0 +1,115 @@
+/* =============================================================================
+   NOVA BLADE · BOSS WORLDS — hyperdrive destination chart.
+   3 swipeable planets, each with 3 escalating bosses. Reached via the
+   Station hyperdrive pad. Portrait / mobile-first, matches the game frame.
+   ============================================================================= */
+:root{ --bwFont:'Orbitron',ui-monospace,system-ui,sans-serif; }
+
+#bwOverlay{ position:fixed; top:0; bottom:0; left:50%; transform:translateX(-50%);
+  width:min(100vw,520px); z-index:120; display:none; overflow:hidden;
+  color:#eaf2ff; font-family:var(--bwFont);
+  background:
+    radial-gradient(120% 60% at 50% 8%, rgba(60,40,120,.35), transparent 60%),
+    radial-gradient(100% 60% at 50% 100%, rgba(20,30,60,.5), transparent 70%),
+    linear-gradient(180deg,#05030f,#0a0820 55%,#06040f);
+  opacity:0; transition:opacity .34s ease; }
+#bwOverlay.show{ display:block; opacity:1; }
+#bwOverlay *{ box-sizing:border-box; }
+/* drifting starfield backdrop */
+#bwOverlay::before{ content:''; position:absolute; inset:0; pointer-events:none; opacity:.7;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 78% 12%, #cfe2ff, transparent),
+    radial-gradient(1px 1px at 32% 64%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 64% 78%, #dfe9ff, transparent),
+    radial-gradient(1px 1px at 88% 52%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 18% 88%, #cfe2ff, transparent),
+    radial-gradient(1px 1px at 50% 36%, #fff, transparent);
+  animation:bwStar 6s ease-in-out infinite; }
+@keyframes bwStar{ 0%,100%{ opacity:.55; } 50%{ opacity:.85; } }
+
+/* ---- header ---- */
+.bwHead{ position:absolute; top:0; left:0; right:0; z-index:8; display:flex; align-items:center; gap:11px;
+  padding:14px 14px; background:linear-gradient(180deg, rgba(5,3,15,.92), transparent); }
+.bwClose{ width:40px; height:40px; flex:0 0 auto; border-radius:12px; cursor:pointer;
+  background:rgba(20,16,40,.7); border:1px solid rgba(150,130,255,.3); color:#cbb6ff;
+  font-size:22px; line-height:1; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.bwClose:active{ transform:scale(.93); }
+.bwTitle{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
+.bwTitle span{ font-size:15px; font-weight:900; letter-spacing:.08em; color:#fff; text-shadow:0 0 16px rgba(140,90,255,.6); white-space:nowrap; }
+.bwTitle small{ font-size:8px; letter-spacing:.26em; color:#8a7fc0; font-weight:700; margin-top:3px; white-space:nowrap; }
+.bwFuel{ margin-left:auto; display:flex; align-items:center; gap:6px; padding:6px 11px; border-radius:11px;
+  background:rgba(10,22,38,.74); border:1px solid rgba(70,200,255,.32); color:#9af0ff;
+  font-size:13px; font-weight:800; font-variant-numeric:tabular-nums; backdrop-filter:blur(4px); }
+.bwFuel b{ color:#fff; }
+
+/* ---- carousel ---- */
+.bwViewport{ position:absolute; inset:0; overflow:hidden; touch-action:pan-y; }
+.bwTrack{ position:absolute; inset:0; display:flex; width:300%; height:100%;
+  transition:transform .42s cubic-bezier(.22,1,.36,1); will-change:transform; }
+.bwTrack.dragging{ transition:none; }
+.bwPanel{ position:relative; width:33.3333%; height:100%; flex:0 0 33.3333%;
+  display:flex; flex-direction:column; align-items:center;
+  padding:74px 16px calc(20px + env(safe-area-inset-bottom)); overflow-y:auto; scrollbar-width:none; }
+.bwPanel::-webkit-scrollbar{ display:none; }
+
+/* ---- planet sphere ---- */
+.bwPlanetWrap{ position:relative; width:min(58vw,230px); aspect-ratio:1; flex:0 0 auto; margin:4px auto 2px;
+  filter:drop-shadow(0 0 34px rgba(120,90,255,.3)); }
+.bwTheme-lava .bwPlanetWrap{ filter:drop-shadow(0 0 38px rgba(255,110,40,.4)); }
+.bwTheme-ice .bwPlanetWrap{ filter:drop-shadow(0 0 38px rgba(120,210,255,.4)); }
+.bwTheme-void .bwPlanetWrap{ filter:drop-shadow(0 0 40px rgba(150,90,255,.45)); }
+.bwPlanetSvg{ width:100%; height:100%; display:block; overflow:visible; }
+
+.bwWorldName{ text-align:center; margin:6px 0 12px; }
+.bwWorldName .wn{ font-size:23px; font-weight:900; letter-spacing:.06em; color:#fff;
+  text-shadow:0 0 20px var(--wc,#9a6bff); display:block; }
+.bwWorldName small{ display:block; font-size:9px; letter-spacing:.22em; font-weight:700; color:#9a8fce; margin-top:5px; }
+.bwWorldName small b{ color:#ffd98a; }
+
+/* ---- boss cards ---- */
+.bwBosses{ width:100%; max-width:440px; display:flex; flex-direction:column; gap:9px; }
+.bwBoss{ appearance:none; text-align:left; cursor:pointer; display:flex; align-items:center; gap:11px;
+  padding:9px 11px; border-radius:15px; font-family:inherit; color:#eaf2ff;
+  background:linear-gradient(180deg, rgba(22,18,40,.92), rgba(10,8,22,.92));
+  border:1px solid var(--bc,rgba(150,130,255,.3)); transition:transform .12s, box-shadow .2s, border-color .2s; }
+.bwBoss.ready{ box-shadow:0 0 18px -8px var(--bc,#9a6bff); }
+.bwBoss.ready:active{ transform:scale(.985); }
+.bwBoss.locked{ opacity:.6; filter:grayscale(.5); cursor:not-allowed; }
+.bwBoss.nofuel{ }
+.bwBPort{ flex:0 0 auto; width:62px; height:62px; border-radius:12px; overflow:hidden;
+  background:radial-gradient(circle at 50% 40%, var(--bc,#3a2a66), rgba(6,4,16,.9));
+  border:1px solid var(--bc,rgba(150,130,255,.4)); display:flex; align-items:flex-end; justify-content:center; }
+.bwBPort svg{ width:96%; height:96%; }
+.bwBInfo{ flex:1 1 auto; min-width:0; }
+.bwBN{ font-size:13.5px; font-weight:900; letter-spacing:.01em; color:#fff; line-height:1.15;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bwBN i{ font-style:normal; font-size:8.5px; font-weight:800; letter-spacing:.1em; color:var(--bc,#c9a3ff);
+  padding:2px 5px; border-radius:6px; border:1px solid currentColor; margin-left:5px; }
+.bwBSub{ font-size:10.5px; color:#9aa8c4; margin-top:4px; font-variant-numeric:tabular-nums; }
+.bwBSub b{ color:#ff9aa6; } .bwBSub span{ color:#ffd98a; }
+.bwBRwd{ display:flex; gap:9px; margin-top:5px; font-size:10px; font-weight:800; }
+.bwBRwd span:nth-child(1){ color:#ffd24a; } .bwBRwd span:nth-child(2){ color:#7fffd0; } .bwBRwd span:nth-child(3){ color:#c89bff; }
+.bwBGo{ flex:0 0 auto; }
+.bwFight{ padding:9px 13px; border-radius:11px; font-weight:900; font-size:12px; letter-spacing:.07em; white-space:nowrap;
+  background:linear-gradient(180deg,#ff5a4a,#b3241c); color:#fff; border:0;
+  box-shadow:0 4px 14px -4px rgba(255,80,60,.7), inset 0 1px 0 rgba(255,255,255,.35); }
+.bwLockTag{ font-size:10px; font-weight:800; letter-spacing:.04em; color:#ff96a4; white-space:nowrap;
+  padding:7px 10px; border-radius:10px; border:1px solid rgba(255,90,110,.35); background:rgba(255,60,80,.08); }
+.bwLockTag.fuel{ color:#9af0ff; border-color:rgba(70,200,255,.35); background:rgba(40,150,210,.10); }
+
+/* ---- arrows + dots ---- */
+.bwArrow{ position:absolute; top:42%; z-index:7; width:42px; height:60px; cursor:pointer;
+  background:rgba(14,10,30,.55); border:1px solid rgba(150,130,255,.28); color:#cbb6ff;
+  font-size:26px; line-height:1; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+.bwArrow.l{ left:0; border-radius:0 14px 14px 0; }
+.bwArrow.r{ right:0; border-radius:14px 0 0 14px; }
+.bwArrow:active{ transform:scale(.92); }
+.bwArrow.hide{ opacity:.25; pointer-events:none; }
+.bwDots{ position:absolute; left:0; right:0; bottom:14px; z-index:7; display:flex; gap:9px; justify-content:center; pointer-events:none; }
+.bwDot{ width:9px; height:9px; border-radius:50%; background:rgba(180,170,230,.3); transition:all .25s; }
+.bwDot.on{ background:#cbb6ff; box-shadow:0 0 10px #9a6bff; transform:scale(1.25); }
+
+@media (prefers-reduced-motion: reduce){
+  #bwOverlay::before, .bwPlanetSvg *{ animation:none !important; }
+}

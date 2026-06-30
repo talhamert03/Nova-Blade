@@ -1,0 +1,279 @@
+/* =============================================================================
+   NOVA BLADE · COMPANION BEASTS (PET) — UI
+   ============================================================================= */
+
+/* ---------- panel başlık ---------- */
+.petHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.petBal{font-weight:800;font-size:15px}
+.petDisc{font-size:12px;color:var(--dim)}
+.petDisc b{color:var(--cyan)}
+
+.petSec{font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--gold);
+  text-transform:uppercase;margin:18px 0 9px;display:flex;align-items:center;gap:8px}
+.petSec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.petSecCnt{font-size:10px;font-weight:800;letter-spacing:.04em;color:var(--dim);
+  background:rgba(255,255,255,.06);border:1px solid var(--line);padding:2px 7px;border-radius:20px}
+.petSec.petSecLocked{color:var(--dim)}
+.petSec.petSecLocked .petSecCnt{color:var(--dim)}
+.petDexEmpty{font-size:12px;color:var(--dim);line-height:1.5;text-align:center;
+  padding:18px 12px;border:1px dashed var(--line);border-radius:12px;margin:2px 0 4px}
+.petNote,.petDexNote{font-size:12px;color:var(--dim);line-height:1.5;margin:0 0 8px}
+.petNote b{color:var(--gold2)}
+
+/* ---------- aktif companion ---------- */
+.petActiveCard{display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,var(--panel2),var(--panel));
+  border:1px solid var(--line2);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.petActiveCard::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(120% 90% at 18% 30%,rgba(53,224,210,.08),transparent 60%);pointer-events:none}
+.petActiveArt{width:78px;height:78px;flex:0 0 auto;border-radius:50%;
+  background:radial-gradient(circle at 42% 36%,rgba(255,255,255,.1),rgba(0,0,0,.35));
+  border:2px solid var(--rc,var(--cyan));box-shadow:0 0 18px var(--rg,rgba(53,224,210,.4));
+  display:flex;align-items:center;justify-content:center}
+.petActiveArt svg{width:100%;height:100%}
+.petActiveArt.empty{font-size:34px;font-weight:800;color:var(--dim);border-color:var(--line2);box-shadow:none}
+.petActiveInfo{min-width:0}
+.petActiveLbl{font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--cyan)}
+.petActiveName{font-size:17px;font-weight:800;margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.petRarTag{font-size:9px;font-weight:800;letter-spacing:.05em;color:#0a0a1a;padding:2px 7px;border-radius:999px}
+.petActiveBonus{font-size:13px;color:var(--cyan);margin-top:4px;font-weight:700}
+.petCollBonus{font-size:11px;color:var(--gold2);margin-top:3px}
+
+/* ---------- kuluçka ---------- */
+.petIncWrap{display:flex;gap:10px;flex-wrap:wrap}
+.petIncSlot{flex:1 1 150px;min-width:150px;display:flex;flex-direction:column;align-items:center;gap:8px;
+  background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:14px 12px;position:relative}
+.petIncSlot.ready{border-color:var(--rc);box-shadow:0 0 16px var(--rg);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 8%,var(--panel)),var(--panel))}
+.petIncSlot.empty{opacity:.7;border-style:dashed}
+.petEggArt{position:relative;width:88px;height:88px;display:flex;align-items:center;justify-content:center}
+.petEggArt svg{width:66px;height:66px;display:block}
+.petEggArt.empty{font-size:40px;opacity:.5}
+.petIncRing{position:absolute;inset:0;width:88px;height:88px}
+.petIncSlot:not(.ready) .petEggArt svg:first-child{animation:petWobble 2.6s ease-in-out infinite}
+.petIncSlot.ready .petEggArt svg:first-child{animation:petShake .5s ease-in-out infinite}
+@keyframes petWobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes petShake{0%,100%{transform:rotate(-7deg) scale(1)}25%{transform:rotate(6deg) scale(1.04)}50%{transform:rotate(-5deg) scale(1)}75%{transform:rotate(7deg) scale(1.04)}}
+.petIncMeta{text-align:center;display:flex;flex-direction:column;gap:2px}
+.petIncMeta b{font-size:13px}
+.petIncTimer{font-size:13px;font-weight:800;color:var(--txt);font-variant-numeric:tabular-nums}
+.petReadyTxt{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--rc)}
+.petIncMeta span{font-size:11px;color:var(--dim)}
+
+.petAddSlot{flex:1 1 120px;min-width:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  background:repeating-linear-gradient(135deg,rgba(255,181,71,.05) 0 8px,transparent 8px 16px),var(--panel);
+  border:1px dashed var(--gold);border-radius:14px;padding:14px;color:var(--gold)}
+.petAddPlus{font-size:30px;line-height:1;font-weight:300}
+.petAddTxt{font-size:12px;font-weight:800;text-align:center;display:flex;flex-direction:column}
+.petAddTxt span{font-size:14px;color:var(--gold2)}
+
+/* ---------- buton ---------- */
+.petBtn{min-height:38px;padding:0 14px;border-radius:9px;font-weight:800;font-size:12.5px;letter-spacing:.04em;
+  background:var(--panel2);border:1px solid var(--line2);color:var(--txt)}
+.petBtn:active{transform:translateY(1px)}
+.petBtn.place,.petBtn.buy{background:linear-gradient(180deg,#1a3a3a,#0e2424);border-color:var(--cyan);color:var(--cyan)}
+.petBtn.hatch{background:linear-gradient(180deg,var(--rc),color-mix(in srgb,var(--rc) 55%,#000));border-color:var(--rc);color:#0a0a1a;
+  animation:petHatchPulse 1.1s ease-in-out infinite}
+@keyframes petHatchPulse{0%,100%{box-shadow:0 0 0 0 var(--rg)}50%{box-shadow:0 0 0 6px transparent}}
+.petBtn.speed{background:linear-gradient(180deg,#3a2a10,#241808);border-color:var(--gold);color:var(--gold2)}
+.petBtn.ghost{background:transparent;color:var(--dim)}
+
+/* ---------- yumurta çantası ---------- */
+.petEggBag{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px}
+.petEggCard{background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:10px 8px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:5px;border-top:2px solid var(--rc)}
+.petEggMini{width:46px;height:58px}
+.petEggMini svg{width:100%;height:100%}
+.petEggName{font-size:12px;font-weight:800}
+.petEggTime{font-size:10.5px;color:var(--dim)}
+.petEggCard .petBtn{min-height:32px;padding:0 10px;font-size:11px;width:100%}
+
+/* ---------- yumurta al ---------- */
+.petBuyRow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.petBuyCard{background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:12px 8px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:5px}
+.petBuyCard.free{border-color:rgba(84,224,138,.4)}
+.petBuyCard.prem{border-color:rgba(184,107,255,.4)}
+.petBuyTtl{font-size:12.5px;font-weight:800}
+.petBuySub{font-size:10.5px;color:var(--dim);min-height:13px}
+.petBuyCard .petBtn{width:100%;min-height:34px;margin-top:3px}
+.petBuyWait{font-size:11px;font-weight:800;color:var(--dim);margin-top:3px}
+
+/* ---------- koleksiyon (dex) ---------- */
+.petDex{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:9px}
+.petDexCard{background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:10px 8px;text-align:center;
+  position:relative;border-top:2px solid var(--rc);overflow:hidden}
+.petDexCard[data-act]{cursor:pointer}
+.petDexCard[data-act]:active{transform:scale(.97)}
+.petDexCard.locked{opacity:.62;border-top-color:var(--line2)}
+.petDexCard.active{box-shadow:0 0 0 1px var(--rc),0 0 14px var(--rg);background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 10%,var(--panel)),var(--panel))}
+.petDexArt{width:62px;height:62px;margin:0 auto 4px;display:flex;align-items:center;justify-content:center}
+.petDexArt svg{width:100%;height:100%}
+.petDexQ{font-size:30px;font-weight:800;color:#2a3142}
+.petDexName{font-size:12px;font-weight:800;line-height:1.15}
+.petDexRar{font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.petDexPlanet{font-size:9.5px;color:var(--dim);margin-top:1px}
+.petDexBonus{font-size:10px;color:var(--cyan);margin-top:4px;line-height:1.3;font-weight:700}
+.petDexCount{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;background:rgba(0,0,0,.55);
+  border:1px solid var(--line2);border-radius:6px;padding:1px 5px}
+.petDexActive{position:absolute;top:5px;right:6px;font-size:13px;color:var(--rc)}
+
+/* ---------- overlay (satın al / hatch) ---------- */
+.petOv{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+  background:rgba(4,6,16,.74);backdrop-filter:blur(4px);opacity:0;transition:opacity .22s}
+.petOv.show{opacity:1}
+.petOvCard,.petHatchCard{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);
+  border-radius:18px;padding:24px 22px;max-width:330px;width:88%;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);transform:translateY(14px) scale(.96);transition:transform .26s cubic-bezier(.2,1.3,.4,1)}
+.petOv.show .petOvCard,.petOv.show .petHatchCard{transform:none}
+.petOvIco{font-size:40px}
+.petOvCard h3{margin:8px 0 6px;font-size:19px}
+.petOvCard p{font-size:13px;color:var(--dim);line-height:1.5;margin:0 0 14px}
+.petPrice{font-size:26px;font-weight:900;color:var(--gold);margin-bottom:16px;letter-spacing:.02em}
+.petOvBtns{display:flex;gap:10px}
+.petOvBtns .petBtn{flex:1;min-height:44px}
+
+/* hatch reveal */
+.petHatchCard{position:relative;overflow:hidden;border-color:var(--rc);box-shadow:0 0 40px var(--rg),0 20px 60px rgba(0,0,0,.6)}
+.petHatchBurst{position:absolute;top:42%;left:50%;width:300px;height:300px;margin:-150px;
+  background:radial-gradient(circle,var(--rg),transparent 62%);animation:petBurst 1.4s ease-out forwards;pointer-events:none}
+@keyframes petBurst{0%{transform:scale(.2);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+.petNewTag{position:absolute;top:14px;right:-34px;transform:rotate(38deg);background:var(--gold);color:#0a0a1a;
+  font-size:10px;font-weight:900;letter-spacing:.08em;padding:4px 36px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.petHatchKick{font-size:11px;font-weight:800;letter-spacing:.18em;position:relative;color:var(--dim)}
+.petHatchTier{font-size:30px;font-weight:900;letter-spacing:.03em;line-height:1;margin:4px 0 2px;color:var(--rc);
+  text-shadow:0 0 18px var(--rg);position:relative}
+.petHatchFlavor{font-size:12px;color:var(--gold2);margin-top:6px;position:relative;line-height:1.4}
+.petHatchArt{width:140px;height:140px;margin:6px auto 4px;position:relative;animation:petHatchIn .6s cubic-bezier(.2,1.4,.4,1)}
+.petHatchArt svg{width:100%;height:100%;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+@keyframes petHatchIn{0%{transform:scale(.3) rotate(-12deg);opacity:0}60%{transform:scale(1.12) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+.petHatchName{font-size:23px;font-weight:900;position:relative}
+.petHatchPlanet{font-size:12px;color:var(--dim);margin-top:2px;position:relative}
+.petHatchBonus{font-size:14px;font-weight:800;color:var(--cyan);margin:12px 0 16px;position:relative}
+.petHatchCard .petBtn{width:100%;min-height:46px;position:relative}
+
+/* ---------- hatch: nadirliğe göre ölçeklenen kazanım ekranı ---------- */
+.petHatchRays{position:absolute;top:42%;left:50%;width:560px;height:560px;margin:-280px;z-index:0;pointer-events:none;opacity:0;
+  background:repeating-conic-gradient(from 0deg, var(--rg) 0deg 5deg, transparent 5deg 17deg);
+  -webkit-mask:radial-gradient(circle,#000 8%,transparent 58%);mask:radial-gradient(circle,#000 8%,transparent 58%);
+  animation:pHRays 11s linear infinite}
+@keyframes pHRays{to{transform:rotate(360deg)}}
+.hatch-rare .petHatchRays{opacity:.22}
+.hatch-epic .petHatchRays{opacity:.36}
+.hatch-legendary .petHatchRays{opacity:.55;animation-duration:8s}
+
+.petHatchParticles{position:absolute;top:46%;left:50%;width:0;height:0;pointer-events:none;z-index:3}
+.petHatchParticles i{position:absolute;left:0;top:0;border-radius:50%;background:var(--rc);box-shadow:0 0 8px var(--rg);
+  opacity:0;animation:pHPart 1s ease-out forwards}
+@keyframes pHPart{0%{transform:translate(0,0) scale(.4);opacity:0}18%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.15);opacity:0}}
+
+.petHatchFlash{position:fixed;inset:0;z-index:199;pointer-events:none;
+  background:radial-gradient(circle at 50% 44%,var(--fc),transparent 68%);animation:pHFlash .65s ease-out forwards}
+@keyframes pHFlash{0%{opacity:0}18%{opacity:.6}100%{opacity:0}}
+
+/* tier-özel kart yoğunluğu */
+.hatch-rare .petHatchCard,.petHatchCard.hatch-rare{box-shadow:0 0 50px var(--rg),0 20px 60px rgba(0,0,0,.6)}
+.petHatchCard.hatch-epic{box-shadow:0 0 64px var(--rg),0 20px 60px rgba(0,0,0,.6)}
+.petHatchCard.hatch-legendary{box-shadow:0 0 90px var(--rg),0 0 30px var(--rg),0 20px 60px rgba(0,0,0,.7);
+  animation:pHLegCard .5s ease-out}
+@keyframes pHLegCard{0%{transform:scale(.9)}40%{transform:scale(1.03)}100%{transform:scale(1)}}
+.hatch-epic .petHatchArt{animation:petHatchIn .78s cubic-bezier(.2,1.45,.4,1)}
+.hatch-legendary .petHatchArt{animation:petHatchIn .95s cubic-bezier(.18,1.5,.4,1)}
+.hatch-legendary .petHatchArt svg{filter:drop-shadow(0 0 16px var(--rg)) drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+/* legendary tier yazısı parıldar */
+.hatch-legendary .petHatchTier{background:linear-gradient(90deg,#ffd98a 0%,#fff 45%,#ffb547 60%,#ffd98a 100%);
+  background-size:220% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  animation:pHShine 2.4s linear infinite}
+@keyframes pHShine{to{background-position:220% center}}
+.petHatchBurst{z-index:1}
+@media (prefers-reduced-motion:reduce){
+  .petHatchRays,.petHatchParticles i,.petHatchFlash,.hatch-legendary .petHatchTier{animation-duration:.01ms!important}
+}
+
+/* ---------- sahne companion (kahramanın sağ-üst omzunda uçan yardımcı) ---------- */
+#petCompanion{position:absolute;left:23%;bottom:17%;width:50px;height:50px;z-index:5;pointer-events:none;
+  transform:translateX(0);animation:petFloat 3.4s ease-in-out infinite;filter:drop-shadow(0 6px 11px rgba(0,0,0,.5))}
+#petCompanion svg{width:100%;height:100%}
+.petCmpInner{width:100%;height:100%;transform-origin:60% 64%}
+
+/* ===== her arketipe özel saldırı: gövde hamlesi ===== */
+.petCmpInner.atk-critter{animation:pcPounce .44s cubic-bezier(.3,1.25,.5,1)}
+@keyframes pcPounce{0%{transform:translate(0,0) scale(1,1)}18%{transform:translate(-5px,3px) scale(1.06,.9)}46%{transform:translate(22px,-7px) scale(1.12,1.04) rotate(9deg)}68%{transform:translate(9px,-1px) scale(1,1) rotate(3deg)}100%{transform:none}}
+.petCmpInner.atk-lizard{animation:pcLunge .42s cubic-bezier(.3,1.2,.5,1)}
+@keyframes pcLunge{0%{transform:translate(0,0) rotate(0)}20%{transform:translate(-4px,0) rotate(-5deg)}48%{transform:translate(20px,2px) rotate(7deg) scaleX(1.08)}70%{transform:translate(7px,0) rotate(2deg)}100%{transform:none}}
+.petCmpInner.atk-blob{animation:pcSquash .46s cubic-bezier(.34,1.4,.5,1)}
+@keyframes pcSquash{0%{transform:scale(1,1) translateY(0)}18%{transform:scale(1.18,.78) translateY(4px)}40%{transform:scale(.86,1.2) translate(14px,-8px)}62%{transform:scale(1.06,.96) translate(6px,0)}100%{transform:none}}
+.petCmpInner.atk-finling{animation:pcDart .4s cubic-bezier(.4,1.3,.5,1)}
+@keyframes pcDart{0%{transform:translate(0,0) rotate(0)}24%{transform:translate(-6px,0) rotate(-8deg)}50%{transform:translate(26px,-4px) rotate(10deg) scaleX(1.1)}72%{transform:translate(10px,0) rotate(3deg)}100%{transform:none}}
+.petCmpInner.atk-moth{animation:pcFlutter .44s ease-out}
+@keyframes pcFlutter{0%{transform:translate(0,0)}30%{transform:translate(-3px,-3px) rotate(-4deg)}55%{transform:translate(18px,-6px) rotate(6deg)}78%{transform:translate(7px,-2px) rotate(2deg)}100%{transform:none}}
+.petCmpInner.atk-dragon{animation:pcClawBody .46s cubic-bezier(.3,1.25,.5,1)}
+@keyframes pcClawBody{0%{transform:translate(0,0) rotate(0)}22%{transform:translate(-6px,-2px) rotate(-9deg)}50%{transform:translate(18px,-4px) rotate(8deg)}72%{transform:translate(7px,-1px) rotate(3deg)}100%{transform:none}}
+.petCmpInner.atk-serpent{animation:pcStrike .42s cubic-bezier(.36,1.5,.5,1)}
+@keyframes pcStrike{0%{transform:translate(0,0) scale(1,1)}24%{transform:translate(-8px,2px) scale(.92,1.08) rotate(-6deg)}50%{transform:translate(26px,-3px) scale(1.14,.94) rotate(10deg)}72%{transform:translate(9px,0) rotate(3deg)}100%{transform:none}}
+.petCmpInner.atk-phoenix{animation:pcDive .46s cubic-bezier(.3,1.25,.5,1)}
+@keyframes pcDive{0%{transform:translate(0,0) rotate(0)}22%{transform:translate(-4px,-9px) rotate(-7deg)}52%{transform:translate(22px,4px) rotate(11deg)}74%{transform:translate(8px,0) rotate(3deg)}100%{transform:none}}
+
+/* ===== uzuv hareketleri (kanat çırpma / kuyruk savurma / pençe darbesi) ===== */
+.petCmpInner svg .nbpWingL,.petCmpInner svg .nbpWingR,.petCmpInner svg .nbpTail,.petCmpInner svg .nbpArm{transform-box:view-box}
+.petCmpInner svg .nbpWingL,.petCmpInner svg .nbpWingR{transform-origin:50px 50px}
+.petCmpInner svg .nbpTail{transform-origin:64px 70px}
+.petCmpInner svg .nbpArmL{transform-origin:42px 60px}
+.petCmpInner svg .nbpArmR{transform-origin:58px 60px}
+/* kanat çırpma — uçanlar (finling, moth, phoenix) */
+.petCmpInner.atk-finling svg .nbpWingL,.petCmpInner.atk-moth svg .nbpWingL,.petCmpInner.atk-phoenix svg .nbpWingL{animation:pcWingL .42s ease-in-out}
+.petCmpInner.atk-finling svg .nbpWingR,.petCmpInner.atk-moth svg .nbpWingR,.petCmpInner.atk-phoenix svg .nbpWingR{animation:pcWingR .42s ease-in-out}
+@keyframes pcWingL{0%,100%{transform:rotate(0)}38%{transform:rotate(28deg)}68%{transform:rotate(-8deg)}}
+@keyframes pcWingR{0%,100%{transform:rotate(0)}38%{transform:rotate(-28deg)}68%{transform:rotate(8deg)}}
+/* kuyruk savurma — lizard, critter, dragon */
+.petCmpInner.atk-lizard svg .nbpTail,.petCmpInner.atk-critter svg .nbpTail,.petCmpInner.atk-dragon svg .nbpTail{animation:pcTail .42s ease-out}
+@keyframes pcTail{0%{transform:rotate(0)}30%{transform:rotate(-24deg)}60%{transform:rotate(20deg)}100%{transform:rotate(0)}}
+/* pençe darbesi — dragon kolları */
+.petCmpInner.atk-dragon svg .nbpArmL{animation:pcArmL .42s cubic-bezier(.3,1.3,.5,1)}
+.petCmpInner.atk-dragon svg .nbpArmR{animation:pcArmR .42s cubic-bezier(.3,1.3,.5,1)}
+@keyframes pcArmL{0%{transform:rotate(0)}32%{transform:rotate(-34deg)}58%{transform:rotate(46deg)}100%{transform:rotate(0)}}
+@keyframes pcArmR{0%{transform:rotate(0)}32%{transform:rotate(-26deg)}58%{transform:rotate(40deg)}100%{transform:rotate(0)}}
+
+/* companion enerji mermisi — parlak çekirdek + kuyruk, düşmana süzülür */
+.petSpark{position:absolute;width:22px;height:9px;margin:-4px 0 0 0;border-radius:6px;z-index:9;pointer-events:none;
+  transform-origin:left center;opacity:1;transition:transform .2s linear,opacity .18s ease-out .04s;
+  background:linear-gradient(90deg,transparent,var(--psc,#fff) 55%,#ffffff);
+  box-shadow:0 0 9px var(--psc,#fff),0 0 3px #fff}
+.petSpark.pk-claw{width:26px;height:14px;background:none;box-shadow:none;
+  border-top:3px solid var(--psc,#fff);border-right:3px solid var(--psc,#fff);border-radius:0 70% 0 0;filter:drop-shadow(0 0 5px var(--psc,#fff))}
+.petSpark.pk-splat{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,#fff,var(--psc,#fff) 60%,transparent);box-shadow:0 0 12px var(--psc,#fff)}
+.petSpark.pk-ring{width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 60% 50%,#fff,var(--psc,#fff) 55%,transparent 72%);box-shadow:0 0 11px var(--psc,#fff)}
+
+/* ===== düşman üzerinde özgün vuruş efekti ===== */
+.petHitFx{position:absolute;width:60px;height:60px;margin:-30px;z-index:10;pointer-events:none;transform:translate(-50%,-50%)}
+.petHitFx.pf-claw svg{width:60px;height:60px;overflow:visible}
+.petHitFx.pf-claw path{stroke:var(--pc,#fff);stroke-width:3.4;fill:none;stroke-linecap:round;
+  filter:drop-shadow(0 0 5px var(--pc,#fff));stroke-dasharray:70;stroke-dashoffset:70;animation:pfClaw .34s ease-out forwards}
+@keyframes pfClaw{0%{stroke-dashoffset:70;opacity:.2}40%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+.petHitFx.pf-ring{border-radius:50%;border:3px solid var(--pc,#fff);box-shadow:0 0 12px var(--pc,#fff),inset 0 0 8px var(--pc,#fff);
+  animation:pfRing .36s ease-out forwards}
+@keyframes pfRing{0%{transform:translate(-50%,-50%) scale(.2);opacity:1}100%{transform:translate(-50%,-50%) scale(1.3);opacity:0}}
+.petHitFx.pf-splat{border-radius:50%;background:radial-gradient(circle,#fff,var(--pc,#fff) 55%,transparent 72%);
+  box-shadow:0 0 16px var(--pc,#fff);animation:pfSplat .36s cubic-bezier(.3,1.4,.5,1) forwards}
+@keyframes pfSplat{0%{transform:translate(-50%,-50%) scale(.2);opacity:1}55%{transform:translate(-50%,-50%) scale(1.1)}100%{transform:translate(-50%,-50%) scale(.85);opacity:0}}
+.petHitFx.pf-bolt{border-radius:50%;background:radial-gradient(circle,#fff 30%,var(--pc,#fff) 60%,transparent 75%);
+  box-shadow:0 0 16px var(--pc,#fff);animation:pfRing .3s ease-out forwards}
+@keyframes petFloat{0%,100%{transform:translateX(0) translateY(0)}50%{transform:translateX(0) translateY(-11px)}}
+
+@media (prefers-reduced-motion:reduce){
+  .petCmpInner.atk-critter,.petCmpInner.atk-lizard,.petCmpInner.atk-blob,.petCmpInner.atk-finling,
+  .petCmpInner.atk-moth,.petCmpInner.atk-dragon,.petCmpInner.atk-serpent,.petCmpInner.atk-phoenix,
+  .petCmpInner svg .nbpWingL,.petCmpInner svg .nbpWingR,.petCmpInner svg .nbpTail,.petCmpInner svg .nbpArm{animation-duration:.01ms!important}
+}
+
+/* ---------- yer yoldaşı kılıç-dalgası + hamle (görünür vuruş) ---------- */
+.allyChar.allyStrikeG{animation:allyLungeG .34s cubic-bezier(.3,1.4,.5,1)}
+@keyframes allyLungeG{0%{transform:translateX(0) rotate(0)}30%{transform:translateX(16px) rotate(6deg)}60%{transform:translateX(6px) rotate(2deg)}100%{transform:translateX(0) rotate(0)}}
+.allyWave{position:absolute;width:30px;height:30px;margin:-15px 0 0 0;z-index:9;pointer-events:none;
+  transform-origin:left center;opacity:.95;transition:transform .22s ease-out,opacity .2s ease-out .03s;
+  border-radius:0 50% 50% 0;
+  background:radial-gradient(circle at 20% 50%,var(--awc,#fff),color-mix(in srgb,var(--awc,#fff) 30%,transparent) 65%,transparent 75%);
+  box-shadow:0 0 12px var(--awc,#fff);
+  clip-path:polygon(0 12%,42% 0,100% 50%,42% 100%,0 88%,30% 50%)}
+body.worldBoss #petCompanion,body.spaceMode #petCompanion{display:none}
+@media (max-width:380px){ #petCompanion{width:44px;height:44px;left:22%;bottom:18%}
+  @keyframes petFloat{0%,100%{transform:translateX(0) translateY(0)}50%{transform:translateX(0) translateY(-9px)}} }

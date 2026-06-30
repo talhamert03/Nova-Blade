@@ -112,21 +112,37 @@
 
   /* =================== BOSS TANIMLARI =================== */
   // diff = HP çarpanı (oyuncu DPS'ine göre); time = kesim penceresi (sn)
+  // 3 GEZEGEN × 3 BOSS = 9 dünya bossu. world: gezegen indeksi (0..2). Güç gezegen ilerledikçe artar.
   const BOSSES = [
-    { id:'grull', name:'GRULL · Ember Maw', tier:'BRUTE', unlock:1,  diff:1.12, time:36,
+    /* ===== GEZEGEN 0 · PYROS (lav) ===== */
+    { id:'grull', name:'GRULL · Ember Maw', tier:'BRUTE', world:0, unlock:1,  diff:3.0, time:36,
       goldMult:60, sp:14, chestW:{common:70,rare:30}, chests:1, dropChance:.9, crystals:0,
       art:{body:'#9c3320',bodyD:'#4a140c',bodyL:'#d05a36',belly:'#c47a4a',horn:'#f0e6cf',hornD:'#9a8a66',eye:'#ffd24a',glow:'#ff6a2a',hornStyle:'curved',eyes:2,tail:true} },
-    { id:'vorth', name:'VORTH · Hexfang', tier:'WARLORD', unlock:25, diff:1.24, time:34,
-      goldMult:120, sp:24, chestW:{common:40,rare:48,epic:12}, chests:1, dropChance:.92, crystals:0,
+    { id:'cind', name:'CINDROK · Magma Brute', tier:'RAVAGER', world:0, unlock:12, diff:3.7, time:35,
+      goldMult:95, sp:20, chestW:{common:45,rare:45,epic:10}, chests:1, dropChance:.91, crystals:0,
+      art:{body:'#a23a18',bodyD:'#3e120a',bodyL:'#e06a2e',belly:'#c86a3a',horn:'#f0d6a0',hornD:'#9a7a3a',eye:'#ffd24a',glow:'#ff6a2a',hornStyle:'broken',eyes:2,spikes:true,tail:true} },
+    { id:'pyrax', name:'PYRAXIS · Forge Tyrant', tier:'WARLORD', world:0, unlock:28, diff:4.4, time:34,
+      goldMult:150, sp:30, chestW:{common:30,rare:52,epic:18}, chests:1, dropChance:.93, crystals:1,
+      art:{body:'#7a2410',bodyD:'#2c0c06',bodyL:'#ff7a3a',belly:'#ff9a4a',horn:'#ffe6a0',hornD:'#b8862a',eye:'#fff36a',glow:'#ff5b2d',hornStyle:'crown',eyes:3,spikes:true,tail:true} },
+    /* ===== GEZEGEN 1 · CRYON (buz/kristal) ===== */
+    { id:'vorth', name:'VORTH · Hexfang', tier:'COLOSSUS', world:1, unlock:45, diff:5.2, time:33,
+      goldMult:220, sp:42, chestW:{rare:55,epic:38,legendary:7}, chests:1, dropChance:.95, crystals:1,
       art:{body:'#6a2b8a',bodyD:'#2a0c3a',bodyL:'#9b4fc0',belly:'#8a5aa8',horn:'#e6d8f0',hornD:'#7a5a92',eye:'#7fffd0',glow:'#c46bff',hornStyle:'straight',eyes:4,spikes:true,tail:true} },
-    { id:'kaarn', name:'KAARN · Sunderer', tier:'COLOSSUS', unlock:60, diff:1.36, time:33,
-      goldMult:220, sp:40, chestW:{rare:50,epic:42,legendary:8}, chests:1, dropChance:.95, crystals:1,
+    { id:'glac', name:'GLACIVOR · Rime Warden', tier:'TITAN', world:1, unlock:70, diff:6.0, time:32,
+      goldMult:300, sp:56, chestW:{rare:45,epic:46,legendary:9}, chests:1, dropChance:.96, crystals:2,
+      art:{body:'#3a6a90',bodyD:'#13283c',bodyL:'#7fc0e0',belly:'#5a90b0',horn:'#dff4ff',hornD:'#6a90a8',eye:'#bfeaff',glow:'#7fd8ff',hornStyle:'straight',eyes:2,spikes:true,tail:true} },
+    { id:'kaarn', name:'KAARN · Sunderer', tier:'BEHEMOTH', world:1, unlock:95, diff:6.8, time:31,
+      goldMult:400, sp:72, chestW:{rare:35,epic:52,legendary:13}, chests:2, dropChance:.97, crystals:2,
       art:{body:'#3a4250',bodyD:'#12161e',bodyL:'#5a6678',belly:'#4a5260',horn:'#cfd6e2',hornD:'#6a7280',eye:'#ff5a3a',glow:'#ff3b4d',hornStyle:'broken',eyes:3,spikes:true} },
-    { id:'mawk', name:'MAWKROTH · Voidborn', tier:'NIGHTMARE', unlock:120, diff:1.48, time:31,
-      goldMult:380, sp:64, chestW:{epic:58,legendary:42}, chests:2, dropChance:.97, crystals:2,
+    /* ===== GEZEGEN 2 · NOXARETH (boşluk/kıyamet) ===== */
+    { id:'mawk', name:'MAWKROTH · Voidborn', tier:'NIGHTMARE', world:2, unlock:130, diff:7.6, time:31,
+      goldMult:540, sp:92, chestW:{epic:58,legendary:42}, chests:2, dropChance:.98, crystals:3,
       art:{body:'#1f1438',bodyD:'#080418',bodyL:'#3a2a66',belly:'#2a1c4a',horn:'#b8a0ff',hornD:'#5a4a8a',eye:'#9b6bff',glow:'#7a3bff',hornStyle:'curved',eyes:3,thirdEye:true,wings:true,tail:true} },
-    { id:'abad', name:'ABADDON · World Ender', tier:'APOCALYPSE', unlock:200, diff:1.64, time:30,
-      goldMult:640, sp:100, chestW:{epic:34,legendary:66}, chests:2, dropChance:1, crystals:3,
+    { id:'noxar', name:'NOXAR · Dread Sovereign', tier:'OVERLORD', world:2, unlock:170, diff:8.8, time:30,
+      goldMult:720, sp:120, chestW:{epic:46,legendary:54}, chests:2, dropChance:.99, crystals:3,
+      art:{body:'#2a1850',bodyD:'#0c0620',bodyL:'#5a3aa0',belly:'#3a2470',horn:'#cbb0ff',hornD:'#5a4a8a',eye:'#b88bff',glow:'#8a4bff',hornStyle:'crown',eyes:4,thirdEye:true,wings:true,tail:true} },
+    { id:'abad', name:'ABADDON · World Ender', tier:'APOCALYPSE', world:2, unlock:215, diff:10.0, time:30,
+      goldMult:940, sp:150, chestW:{epic:34,legendary:66}, chests:3, dropChance:1, crystals:4,
       art:{body:'#b8341c',bodyD:'#3a0a06',bodyL:'#ff7a3a',belly:'#ff9a4a',horn:'#ffe6a0',hornD:'#b8862a',eye:'#fff36a',glow:'#ff3b1a',hornStyle:'crown',eyes:4,thirdEye:true,wings:true,spikes:true,tail:true} }
   ];
 
@@ -137,6 +153,16 @@
   let wbSwingDir = 1;
   function wbHeroSwing(){
     const w = document.getElementById('wbHero'); if(!w) return;
+    // Blaster sınıfı: arena'da da ışın cıvatası atsın (kılıç savurma yerine)
+    if(S.cls==='blaster' && typeof window.NB_blasterFireAt==='function'){
+      window.NB_blasterFireAt(w, function(){
+        const boss=document.getElementById('wbBoss'), sc=document.getElementById('scene');
+        if(!boss||!sc) return null;
+        const br=boss.getBoundingClientRect(), sr=sc.getBoundingClientRect();
+        return { x: br.left - sr.left + br.width*0.5, y: br.top - sr.top + br.height*0.42 };
+      }, true);
+      return;
+    }
     wbSwingDir = -wbSwingDir;
     const dir = wbSwingDir > 0 ? 'nbSwR' : 'nbSwL';
     w.classList.remove('nbSwR','nbSwL','nbSwBig'); void w.offsetWidth;
@@ -161,7 +187,9 @@
       +'<svg viewBox="0 0 200 200">'+demon('orb_', BOSSES[0].art).replace(/<ellipse cx="100" cy="206"[^>]*>/,'')+'</svg>'
       +'<span class="wbOrbCount">0</span><span class="wbOrbLbl">WORLD BOSS</span>';
     orb.addEventListener('click', openRoster);
-    scene.appendChild(orb);
+    var dock=document.getElementById('combatDock');
+    if(dock){ var anchor=document.getElementById('dockRow'); if(anchor) dock.insertBefore(orb, anchor); else dock.appendChild(orb); }
+    else scene.appendChild(orb);
     refreshOrb();
     setInterval(refreshOrb, 4000);
   }
@@ -170,9 +198,11 @@
     const c=availableCount();
     const badge=orb.querySelector('.wbOrbCount');
     badge.textContent=c;
-    badge.style.display=c>0?'block':'none';
+    const lbl=orb.querySelector('.wbOrbLbl');
+    if(lbl) lbl.innerHTML = c>0 ? 'WORLD BOSS <span style="color:#ffd24a">×'+c+' READY</span>' : 'WORLD BOSS';
     orb.style.animationPlayState = c>0?'running':'paused';
-    orb.style.filter = c>0?'none':'grayscale(.5) brightness(.75)';
+    orb.style.filter = c>0?'none':'grayscale(.5) brightness(.7)';
+    orb.style.opacity = c>0?'1':'.82';
   }
 
   /* =================== ROSTER (boss seçim ekranı) =================== */
@@ -235,7 +265,7 @@
   function enterWB(i){
     buildArena();
     const b=BOSSES[i];
-    const hp=Math.max(effDps()*b.time*b.diff, num(()=>tapDamage(),10)*30);
+    const hp=Math.max(effDps()*b.time*b.diff, num(()=>tapDamage(),10)*150);
     WB={ i, b, hpMax:hp, hp, time:b.time, t:b.time, dead:false, enraged:false, lastTap:0 };
     document.body.classList.add('worldBoss');
     const wb=document.getElementById('wbScene');
@@ -244,6 +274,7 @@
     const boss=document.getElementById('wbBoss');
     boss.className=''; boss.innerHTML='<svg viewBox="0 0 200 220" preserveAspectRatio="xMidYMax meet">'+demon('arena_', b.art)+'</svg>';
     document.getElementById('wbHero').innerHTML=heroSVG();
+    if(S.cls==='blaster' && typeof window.NB_applyPoseTo==='function'){ try{ window.NB_applyPoseTo(document.getElementById('wbHero')); }catch(e){} }
     wb.querySelector('.wbHint').innerHTML='Sustained DPS won\'t be enough — <b>tap fast</b> to break it before the timer ends!';
     updateWBHud();
     seedEmbers();
@@ -371,6 +402,17 @@
     S.space.credits+=sp; drops.push({k:'sp',n:sp});
     // kristal
     if(b.crystals>0 && Math.random()<.6){ S.crystals=(S.crystals||0)+b.crystals; S.crystalsEarned=(S.crystalsEarned||0)+b.crystals; drops.push({k:'cry',n:b.crystals}); }
+    // pet yumurtası (üst tier boss = daha iyi nadirlik)
+    if(Math.random()<.42){
+      S.pets=S.pets||{}; if(!Array.isArray(S.pets.eggs)) S.pets.eggs=[];
+      let eggR;
+      if(b.id==='abad'||b.id==='mawk') eggR=Math.random()<.45?'epic':'rare';
+      else if(b.id==='kaarn') eggR=Math.random()<.5?'rare':'regular';
+      else if(b.id==='vorth') eggR=Math.random()<.5?'regular':'rare';
+      else eggR=Math.random()<.55?'common':'regular';
+      if(Math.random()<.05) eggR='legendary';
+      S.pets.eggs.push({rarity:eggR}); drops.push({k:'egg',r:eggR});
+    }
     // durum
     const w=wbState(); w.kills=(w.kills||0)+1; w.perBoss[b.id]=(w.perBoss[b.id]||0)+1; w.cd[b.id]=Date.now()+COOLDOWN_MS;
     if(S.stats){ S.stats.wbKills=(S.stats.wbKills||0)+1; }
@@ -405,6 +447,7 @@
         else if(d.k==='gold'){ inner+='<div class="wbRewItem"><div class="ic" style="background:#ffd24a22;color:#ffd24a">💰</div><div class="tx"><b>+'+fmt(d.n)+' Gold</b><span>Credited to your bank</span></div></div>'; }
         else if(d.k==='sp'){ inner+='<div class="wbRewItem"><div class="ic" style="background:#35e0d222;color:#35e0d2">✦</div><div class="tx"><b>+'+d.n+' Space Credits</b><span>Spend in the Hangar</span></div></div>'; }
         else if(d.k==='cry'){ inner+='<div class="wbRewItem"><div class="ic" style="background:#a86bff22;color:#c89bff">◆</div><div class="tx"><b>+'+d.n+' Plasma Crystals</b><span>Permanent power</span></div></div>'; }
+        else if(d.k==='egg'){ const cm={common:'#aeb8c6',regular:'#54e08a',rare:'#4db8ff',epic:'#b86bff',legendary:'#ffb547'},cc=cm[d.r]||'#aeb8c6'; inner+='<div class="wbRewItem"><div class="ic" style="background:'+cc+'22;color:'+cc+'">🥚</div><div class="tx"><b>'+d.r.charAt(0).toUpperCase()+d.r.slice(1)+' Pet Egg</b><span>Hatch it in the Pets tab</span></div></div>'; }
       });
       inner+='</div><button class="wbResBtn">CLAIM &amp; RETURN</button>';
     } else {

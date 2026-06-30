@@ -1,14 +1,14 @@
 /* ===========================================================================
-   NOVA BLADE · FAZ 2 — 20 IŞIN SİLAHI · v4 (silüet çeşitliliği)
-   • Her silah AYRI bir arketip: ince saber, tsuba saber, shoto, plazma balta,
-     pala, mızrak, katana, çapraz saber, çift uçlu staff, tırpan, rünlü kılıç,
-     trident, BUSTER (dev levha), çekiç, glaive, çift ağızlı balta, çift hançer,
-     ikiz kılıç, kara delik tırpan, nova çapraz.
-   • Şekilli enerji bıçağı motoru: dış parıltı + gradient gövde + beyaz kenar +
-     parlak çekirdek hattı. Metal kabza/sap ele oturur, kesici kısım enerjidir.
-   • Kart tuvali 400×140. Silah ortalı + çapraz. Kanonik dik yön: el=origin,
-     bıçak yukarı (-Y). Aynı çizim hem kartta hem kahramanın elinde kullanılır.
-   • Korunan dövme silahlar (çekiç/glaive/ikiz kılıç) frame() ile çizilir.
+   NOVA BLADE · FAZ 2 — 20 IŞIN KILICI · v5 (TAP TITANS × STAR WARS sentezi)
+   • Star Wars işçiliği: detaylı ışın kılıcı kabzaları — emitter shroud, kontrol
+     kutusu + aktivasyon düğmesi + LED, kyber kristal penceresi, işlenmiş halkalar,
+     havalandırma kanatları, pommel kapağı, sarılı tutamak.
+   • Tap Titans hazine hissi: kanatlı muhafızlar, pençe/dragon emitter, taç
+     uçları, mücevher yuvaları, rünler, altın kakma — her kılıç bir koleksiyon.
+   • Her kılıç KENDİ Star Wars kimliğine eşlenir (renkler SWORDS dizisiyle birebir):
+     Darksaber, Dooku eğri kabza, Inquisitor dönen kılıç, Maul çift saber, vb.
+   • Kanonik yön: el = origin (0,0), bıçak yukarı (-Y). Aynı çizim hem galeride
+     hem kahramanın elinde (NB2_heroBlade) kullanılır.
    =========================================================================== */
 (function(){
   const A = window.NB2, rng = A.rng;
@@ -27,223 +27,319 @@
     return s;
   }
 
-  /* ===================== SABER KABZA PARÇALARI ===================== */
-  function lsDefs(p,c,core){ core=core||'#ffffff';
+  /* ===================== ORTAK DEFS (metal + enerji) ===================== */
+  function defs(p,c,core,acc){ core=core||'#ffffff'; acc=acc||c;
     return '<defs>'
-      +'<linearGradient id="'+p+'st" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b0e14"/><stop offset=".2" stop-color="#5c6675"/><stop offset=".5" stop-color="#b8c4d4"/><stop offset=".8" stop-color="#454e5c"/><stop offset="1" stop-color="#090c11"/></linearGradient>'
-      +'<linearGradient id="'+p+'dk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#04060a"/><stop offset=".5" stop-color="#39414e"/><stop offset="1" stop-color="#04060a"/></linearGradient>'
-      +'<linearGradient id="'+p+'gd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6a4910"/><stop offset=".5" stop-color="#ffe6a0"/><stop offset="1" stop-color="#6a4910"/></linearGradient>'
-      +'<linearGradient id="'+p+'bd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+c+'" stop-opacity=".18"/><stop offset=".5" stop-color="'+core+'"/><stop offset="1" stop-color="'+c+'" stop-opacity=".18"/></linearGradient>'
-      + A.energy(p+'gl', c, '#ffffff')
-      + A.bloom(p+'b2', 3.4) + A.bloom(p+'b1', 1.5)
+      // krom çelik gövde (dikey speküler)
+      +'<linearGradient id="'+p+'st" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#090c12"/><stop offset=".18" stop-color="#454d5b"/><stop offset=".42" stop-color="#c2cdda"/><stop offset=".58" stop-color="#e8eef6"/><stop offset=".78" stop-color="#3a414e"/><stop offset="1" stop-color="#070a0e"/></linearGradient>'
+      // koyu metal (kontrol kutusu / gölge parçalar)
+      +'<linearGradient id="'+p+'dk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#04060a"/><stop offset=".5" stop-color="#2e353f"/><stop offset="1" stop-color="#04060a"/></linearGradient>'
+      // altın kakma
+      +'<linearGradient id="'+p+'gd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5a3e10"/><stop offset=".3" stop-color="#ffe6a0"/><stop offset=".55" stop-color="#b8862a"/><stop offset="1" stop-color="#4a3208"/></linearGradient>'
+      +'<linearGradient id="'+p+'gd2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset=".5" stop-color="#b8862a"/><stop offset="1" stop-color="#5a3e10"/></linearGradient>'
+      // aksan (bıçak rengiyle metalize muhafız/kakma)
+      +'<linearGradient id="'+p+'ac" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+acc+'" stop-opacity=".3"/><stop offset=".5" stop-color="#ffffff"/><stop offset="1" stop-color="'+acc+'" stop-opacity=".3"/></linearGradient>'
+      +'<linearGradient id="'+p+'ac2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="'+acc+'"/><stop offset="1" stop-color="'+acc+'" stop-opacity=".4"/></linearGradient>'
+      // enerji bıçak: yatay (genişlik) ve dikey (uzunluk) çekirdek hatları
+      +'<linearGradient id="'+p+'eb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+c+'" stop-opacity=".34"/><stop offset=".5" stop-color="'+core+'"/><stop offset="1" stop-color="'+c+'" stop-opacity=".34"/></linearGradient>'
+      +'<linearGradient id="'+p+'ev" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c+'" stop-opacity=".30"/><stop offset=".5" stop-color="'+core+'"/><stop offset="1" stop-color="'+c+'" stop-opacity=".30"/></linearGradient>'
+      + A.energy(p+'rg', c, core) + A.bloom(p+'b2', 3.4) + A.bloom(p+'b1', 1.5)
       +'</defs>';
   }
+  const HUM='<animateTransform attributeName="transform" type="scale" values="1 1;1 1.012;1 .997;1 1" dur="2.6s" repeatCount="indefinite" additive="sum"/>';
 
-  function emit(p,o,w,h,top){ const t=o.emitter||'flared', mt=o.metal||'st';
-    if(t==='claw'||t==='cross'){
-      return '<rect x="-'+(h+1)+'" y="'+(top-7)+'" width="'+(w+2)+'" height="8" rx="1.6" fill="url(#'+p+mt+')" stroke="#04060a" stroke-width="1"/>'
-        +'<rect x="-'+(h-1)+'" y="'+(top-9)+'" width="'+(w-2)+'" height="3.4" rx="1.2" fill="#0c1016"/>';
-    }
-    return '<path d="M-'+(h+2.4)+' '+(top-8)+' L-'+h+' '+top+' L'+h+' '+top+' L'+(h+2.4)+' '+(top-8)+' Z" fill="url(#'+p+mt+')" stroke="#04060a" stroke-width="1"/>'
-      +'<rect x="-'+(h-1)+'" y="'+(top-10)+'" width="'+(w-2)+'" height="4" rx="1.4" fill="#0c1016"/>';
-  }
+  /* ===================== METAL KABZA PARÇA SETİ ===================== */
+  // yatay işlenmiş halka (rounded rect bant)
+  function ring(p,cy,hw,h,fill){ return '<rect x="-'+(hw).toFixed(1)+'" y="'+(cy-h/2).toFixed(1)+'" width="'+(hw*2).toFixed(1)+'" height="'+h+'" rx="'+(h*0.45).toFixed(1)+'" fill="'+(fill||('url(#'+p+'st)'))+'" stroke="#04060a" stroke-width=".8"/>'
+    +'<rect x="-'+(hw).toFixed(1)+'" y="'+(cy-h/2).toFixed(1)+'" width="'+(hw*2).toFixed(1)+'" height="'+(h*0.34).toFixed(1)+'" rx="'+(h*0.3).toFixed(1)+'" fill="#fff" opacity=".18"/>'; }
 
-  function hilt(p,o){
-    const H=o.hiltLen||30, w=o.w||11, h=w/2, top=-H/2, bot=H/2, mt=o.metal||'st';
-    let s='';
-    s+='<path d="M-'+h+' '+(bot-3)+' Q-'+h+' '+(bot+5)+' 0 '+(bot+5)+' Q'+h+' '+(bot+5)+' '+h+' '+(bot-3)+' Z" fill="url(#'+p+mt+')" stroke="#04060a" stroke-width="1"/>';
-    s+='<rect x="-'+(h-1)+'" y="'+(bot+1.4)+'" width="'+(w-2)+'" height="2" rx="1" fill="#04060a"/>';
-    s+='<rect x="-'+h+'" y="'+top+'" width="'+w+'" height="'+H+'" rx="2.4" fill="url(#'+p+mt+')" stroke="#04060a" stroke-width="1"/>';
-    s+='<rect x="-'+(h-1.4)+'" y="'+(top+1)+'" width="1.8" height="'+(H-2)+'" fill="#fff" opacity=".2"/>';
-    for(let y=top+5;y<bot-3;y+=5.5) s+='<rect x="-'+(h+0.6)+'" y="'+y.toFixed(1)+'" width="'+(w+1.2)+'" height="1.7" rx=".85" fill="#0e1219" opacity=".85"/>';
-    s+='<rect x="'+(h-0.5)+'" y="'+(top+H*0.32).toFixed(1)+'" width="3.8" height="8" rx="1.2" fill="#161b23" stroke="#04060a" stroke-width=".7"/>';
-    s+='<circle cx="'+(h+1.4)+'" cy="'+(top+H*0.32+3).toFixed(1)+'" r="1.3" fill="'+(o.led||'#9fd8ff')+'"><animate attributeName="opacity" values="1;.2;1" dur="1.4s" repeatCount="indefinite"/></circle>';
-    if(o.ornate>=1&&o.accent){ s+='<rect x="-'+(h+0.8)+'" y="'+(top+1)+'" width="'+(w+1.6)+'" height="2.5" rx="1" fill="url(#'+p+o.accent+')"/>'
-      +'<rect x="-'+(h+0.8)+'" y="'+(bot-4)+'" width="'+(w+1.6)+'" height="2.5" rx="1" fill="url(#'+p+o.accent+')"/>'; }
-    if(o.ornate>=2) s+='<circle cx="-'+(h+2.6)+'" cy="'+(bot-3)+'" r="2.3" fill="none" stroke="url(#'+p+mt+')" stroke-width="1.5"/>';
-    if(o.ornate>=3) s+='<rect x="-'+(h+1.4)+'" y="-2" width="'+(w+2.8)+'" height="4" rx="1" fill="url(#'+p+(o.accent||'gd')+')"/>';
-    s+=emit(p,o,w,h,top);
+  // pommel kapağı (alt) — origin altı, +y
+  function pommel(p,y,w,o){ o=o||{}; const h=w/2;
+    let s='<path d="M-'+(h-1)+' '+(y-2)+' Q-'+(h+1.5)+' '+(y+7)+' 0 '+(y+8)+' Q'+(h+1.5)+' '+(y+7)+' '+(h-1)+' '+(y-2)+' Z" fill="url(#'+p+'st)" stroke="#04060a" stroke-width="1"/>';
+    s+='<ellipse cx="0" cy="'+(y+0.5)+'" rx="'+(h+1)+'" ry="2.4" fill="url(#'+p+(o.acc||'gd')+')" stroke="#04060a" stroke-width=".7"/>';
+    if(o.gem) s+='<circle cx="0" cy="'+(y+5)+'" r="'+(o.gemR||2.6)+'" fill="'+o.gem+'" stroke="#fff" stroke-width=".5"><animate attributeName="opacity" values="1;.45;1" dur="1.8s" repeatCount="indefinite"/></circle>';
     return s;
   }
 
-  function blade(p,o){
-    const len=o.len, w=o.w||9, y0=o.fromY, tip=y0-len, c=o.c;
-    let b = (o.flick===false)?'<g>':'<g><animateTransform attributeName="transform" type="scale" values="1 1;1 1.014;1 .996;1 1" dur="2.6s" repeatCount="indefinite" additive="sum"/>';
-    b+='<rect x="-'+(w*1.7)+'" y="'+tip+'" width="'+(w*3.4)+'" height="'+len+'" rx="'+(w*1.7)+'" fill="'+c+'" opacity=".26" filter="url(#'+p+'b2)"><animate attributeName="opacity" values=".26;.4;.26" dur="2s" repeatCount="indefinite"/></rect>';
-    b+='<rect x="-'+w+'" y="'+tip+'" width="'+(w*2)+'" height="'+len+'" rx="'+w+'" fill="url(#'+p+'bd)"/>';
-    b+='<rect x="-'+(w*0.4)+'" y="'+(tip+2)+'" width="'+(w*0.8)+'" height="'+(len-2)+'" rx="'+(w*0.4)+'" fill="#fff"><animate attributeName="opacity" values="1;.84;1" dur="1.3s" repeatCount="indefinite"/></rect>';
-    b+='<ellipse cx="0" cy="'+y0+'" rx="'+(w*1.5)+'" ry="'+(w*0.9)+'" fill="#fff" opacity=".5" filter="url(#'+p+'b1)"/>';
-    if(o.anim>=2) b+=motes(p,y0,len,w,o.seed);
-    return b+'</g>';
+  // ana tutamak gövdesi: çelik silindir + ribbed bantlar + kontrol kutusu + LED + kyber penceresi
+  function grip(p,top,bot,w,c,o){ o=o||{}; const h=w/2, H=bot-top;
+    let s='<rect x="-'+h+'" y="'+top+'" width="'+w+'" height="'+H+'" rx="2.2" fill="url(#'+p+'st)" stroke="#04060a" stroke-width="1"/>';
+    s+='<rect x="-'+(h-1.2)+'" y="'+(top+1)+'" width="1.6" height="'+(H-2)+'" fill="#fff" opacity=".22"/>';
+    s+='<rect x="'+(h-2)+'" y="'+(top+1)+'" width="1.6" height="'+(H-2)+'" fill="#000" opacity=".3"/>';
+    // ribbed işleme bantları (üst ve alt bölgede)
+    if(o.ribs!==false){ for(let y=top+3;y<bot-2;y+=3.4){ s+='<rect x="-'+(h+0.5)+'" y="'+y.toFixed(1)+'" width="'+(w+1)+'" height="1.5" rx=".7" fill="#0c1016" opacity=".8"/>'; } }
+    // kyber kristal penceresi (parlayan dikey yuva)
+    if(o.kyber!==false){ const ky=top+H*0.30, kh=H*0.26;
+      s+='<rect x="-1.7" y="'+ky.toFixed(1)+'" width="3.4" height="'+kh.toFixed(1)+'" rx="1.2" fill="#05070c"/>'
+       +'<rect x="-1.1" y="'+(ky+1).toFixed(1)+'" width="2.2" height="'+(kh-2).toFixed(1)+'" rx=".9" fill="'+c+'" filter="url(#'+p+'b1)"><animate attributeName="opacity" values=".95;.5;.95" dur="1.6s" repeatCount="indefinite"/></rect>'; }
+    // kontrol kutusu (sağ yan) + aktivasyon düğmesi + LED
+    if(o.box!==false){ const by=top+H*0.5;
+      s+='<rect x="'+(h-0.4)+'" y="'+(by-6).toFixed(1)+'" width="4.6" height="12" rx="1.2" fill="url(#'+p+'dk)" stroke="#04060a" stroke-width=".7"/>'
+       +'<rect x="'+(h+0.4)+'" y="'+(by-3.4).toFixed(1)+'" width="2.8" height="2.4" rx=".6" fill="'+(o.acc==='gd'?'url(#'+p+'gd)':'url(#'+p+'ac)')+'"/>'
+       +'<circle cx="'+(h+1.8)+'" cy="'+(by+2.6).toFixed(1)+'" r="1.2" fill="'+(o.led||c)+'"><animate attributeName="opacity" values="1;.2;1" dur="1.3s" repeatCount="indefinite"/></circle>'; }
+    // d-ring / kanca (sol yan)
+    if(o.dring){ s+='<circle cx="-'+(h+2.2)+'" cy="'+(bot-3).toFixed(1)+'" r="2.2" fill="none" stroke="url(#'+p+'st)" stroke-width="1.4"/>'; }
+    // aksan halkalar (üst/alt)
+    s+=ring(p,top+1.6,h+1,3,'url(#'+p+(o.acc||'gd')+')');
+    s+=ring(p,bot-1.6,h+1,3,'url(#'+p+(o.acc||'gd')+')');
+    return s;
   }
-  function miniBlade(p,len,w,c){ return '<rect x="-'+(w*1.5)+'" y="-'+len+'" width="'+(w*3)+'" height="'+len+'" rx="'+(w*1.5)+'" fill="'+c+'" opacity=".26" filter="url(#'+p+'b2)"/>'
-    +'<rect x="-'+w+'" y="-'+len+'" width="'+(w*2)+'" height="'+len+'" rx="'+w+'" fill="url(#'+p+'bd)"/>'
-    +'<rect x="-'+(w*0.4)+'" y="-'+(len-1)+'" width="'+(w*0.8)+'" height="'+(len-1)+'" rx="'+(w*0.4)+'" fill="#fff"/>'; }
+
+  // ribbed nötr çelik halka yığını (emitter boynu)
+  function neck(p,y,w,acc){ const h=w/2;
+    return ring(p,y,h+1.4,3.4,'url(#'+p+'st)')+ring(p,y-3.6,h+0.6,2.6,'url(#'+p+(acc||'gd')+')'); }
+
+  // ---- EMITTER VARYANTLARI (y = bıçağın çıktığı nokta) ----
+  function emFlared(p,y,w,acc){ const h=w/2;
+    return '<path d="M-'+h+' '+(y+4)+' L-'+(h+2.6)+' '+(y-7)+' L'+(h+2.6)+' '+(y-7)+' L'+h+' '+(y+4)+' Z" fill="url(#'+p+'st)" stroke="#04060a" stroke-width="1"/>'
+      +'<rect x="-'+(h+2.6)+'" y="'+(y-8.5)+'" width="'+(w+5.2)+'" height="2.6" rx="1" fill="url(#'+p+(acc||'gd')+')" stroke="#04060a" stroke-width=".6"/>'
+      +'<rect x="-'+(h-1)+'" y="'+(y-7)+'" width="'+(w-2)+'" height="4" rx="1.2" fill="#0a0d13"/>'; }
+
+  // pençe emitter (Tap Titans dragon cradle): 3 kavisli metal pençe
+  function emClaw(p,y,w,acc){ const h=w/2;
+    const prong=(x,dx)=>'<path d="M'+x+' '+(y+2)+' Q'+(x+dx*0.4)+' '+(y-9)+' '+(x+dx)+' '+(y-15)+' Q'+(x+dx*0.2)+' '+(y-8)+' '+(x+(x<0?2:-2))+' '+(y+2)+' Z" fill="url(#'+p+'st)" stroke="#04060a" stroke-width=".9"/>'
+      +'<circle cx="'+(x+dx)+'" cy="'+(y-15)+'" r="1.4" fill="url(#'+p+(acc||'gd')+')"/>';
+    return '<rect x="-'+(h+3)+'" y="'+(y-3)+'" width="'+(w+6)+'" height="5" rx="2" fill="url(#'+p+'st)" stroke="#04060a" stroke-width="1"/>'
+      +prong(-h,-5)+prong(h,5)+prong(0,0).replace(/Q[^Z]+Z/,'')  // merkez yok
+      +'<path d="M-2 '+(y-2)+' L0 '+(y-12)+' L2 '+(y-2)+' Z" fill="url(#'+p+'st)" stroke="#04060a" stroke-width=".7"/>'
+      +'<rect x="-'+(h-1)+'" y="'+(y-6)+'" width="'+(w-2)+'" height="3.5" rx="1" fill="#0a0d13"/>'; }
+
+  // kanatlı muhafız (winged crossguard): emitter + iki süpürülmüş metal kanat
+  function emWing(p,y,w,acc){ const h=w/2;
+    const wing=(s)=>'<path d="M'+(s*h)+' '+(y+1)+' Q'+(s*(h+16))+' '+(y-6)+' '+(s*(h+22))+' '+(y+5)+' Q'+(s*(h+14))+' '+(y+3)+' '+(s*h)+' '+(y+5)+' Z" fill="url(#'+p+'ac2)" stroke="#04060a" stroke-width=".9"/>'
+      +'<path d="M'+(s*(h+3))+' '+(y+1.5)+' Q'+(s*(h+13))+' '+(y-3)+' '+(s*(h+19))+' '+(y+4)+'" stroke="#fff" stroke-width=".8" fill="none" opacity=".5"/>';
+    return wing(-1)+wing(1)+emFlared(p,y,w,acc); }
+
+  // taç emitter (royal): 5 sivri uç + merkez mücevher
+  function emCrown(p,y,w,acc,gem){ const h=w/2; let s='<rect x="-'+(h+2)+'" y="'+(y-2)+'" width="'+(w+4)+'" height="5" rx="1.6" fill="url(#'+p+'st)" stroke="#04060a" stroke-width="1"/>';
+    [-1,-0.5,0.5,1].forEach(f=>{ const x=f*(h+1); s+='<path d="M'+x+' '+(y-1)+' l'+(f<0?-2:2)+' -9 l'+(f<0?2:-2)+' 9 Z" fill="url(#'+p+(acc||'gd')+')" stroke="#04060a" stroke-width=".6"/>'; });
+    s+='<path d="M-3 '+(y-2)+' L0 '+(y-14)+' L3 '+(y-2)+' Z" fill="url(#'+p+(acc||'gd')+')" stroke="#04060a" stroke-width=".7"/>';
+    if(gem) s+='<circle cx="0" cy="'+(y-3)+'" r="2.4" fill="'+gem+'" stroke="#fff" stroke-width=".5"><animate attributeName="opacity" values="1;.5;1" dur="1.8s" repeatCount="indefinite"/></circle>';
+    return s; }
+
+  // halka muhafız (metalik ornate tsuba)
+  function emRing(p,y,w,acc,R){ R=R||13; const h=w/2;
+    return '<ellipse cx="0" cy="'+y+'" rx="'+R+'" ry="3.8" fill="url(#'+p+'st)" stroke="#04060a" stroke-width="1"/>'
+      +'<ellipse cx="0" cy="'+y+'" rx="'+R+'" ry="3.8" fill="none" stroke="url(#'+p+(acc||'gd')+')" stroke-width="1.1"/>'
+      +'<ellipse cx="0" cy="'+y+'" rx="'+(R*0.46).toFixed(1)+'" ry="1.8" fill="#0a0d13"/>'
+      +'<circle cx="-'+(R-1)+'" cy="'+y+'" r="1.3" fill="url(#'+p+(acc||'gd')+')"/><circle cx="'+(R-1)+'" cy="'+y+'" r="1.3" fill="url(#'+p+(acc||'gd')+')"/>'; }
+
+  // tam kabza derleyici: blade emitY'den yukarı çıkar
+  function swHilt(p,o){ const H=o.hiltLen||32, w=o.w||13, top=-H/2, bot=H/2, emitY=top, c=o.c, acc=o.acc||'gd';
+    let s=pommel(p,bot,w,{acc:acc,gem:o.pommelGem,gemR:o.pommelGemR});
+    s+=grip(p,top+ (o.neck!==false?2:0),bot-2,w,c,{acc:acc,led:o.led||c,box:o.box,kyber:o.kyber,ribs:o.ribs,dring:o.dring});
+    if(o.neck!==false) s+=neck(p,top+1,w,acc);
+    const em=o.emitter||'flared';
+    if(em==='claw') s+=emClaw(p,emitY,w,acc);
+    else if(em==='wing') s+=emWing(p,emitY,w,acc);
+    else if(em==='crown') s+=emCrown(p,emitY,w,acc,o.crownGem);
+    else if(em==='ring') s+=emRing(p,emitY,w,acc,o.ringR);
+    else s+=emFlared(p,emitY,w,acc);
+    return s;
+  }
+
+  /* ===================== BIÇAK MOTORU ===================== */
+  // düz ışın bıçağı (chunkier, sıcak uç). dark=true → kara bıçak (Darksaber/Eternal)
+  function blade(p,o){ const len=o.len, w=o.w||10, y0=o.fromY, tip=y0-len, c=o.c, core=o.core||'#fff';
+    let b='<g>'+(o.flick===false?'':HUM);
+    // dış hale (ince, net)
+    b+='<rect x="-'+(w*1.3)+'" y="'+(tip-2)+'" width="'+(w*2.6)+'" height="'+(len+2)+'" rx="'+(w*1.3)+'" fill="'+c+'" opacity=".22" filter="url(#'+p+'b2)"><animate attributeName="opacity" values=".22;.36;.22" dur="2s" repeatCount="indefinite"/></rect>';
+    if(o.dark){
+      // kara plazma: koyu gövde + parlak renkli kenar + ince çekirdek
+      b+='<path d="M-'+w+' '+y0+' L-'+w+' '+(tip+w*0.7).toFixed(1)+' Q0 '+(tip-w*1.1).toFixed(1)+' '+w+' '+(tip+w*0.7).toFixed(1)+' L'+w+' '+y0+' Z" fill="#0a0c12"/>';
+      b+='<path d="M-'+w+' '+y0+' L-'+w+' '+(tip+w*0.7).toFixed(1)+' Q0 '+(tip-w*1.1).toFixed(1)+' '+w+' '+(tip+w*0.7).toFixed(1)+' L'+w+' '+y0+' Z" fill="none" stroke="'+c+'" stroke-width="2.4" opacity=".95" filter="url(#'+p+'b1)"/>';
+      b+='<path d="M0 '+(y0-2)+' L0 '+(tip+w*0.6).toFixed(1)+'" stroke="'+c+'" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>';
+    } else {
+      // gövde (yuvarlak kapaklı sütun) + sıcak uç
+      b+='<path d="M-'+w+' '+y0+' L-'+w+' '+(tip+w).toFixed(1)+' Q0 '+(tip-w*1.3).toFixed(1)+' '+w+' '+(tip+w).toFixed(1)+' L'+w+' '+y0+' Z" fill="url(#'+p+'eb)" stroke="'+c+'" stroke-width=".5"/>';
+      b+='<path d="M-'+w+' '+y0+' L-'+w+' '+(tip+w).toFixed(1)+' Q0 '+(tip-w*1.3).toFixed(1)+' '+w+' '+(tip+w).toFixed(1)+' L'+w+' '+y0+' Z" fill="none" stroke="#fff" stroke-width="'+(o.edge||1.4)+'" opacity=".8"/>';
+      b+='<rect x="-'+(w*0.3)+'" y="'+(tip+2)+'" width="'+(w*0.6)+'" height="'+(len-2)+'" rx="'+(w*0.3)+'" fill="'+core+'"><animate attributeName="opacity" values="1;.82;1" dur="1.3s" repeatCount="indefinite"/></rect>';
+      b+='<circle cx="0" cy="'+(tip+w*0.45).toFixed(1)+'" r="'+(w*0.44).toFixed(1)+'" fill="#fff" opacity=".75" filter="url(#'+p+'b1)"/>';
+    }
+    // emitter ağzı parıltısı
+    b+='<ellipse cx="0" cy="'+y0+'" rx="'+(w*1.15)+'" ry="'+(w*0.8)+'" fill="'+(o.dark?c:'#fff')+'" opacity=".5" filter="url(#'+p+'b1)"/>';
+    if(o.motes) b+=motes(p,y0,len,w,o.seed);
+    if(o.crackle) b+=crackle(p,y0,len,w,c,o.seed);
+    return b+'</g>'; }
+
+  function miniBlade(p,len,w,c,core){ core=core||'#fff'; return '<rect x="-'+(w*1.25)+'" y="-'+len+'" width="'+(w*2.5)+'" height="'+len+'" rx="'+(w*1.25)+'" fill="'+c+'" opacity=".22" filter="url(#'+p+'b2)"/>'
+    +'<path d="M-'+w+' 0 L-'+w+' '+(-len+w).toFixed(1)+' Q0 '+(-len-w*1.2).toFixed(1)+' '+w+' '+(-len+w).toFixed(1)+' L'+w+' 0 Z" fill="url(#'+p+'eb)"/>'
+    +'<rect x="-'+(w*0.34)+'" y="-'+(len-1)+'" width="'+(w*0.68)+'" height="'+(len-1)+'" rx="'+(w*0.34)+'" fill="'+core+'"/>'; }
 
   function motes(p,y0,len,w,seed){ const r=rng(seed||len*3); let s='<g>';
     for(let i=0;i<7;i++){ const x=((r()-0.5)*w*1.7).toFixed(1), ys=(y0-r()*len).toFixed(1), d=(1.3+r()*1.4).toFixed(1);
       s+='<circle cx="'+x+'" cy="'+ys+'" r="'+(0.5+r()*0.8).toFixed(2)+'" fill="#fff"><animate attributeName="cy" values="'+ys+';'+(parseFloat(ys)-len*0.45).toFixed(1)+'" dur="'+d+'s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.9;0" dur="'+d+'s" repeatCount="indefinite"/></circle>'; }
     return s+'</g>'; }
+  // kararsız çekirdek (Cross Guard / Cracked Ember) — titrek yan kıvılcımlar
+  function crackle(p,y0,len,w,c,seed){ const r=rng(seed||99); let s='<g>';
+    for(let i=0;i<5;i++){ const ys=(y0-len*(0.15+0.7*r())).toFixed(1), dir=r()<0.5?-1:1, ln=(4+r()*7).toFixed(1);
+      s+='<path d="M'+(dir*w*0.7).toFixed(1)+' '+ys+' l'+(dir*ln)+' '+((r()-0.5)*6).toFixed(1)+'" stroke="'+c+'" stroke-width="1.6" stroke-linecap="round" opacity=".85" filter="url(#'+p+'b1)"><animate attributeName="opacity" values=".85;0;.85" dur="'+(0.5+r()*0.6).toFixed(2)+'s" repeatCount="indefinite"/></path>'; }
+    return s+'</g>'; }
 
-  /* ===================== ŞEKİLLİ ENERJİ BIÇAĞI MOTORU ===================== */
-  function eDefs(p,c,core){ core=core||'#ffffff';
-    return '<defs>'
-      +'<linearGradient id="'+p+'st" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b0e14"/><stop offset=".2" stop-color="#5c6675"/><stop offset=".5" stop-color="#b8c4d4"/><stop offset=".8" stop-color="#454e5c"/><stop offset="1" stop-color="#090c11"/></linearGradient>'
-      +'<linearGradient id="'+p+'dk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#04060a"/><stop offset=".5" stop-color="#39414e"/><stop offset="1" stop-color="#04060a"/></linearGradient>'
-      +'<linearGradient id="'+p+'gd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6a4910"/><stop offset=".5" stop-color="#ffe6a0"/><stop offset="1" stop-color="#6a4910"/></linearGradient>'
-      +'<linearGradient id="'+p+'gd2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset=".5" stop-color="#b8862a"/><stop offset="1" stop-color="#5a3e10"/></linearGradient>'
-      +'<linearGradient id="'+p+'mt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfd6e2"/><stop offset=".5" stop-color="#5a6272"/><stop offset="1" stop-color="#2a303c"/></linearGradient>'
-      +'<linearGradient id="'+p+'hf" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0e1016"/><stop offset=".5" stop-color="#39414e"/><stop offset="1" stop-color="#0b0d12"/></linearGradient>'
-      +'<linearGradient id="'+p+'eb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+c+'" stop-opacity=".30"/><stop offset=".5" stop-color="'+core+'"/><stop offset="1" stop-color="'+c+'" stop-opacity=".30"/></linearGradient>'
-      +'<linearGradient id="'+p+'ev" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c+'" stop-opacity=".30"/><stop offset=".5" stop-color="'+core+'"/><stop offset="1" stop-color="'+c+'" stop-opacity=".30"/></linearGradient>'
-      + A.energy(p+'rg', c, core) + A.bloom(p+'b2', 3.4) + A.bloom(p+'b1', 1.5)
-      +'</defs>';
-  }
-  const HUM='<animateTransform attributeName="transform" type="scale" values="1 1;1 1.013;1 .997;1 1" dur="2.6s" repeatCount="indefinite" additive="sum"/>';
-
-  // dolu enerji bıçağı: parıltı + gövde + beyaz kenar + parlak çekirdek
-  function eBlade(p,d,c,o){ o=o||{};
-    let s='<g>'+(o.hum===false?'':HUM);
+  // şekilli enerji bıçağı (eğri/yaprak/balta ağzı)
+  function eBlade(p,d,c,o){ o=o||{}; let s='<g>'+(o.hum===false?'':HUM);
     s+='<path d="'+d+'" fill="'+c+'" opacity=".24" filter="url(#'+p+'b2)"/>';
     s+='<path d="'+d+'" fill="url(#'+p+(o.grad||'eb')+')" stroke="'+c+'" stroke-width=".5"/>';
     s+='<path d="'+d+'" fill="none" stroke="#fff" stroke-width="'+(o.edge||1.3)+'" opacity=".82"/>';
-    if(o.core) s+='<path d="'+o.core+'" fill="none" stroke="#fff" stroke-width="'+(o.coreW||2.2)+'" stroke-linecap="round" opacity=".9"><animate attributeName="opacity" values=".9;.62;.9" dur="1.3s" repeatCount="indefinite"/></path>';
-    return s+'</g>';
-  }
-  // açık enerji keskin (kenar çizgisi) — metal bıçaklara enerji ağız eklemek için
+    if(o.core) s+='<path d="'+o.core+'" fill="none" stroke="'+(o.coreCol||'#fff')+'" stroke-width="'+(o.coreW||2.2)+'" stroke-linecap="round" opacity=".9"><animate attributeName="opacity" values=".9;.62;.9" dur="1.3s" repeatCount="indefinite"/></path>';
+    return s+'</g>'; }
   function eEdge(p,d,c,w){ w=w||2.4;
     return '<path d="'+d+'" fill="none" stroke="'+c+'" stroke-width="'+(w*2.6)+'" stroke-linecap="round" opacity=".5" filter="url(#'+p+'b1)"/>'
-      +'<path d="'+d+'" fill="none" stroke="#fff" stroke-width="'+w+'" stroke-linecap="round" opacity=".95"><animate attributeName="opacity" values=".95;.7;.95" dur="1.3s" repeatCount="indefinite"/></path>';
-  }
+      +'<path d="'+d+'" fill="none" stroke="#fff" stroke-width="'+w+'" stroke-linecap="round" opacity=".95"><animate attributeName="opacity" values=".95;.7;.95" dur="1.3s" repeatCount="indefinite"/></path>'; }
 
-  // dövme kabza: sarılı tutamak + (tsuba ya da haç) muhafız (origin = bıçak tabanı)
-  function fGrip(p,o){ o=o||{}; const gl=o.gripLen||26;
-    let s=grip(p,gl,o.wrap||'#2a2118',o.pom,o.gruna);
-    if(o.tsuba){ s+='<ellipse cx="0" cy="-1" rx="'+o.tsuba+'" ry="3.6" fill="url(#'+p+'mt)" stroke="#14110b" stroke-width="1.2"/>'
-      +'<ellipse cx="0" cy="-1" rx="'+(o.tsuba*0.46).toFixed(1)+'" ry="1.9" fill="#0c0e12"/>'; }
-    else if(o.gw!==0){ const gw=o.gw||12;
-      s+='<path d="M-'+gw+' -2 Q0 -9 '+gw+' -2 L'+(gw-3)+' 5 Q0 1 -'+(gw-3)+' 5 Z" fill="url(#'+p+'gd2)" stroke="#1c1610" stroke-width="1.1"/>'; }
-    return s;
-  }
-  // uzun metal sap (mızrak/balta/tırpan/trident) — origin civarı, sap +y'ye
-  function pole(p,o){ const top=o.top;
-    let s='<rect x="-3.4" y="'+top+'" width="6.8" height="'+(18-top).toFixed(1)+'" rx="3" fill="url(#'+p+'hf)" stroke="#070a0e" stroke-width="1"/>'
-      +'<rect x="-3.2" y="'+top+'" width="2" height="'+(18-top).toFixed(1)+'" fill="#fff" opacity=".06"/>';
-    for(let y=top+24;y<6;y+=30){ s+='<rect x="-5" y="'+y.toFixed(1)+'" width="10" height="5" rx="2" fill="#262b35" stroke="#070a0e" stroke-width=".9"/>'
-      +(o.gruna?'<rect x="-1.3" y="'+(y+1.3).toFixed(1)+'" width="2.6" height="2.6" rx=".5" fill="'+o.gruna+'"><animate attributeName="opacity" values="1;.3;1" dur="1.8s" repeatCount="indefinite"/></rect>':''); }
-    s+='<path d="M-4.4 12 L0 24 L4.4 12 Z" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1"/>';
+  // uzun metal sap (mızrak/balta/tırpan/trident) — sarılı tutamak + metal yakalar + dipçik
+  function staff(p,o){ const top=o.top, c=o.c, acc=o.acc||'gd';
+    let s='<rect x="-3.6" y="'+top+'" width="7.2" height="'+(18-top).toFixed(1)+'" rx="3" fill="url(#'+p+'dk)" stroke="#070a0e" stroke-width="1"/>'
+      +'<rect x="-3.4" y="'+top+'" width="2" height="'+(18-top).toFixed(1)+'" fill="#fff" opacity=".08"/>';
+    // sarılı kavrama bölgesi (origin civarı)
+    s+='<rect x="-4" y="-14" width="8" height="28" rx="3" fill="'+(o.wrap||'#241a12')+'" stroke="#14100a" stroke-width="1"/>';
+    for(let y=-12;y<13;y+=3.2) s+='<path d="M-4 '+y+' l8 1.8" stroke="#14100a" stroke-width="1" opacity=".55"/>';
+    // metal yakalar (boyunca)
+    for(let y=top+22;y<-16;y+=28){ s+=ring(p,y,5.2,5,'url(#'+p+'st)')+ring(p,y,5.8,2,'url(#'+p+acc+')'); }
+    // dipçik
+    s+='<path d="M-4.6 12 L0 24 L4.6 12 Z" fill="url(#'+p+'st)" stroke="#070a0e" stroke-width="1"/>'
+      +'<circle cx="0" cy="14" r="2.4" fill="url(#'+p+acc+')"/>';
     return s;
   }
 
-  /* ---- saber arketipleri ---- */
-  function lsSaber(p,o){ const H=o.hiltLen||30;
-    return lsDefs(p,o.c,o.core)+hilt(p,o)+blade(p,{len:o.blLen,w:o.blW||9,c:o.c,fromY:-H/2-2,anim:o.anim||1,seed:o.seed}); }
+  /* ===================== SABER ARKETİPLERİ ===================== */
+  function lsSaber(p,o){ const H=o.hiltLen||32;
+    return defs(p,o.c,o.core,o.acc&&o.accCol)+swHilt(p,o)+blade(p,{len:o.blLen,w:o.blW||10,c:o.c,core:o.core,fromY:-H/2-3,motes:o.motes,crackle:o.crackle,dark:o.dark,seed:o.seed}); }
 
-  function lsTsuba(p,o){ const H=o.hiltLen||30, yt=-H/2-1, R=o.tsuba||12;
-    return lsDefs(p,o.c,o.core)+hilt(p,o)
-      +'<ellipse cx="0" cy="'+yt+'" rx="'+R+'" ry="3.6" fill="url(#'+p+'st)" stroke="#04060a" stroke-width="1"/>'
-      +'<ellipse cx="0" cy="'+yt+'" rx="'+R+'" ry="3.6" fill="none" stroke="'+(o.ring||'#ffe6a0')+'" stroke-width=".8" opacity=".6"/>'
-      +'<ellipse cx="0" cy="'+yt+'" rx="'+(R*0.5).toFixed(1)+'" ry="1.8" fill="#0c0e12"/>'
-      +blade(p,{len:o.blLen,w:o.blW||8,c:o.c,fromY:-H/2-2,anim:o.anim||1,seed:o.seed}); }
-
-  function lsCross(p,o){ const H=o.hiltLen||30, w=o.w||12, h=w/2, top=-H/2, c=o.c, qb=o.qb||34, qy=top-3;
-    let s=lsDefs(p,c,o.core)+hilt(p,{...o, emitter:'cross'});
-    s+='<rect x="-'+(h+13)+'" y="'+(qy-2.5)+'" width="13" height="5" rx="1.4" fill="url(#'+p+(o.metal||'st')+')" stroke="#04060a" stroke-width=".9"/>'
-      +'<rect x="'+h+'" y="'+(qy-2.5)+'" width="13" height="5" rx="1.4" fill="url(#'+p+(o.metal||'st')+')" stroke="#04060a" stroke-width=".9"/>';
-    s+='<g transform="translate(-'+(h+12)+' '+qy+') rotate(-94)">'+miniBlade(p,qb,5.5,c)+'</g>';
-    s+='<g transform="translate('+(h+12)+' '+qy+') rotate(94)">'+miniBlade(p,qb,5.5,c)+'</g>';
-    s+=blade(p,{len:o.blLen,w:o.blW||10,c:c,fromY:top-2,anim:3,seed:o.seed});
+  function lsCross(p,o){ const H=o.hiltLen||32, w=o.w||13, h=w/2, top=-H/2, c=o.c;
+    let s=defs(p,c,o.core)+swHilt(p,{...o,emitter:'flared'});
+    // yan çapraz ventler (Kylo Ren) — kısa enerji ağızlar
+    s+='<rect x="-'+(h+14)+'" y="'+(top-2)+'" width="14" height="5" rx="1.4" fill="url(#'+p+'st)" stroke="#04060a" stroke-width=".9"/>'
+      +'<rect x="'+h+'" y="'+(top-2)+'" width="14" height="5" rx="1.4" fill="url(#'+p+'st)" stroke="#04060a" stroke-width=".9"/>';
+    s+='<g transform="translate(-'+(h+13)+' '+(top+0.5)+') rotate(-92)">'+miniBlade(p,o.qb||32,5,c,o.core)+'</g>';
+    s+='<g transform="translate('+(h+13)+' '+(top+0.5)+') rotate(92)">'+miniBlade(p,o.qb||32,5,c,o.core)+'</g>';
+    s+=blade(p,{len:o.blLen,w:o.blW||11,c:c,core:o.core,fromY:top-3,crackle:true,seed:o.seed});
     return s; }
 
-  function lsSaberstaff(p,o){ const H=o.hiltLen||44, w=o.w||11, h=w/2, top=-H/2;
-    let s=lsDefs(p,o.c,o.core);
-    s+='<rect x="-'+h+'" y="'+top+'" width="'+w+'" height="'+H+'" rx="2.4" fill="url(#'+p+(o.metal||'st')+')" stroke="#04060a" stroke-width="1"/>';
-    s+='<rect x="-'+(h-1.4)+'" y="'+(top+1)+'" width="1.8" height="'+(H-2)+'" fill="#fff" opacity=".2"/>';
-    for(let y=top+6;y<H/2-3;y+=6) s+='<rect x="-'+(h+0.6)+'" y="'+y.toFixed(1)+'" width="'+(w+1.2)+'" height="1.7" rx=".85" fill="#0e1219" opacity=".8"/>';
-    s+='<rect x="-'+(h+1)+'" y="-3.4" width="'+(w+2)+'" height="6.8" rx="1.4" fill="url(#'+p+(o.accent||'gd')+')" stroke="#04060a" stroke-width=".7"/>';
-    s+='<circle cx="'+(h+1.6)+'" cy="0" r="1.3" fill="'+(o.led||o.c)+'"><animate attributeName="opacity" values="1;.2;1" dur="1.4s" repeatCount="indefinite"/></circle>';
-    s+=emit(p,{...o,emitter:'flared'},w,h,top);
-    s+='<g transform="scale(1 -1)">'+emit(p,{...o,emitter:'flared'},w,h,top)+'</g>';
-    s+=blade(p,{len:o.blLen,w:o.blW||9,c:o.c,fromY:top-2,anim:o.anim||2,seed:o.seed});
-    s+='<g transform="scale(1 -1)">'+blade(p,{len:o.blLen,w:o.blW||9,c:o.c,fromY:top-2,anim:o.anim||2,seed:(o.seed||1)+50})+'</g>';
+  function lsSaberstaff(p,o){ const H=o.hiltLen||46, w=o.w||13, h=w/2, top=-H/2, bot=H/2;
+    let s=defs(p,o.c,o.core,o.acc&&o.accCol);
+    s+=grip(p,top+3,bot-3,w,o.c,{acc:o.acc||'gd',led:o.c,kyber:true});
+    s+=neck(p,top+2,w,o.acc||'gd'); s+='<g transform="scale(1 -1)">'+neck(p,top+2,w,o.acc||'gd')+'</g>';
+    s+=emFlared(p,top,w,o.acc||'gd'); s+='<g transform="scale(1 -1)">'+emFlared(p,top,w,o.acc||'gd')+'</g>';
+    s+=blade(p,{len:o.blLen,w:o.blW||10,c:o.c,core:o.core,fromY:top-3,motes:o.motes,seed:o.seed});
+    s+='<g transform="scale(1 -1)">'+blade(p,{len:o.blLen,w:o.blW||10,c:o.c,core:o.core,fromY:top-3,motes:o.motes,seed:(o.seed||1)+50})+'</g>';
     return s; }
 
-  /* ---- şekilli enerji arketipleri ---- */
-  // shoto: kısa, geniş yaprak bıçak
-  function eShoto(p,o){ const c=o.c,L=o.blLen||84,w=o.blW||12,B=-2;
+  // çift saber (Ahsoka / Starkiller): iki çapraz tek-elli saber
+  function lsTwin(p,o){ const one=(s)=>swHilt(p,{...o,hiltLen:o.hiltLen||26,w:o.w||11})+blade(p,{len:o.blLen,w:o.blW||9,c:o.c,core:o.core,fromY:-(o.hiltLen||26)/2-3,seed:s});
+    return defs(p,o.c,o.core)+'<g transform="rotate(-11) translate(-5 2)">'+one(7)+'</g><g transform="rotate(11) translate(5 2)">'+one(40)+'</g>'; }
+
+  /* ---- şekilli enerji arketipleri (kabza = swHilt sapı) ---- */
+  function gripHandle(p,o){ // saber tutamağı (emitter yerine düz muhafız) — şekilli bıçaklar için
+    const H=o.hiltLen||26, w=o.w||12, top=-H/2, bot=H/2;
+    let s=pommel(p,bot,w,{acc:o.acc||'gd',gem:o.pommelGem});
+    s+=grip(p,top,bot-2,w,o.c,{acc:o.acc||'gd',led:o.c,box:o.box,kyber:o.kyber!==false});
+    if(o.guard==='cross') s+='<path d="M-'+(w*0.5+11)+' '+(top-1)+' Q0 '+(top-9)+' '+(w*0.5+11)+' '+(top-1)+' L'+(w*0.5+7)+' '+(top+6)+' Q0 '+(top)+' -'+(w*0.5+7)+' '+(top+6)+' Z" fill="url(#'+p+'gd2)" stroke="#1c1610" stroke-width="1.1"/>';
+    else if(o.guard==='ring') s+=emRing(p,top,w,o.acc||'gd',o.ringR||11);
+    else s+=ring(p,top,w*0.5+2,4,'url(#'+p+(o.acc||'gd')+')'); // basit muhafız bandı
+    return s;
+  }
+
+  // shoto: kısa geniş yaprak
+  function eShoto(p,o){ const c=o.c,L=o.blLen||84,w=o.blW||12,B=-15;
     const d='M -'+w+' '+B+' L -'+w+' '+(B-L*0.55).toFixed(1)+' Q -'+(w*0.66).toFixed(1)+' '+(B-L*0.93).toFixed(1)+' 0 '+(B-L)+' Q '+(w*0.66).toFixed(1)+' '+(B-L*0.93).toFixed(1)+' '+w+' '+(B-L*0.55).toFixed(1)+' L '+w+' '+B+' Z';
-    return eDefs(p,c,o.core)+fGrip(p,{gripLen:20,wrap:o.wrap||'#22382a',tsuba:9,gruna:o.gruna})
-      +eBlade(p,d,c,{core:'M0 '+B+' L0 '+(B-L+5).toFixed(1),coreW:w*0.6,edge:1.4}); }
+    return defs(p,c,o.core)+gripHandle(p,{c:c,hiltLen:24,w:11,acc:'ac',guard:'band',pommelGem:o.gruna})
+      +eBlade(p,d,c,{core:'M0 '+B+' L0 '+(B-L+5).toFixed(1),coreCol:o.core,coreW:w*0.6,edge:1.4}); }
 
-  // pala / scimitar: kavisli tek ağız
-  function eScimitar(p,o){ const c=o.c,L=o.blLen||150,w=o.blW||9,B=-2;
+  // pala / scimitar (Orange Current): kavisli tek ağız
+  function eScimitar(p,o){ const c=o.c,L=o.blLen||150,w=o.blW||9,B=-13;
     const d='M -'+(w*0.5)+' '+B
       +' Q '+(w*0.3).toFixed(1)+' '+(B-L*0.5).toFixed(1)+' '+(L*0.14).toFixed(1)+' '+(B-L*0.80).toFixed(1)
       +' Q '+(L*0.26).toFixed(1)+' '+(B-L).toFixed(1)+' '+(L*0.34).toFixed(1)+' '+(B-L*0.84).toFixed(1)
       +' Q '+(w*2.4).toFixed(1)+' '+(B-L*0.42).toFixed(1)+' '+(w*0.6).toFixed(1)+' '+B+' Z';
     const core='M 0 '+(B-2)+' Q '+(w*0.6).toFixed(1)+' '+(B-L*0.5).toFixed(1)+' '+(L*0.18).toFixed(1)+' '+(B-L*0.82).toFixed(1);
-    return eDefs(p,c,o.core)+fGrip(p,{gripLen:24,wrap:o.wrap||'#1f3a2a',gw:11,gruna:o.gruna})
-      +eBlade(p,d,c,{core:core,coreW:w*0.7,edge:1.3}); }
+    return defs(p,c,o.core)+gripHandle(p,{c:c,hiltLen:26,w:12,acc:'gd',guard:'cross',pommelGem:o.gruna})
+      +eBlade(p,d,c,{core:core,coreCol:o.core,coreW:w*0.7,edge:1.3}); }
 
-  // katana: hafif kavis, kissaki uç, yuvarlak tsuba + uzun sap
-  function eKatana(p,o){ const c=o.c,L=o.blLen||156,w=o.blW||8,B=-2,cx=L*0.10;
+  // katana (eğri SW vibe): hafif kavis + kissaki uç + halka tsuba
+  function eKatana(p,o){ const c=o.c,L=o.blLen||156,w=o.blW||8,B=-13,cx=L*0.10;
     const d='M -'+(w*0.45).toFixed(1)+' '+B
       +' Q '+(w*0.15).toFixed(1)+' '+(B-L*0.5).toFixed(1)+' '+cx.toFixed(1)+' '+(B-L*0.9).toFixed(1)
       +' L '+(cx+w*0.18).toFixed(1)+' '+(B-L).toFixed(1)
       +' L '+(cx-w*1.4).toFixed(1)+' '+(B-L*0.88).toFixed(1)
       +' Q '+(w*1.3).toFixed(1)+' '+(B-L*0.45).toFixed(1)+' '+(w*0.55).toFixed(1)+' '+B+' Z';
     const core='M '+(w*0.05).toFixed(1)+' '+(B-2)+' Q '+(w*0.7).toFixed(1)+' '+(B-L*0.5).toFixed(1)+' '+cx.toFixed(1)+' '+(B-L*0.86).toFixed(1);
-    return eDefs(p,c,o.core)+fGrip(p,{gripLen:30,wrap:o.wrap||'#1c2c3a',tsuba:10,gruna:o.gruna})
-      +eBlade(p,d,c,{core:core,coreW:w*0.62,edge:1.2}); }
+    return defs(p,c,o.core)+gripHandle(p,{c:c,hiltLen:30,w:11,acc:'gd',guard:'ring',ringR:10,pommelGem:o.gruna})
+      +eBlade(p,d,c,{core:core,coreCol:o.core,coreW:w*0.62,edge:1.2}); }
 
   // mızrak: uzun sap + kristal yaprak uç
-  function eSpear(p,o){ const c=o.c, sh=o.blLen||150, hd=o.head||50, hw=o.blW||9, HT=-2-sh, neck=HT+hd*0.42;
-    let s=eDefs(p,c,o.core)+pole(p,{top:neck,gruna:o.gruna});
-    s+='<rect x="-4.5" y="'+(neck-3).toFixed(1)+'" width="9" height="9" rx="2" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1"/>';
-    const d='M 0 '+neck.toFixed(1)+' Q '+hw+' '+(HT+hd*0.05).toFixed(1)+' '+(hw*0.5).toFixed(1)+' '+(HT-hd*0.2).toFixed(1)+' L 0 '+(HT-hd).toFixed(1)+' L -'+(hw*0.5).toFixed(1)+' '+(HT-hd*0.2).toFixed(1)+' Q -'+hw+' '+(HT+hd*0.05).toFixed(1)+' 0 '+neck.toFixed(1)+' Z';
-    s+=eBlade(p,d,c,{core:'M0 '+neck.toFixed(1)+' L0 '+(HT-hd*0.92).toFixed(1),coreW:hw*0.5,edge:1.2});
+  function eSpear(p,o){ const c=o.c, sh=o.blLen||150, hd=o.head||50, hw=o.blW||9, HT=-15-sh, neckY=HT+hd*0.42;
+    let s=defs(p,c,o.core)+staff(p,{top:neckY,c:c,acc:o.acc||'gd',wrap:o.wrap});
+    s+=ring(p,neckY,5,5,'url(#'+p+'st)')+ring(p,neckY,5.6,2,'url(#'+p+(o.acc||'gd')+')');
+    const d='M 0 '+neckY.toFixed(1)+' Q '+hw+' '+(HT+hd*0.05).toFixed(1)+' '+(hw*0.5).toFixed(1)+' '+(HT-hd*0.2).toFixed(1)+' L 0 '+(HT-hd).toFixed(1)+' L -'+(hw*0.5).toFixed(1)+' '+(HT-hd*0.2).toFixed(1)+' Q -'+hw+' '+(HT+hd*0.05).toFixed(1)+' 0 '+neckY.toFixed(1)+' Z';
+    s+=eBlade(p,d,c,{core:'M0 '+neckY.toFixed(1)+' L0 '+(HT-hd*0.92).toFixed(1),coreCol:o.core,coreW:hw*0.5,edge:1.2});
     return s; }
 
   // trident: uzun sap + 3 çatal
-  function eTrident(p,o){ const c=o.c, sh=o.blLen||150, pl=o.head||42, cw=o.spread||11, HT=-2-sh;
-    let s=eDefs(p,c,o.core)+pole(p,{top:HT,gruna:o.gruna});
-    s+='<rect x="-'+(cw+3)+'" y="'+(HT-2)+'" width="'+(2*cw+6)+'" height="5" rx="2" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1"/>';
+  function eTrident(p,o){ const c=o.c, sh=o.blLen||150, pl=o.head||42, cw=o.spread||11, HT=-15-sh;
+    let s=defs(p,c,o.core)+staff(p,{top:HT,c:c,acc:o.acc||'gd',wrap:o.wrap});
+    s+='<rect x="-'+(cw+3)+'" y="'+(HT-2)+'" width="'+(2*cw+6)+'" height="5" rx="2" fill="url(#'+p+'st)" stroke="#070a0e" stroke-width="1"/>';
     const prong=(x,len,bend)=>{ const tipx=x+bend; return 'M '+x+' '+HT+' Q '+(x-2.2)+' '+(HT-len*0.5).toFixed(1)+' '+tipx+' '+(HT-len).toFixed(1)+' Q '+(x+2.2)+' '+(HT-len*0.5).toFixed(1)+' '+x+' '+HT+' Z'; };
-    s+=eBlade(p,prong(0,pl*1.2,0),c,{core:'M0 '+HT+' L0 '+(HT-pl*1.12).toFixed(1),coreW:2.2,edge:1.1});
+    s+=eBlade(p,prong(0,pl*1.2,0),c,{core:'M0 '+HT+' L0 '+(HT-pl*1.12).toFixed(1),coreCol:o.core,coreW:2.2,edge:1.1});
     s+=eBlade(p,prong(-cw,pl,-2.5),c,{edge:1});
     s+=eBlade(p,prong(cw,pl,2.5),c,{edge:1});
     return s; }
 
-  // BUSTER: dev levha (referans) — metal yaka + cıvata + sırt çubuğu
-  function eBuster(p,o){ const c=o.c,L=o.blLen||182,w=o.blW||22,B=-2;
-    const d='M -'+w+' '+B+' L -'+w+' '+(B-L*0.80).toFixed(1)+' L -'+(w*0.14).toFixed(1)+' '+(B-L).toFixed(1)+' L '+w+' '+(B-L*0.58).toFixed(1)+' L '+w+' '+B+' Z';
-    let s=eDefs(p,c,o.core)+fGrip(p,{gripLen:30,wrap:o.wrap||'#2a1810',gw:0,gruna:o.gruna});
-    s+='<rect x="-'+(w+1)+'" y="'+(B-3)+'" width="'+(2*w+2)+'" height="8" rx="2" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1.2"/>';
-    s+='<circle cx="0" cy="'+(B+1)+'" r="4.2" fill="url(#'+p+'st)" stroke="#070a0e" stroke-width="1.1"/>';
-    s+=eBlade(p,d,c,{grad:'eb',edge:1.6,core:'M -'+(w*0.34).toFixed(1)+' '+(B-4)+' L -'+(w*0.34).toFixed(1)+' '+(B-L*0.78).toFixed(1),coreW:w*0.48});
-    s+='<path d="M '+(w-1.4).toFixed(1)+' '+(B-2)+' L '+(w-1.4).toFixed(1)+' '+(B-L*0.56).toFixed(1)+'" stroke="url(#'+p+'mt)" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+  // Darksaber (Nightblade): siyah düz pala — Mandalor ikonik şekli + krom kabza
+  function eDarksaber(p,o){ const c=o.c, L=o.blLen||150, w=o.blW||11, B=-15;
+    // hafif asimetrik, sivri uç (Darksaber silüeti)
+    const d='M -'+w+' '+B+' L -'+w+' '+(B-L*0.55).toFixed(1)+' L -'+(w*0.5).toFixed(1)+' '+(B-L*0.86).toFixed(1)+' L 0 '+(B-L)+' L '+(w*0.85).toFixed(1)+' '+(B-L*0.72).toFixed(1)+' L '+w+' '+(B-L*0.4).toFixed(1)+' L '+w+' '+B+' Z';
+    let s=defs(p,c,o.core,'#cfd8e6')+swHilt(p,{c:c,hiltLen:30,w:12,acc:'ac',emitter:'flared',led:c,pommelGem:o.gruna});
+    // kara plazma dolgu + beyaz/parlak kenar
+    s+='<path d="'+d+'" fill="'+c+'" opacity=".3" filter="url(#'+p+'b2)"/>';
+    s+='<path d="'+d+'" fill="#0a0c12"/>';
+    s+='<path d="'+d+'" fill="none" stroke="#ffffff" stroke-width="2.2" opacity=".95" filter="url(#'+p+'b1)"/>';
+    s+='<path d="M -'+(w*0.5).toFixed(1)+' '+(B-2)+' L 0 '+(B-L+6).toFixed(1)+'" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".5"/>';
     return s; }
 
-  // rünlü savaş kılıcı: geniş düz enerji kılıç + rünler + haç muhafız
-  function eRunedSword(p,o){ const c=o.c,L=o.blLen||150,w=o.blW||12,B=-2;
-    const d='M -'+w+' '+B+' L -'+w+' '+(B-L*0.72).toFixed(1)+' L 0 '+(B-L).toFixed(1)+' L '+w+' '+(B-L*0.72).toFixed(1)+' L '+w+' '+B+' Z';
-    let s=eDefs(p,c,o.core)+fGrip(p,{gripLen:26,wrap:o.wrap||'#2a1838',gw:15,gruna:o.gruna});
-    s+=eBlade(p,d,c,{core:'M0 '+B+' L0 '+(B-L+4).toFixed(1),coreW:w*0.5,edge:1.4});
+  // BUSTER / dev levha (Crimson Fury): metal yaka + cıvata
+  function eBuster(p,o){ const c=o.c,L=o.blLen||182,w=o.blW||22,B=-15;
+    const d='M -'+w+' '+B+' L -'+w+' '+(B-L*0.80).toFixed(1)+' L -'+(w*0.14).toFixed(1)+' '+(B-L).toFixed(1)+' L '+w+' '+(B-L*0.58).toFixed(1)+' L '+w+' '+B+' Z';
+    let s=defs(p,c,o.core)+gripHandle(p,{c:c,hiltLen:30,w:13,acc:'gd',guard:'band',pommelGem:o.gruna});
+    s+='<rect x="-'+(w+1)+'" y="'+(B-3)+'" width="'+(2*w+2)+'" height="8" rx="2" fill="url(#'+p+'st)" stroke="#070a0e" stroke-width="1.2"/>';
+    s+='<circle cx="0" cy="'+(B+1)+'" r="4.2" fill="url(#'+p+'gd2)" stroke="#070a0e" stroke-width="1.1"/>';
+    s+=eBlade(p,d,c,{grad:'eb',edge:1.6,core:'M -'+(w*0.34).toFixed(1)+' '+(B-4)+' L -'+(w*0.34).toFixed(1)+' '+(B-L*0.78).toFixed(1),coreCol:o.core,coreW:w*0.48});
+    s+='<path d="M '+(w-1.4).toFixed(1)+' '+(B-2)+' L '+(w-1.4).toFixed(1)+' '+(B-L*0.56).toFixed(1)+'" stroke="url(#'+p+'st)" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+    return s; }
+
+  // rünlü/geniş savaş kılıcı (Golden Hunter): geniş düz enerji kılıç + altın haç + rünler
+  function eRunedSword(p,o){ const c=o.c,L=o.blLen||150,w=o.blW||12,B=-15;
+    const d='M -'+w+' '+B+' L -'+w+' '+(B-L*0.72).toFixed(1)+' L 0 '+(B-L)+' L '+w+' '+(B-L*0.72).toFixed(1)+' L '+w+' '+B+' Z';
+    let s=defs(p,c,o.core)+gripHandle(p,{c:c,hiltLen:28,w:13,acc:'gd',guard:'cross',pommelGem:o.gruna});
+    s+=eBlade(p,d,c,{core:'M0 '+B+' L0 '+(B-L+4).toFixed(1),coreCol:o.core,coreW:w*0.5,edge:1.4});
     if(o.rune) for(let i=1;i<=3;i++){ const yy=(B-L*i/4.2).toFixed(1); s+='<rect x="-2.2" y="'+yy+'" width="4.4" height="4.4" rx=".8" fill="'+o.rune+'" opacity=".95"><animate attributeName="opacity" values=".95;.35;.95" dur="1.6s" begin="'+(i*0.2)+'s" repeatCount="indefinite"/></rect>'; }
     return s; }
 
-  // plazma savaş baltası: uzun sap + tek enerji ağız + tepe enerji çiviler
-  function eAxe(p,o){ const c=o.c, sh=o.blLen||120, R=o.head||46, HT=-2-sh, ay=HT+22;
-    let s=eDefs(p,c,o.core)+pole(p,{top:HT,gruna:o.gruna});
-    s+='<rect x="-4.5" y="'+(ay-2)+'" width="9" height="16" rx="2" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1"/>';
-    s+=eBlade(p,'M -2.5 '+ay+' L 0 '+(HT-3).toFixed(1)+' L 2.5 '+ay+' Z',c,{edge:1});
-    const bit='M 3 '+(ay+2)+' Q '+(R*1.05).toFixed(1)+' '+(ay-R*0.1).toFixed(1)+' '+(R*0.92).toFixed(1)+' '+(ay-R*0.74).toFixed(1)+' Q '+(R*0.45).toFixed(1)+' '+(ay-R*0.42).toFixed(1)+' 3 '+(ay-R*0.12).toFixed(1)+' Z';
-    s+=eBlade(p,bit,c,{grad:'ev',edge:1.3,core:'M 5 '+(ay-R*0.06).toFixed(1)+' Q '+(R*0.66).toFixed(1)+' '+(ay-R*0.32).toFixed(1)+' '+(R*0.9).toFixed(1)+' '+(ay-R*0.68).toFixed(1),coreW:2});
+  // dönen hilal kılıç (Spinning Crescent — Inquisitor): halka kabza + çift hilal
+  function eSpinner(p,o){ const c=o.c, R=o.head||74, B=-15;
+    let s=defs(p,c,o.core)+gripHandle(p,{c:c,hiltLen:30,w:12,acc:'dk',guard:'ring',ringR:13,pommelGem:o.gruna});
+    // büyük dış halka muhafız (Inquisitor spin ring)
+    s+='<g><animateTransform attributeName="transform" type="rotate" from="0 0 '+(B-R*0.9).toFixed(1)+'" to="360 0 '+(B-R*0.9).toFixed(1)+'" dur="'+(o.spin||3.4)+'s" repeatCount="indefinite"/>';
+    s+='<circle cx="0" cy="'+(B-R*0.9).toFixed(1)+'" r="'+(R*0.62).toFixed(1)+'" fill="none" stroke="url(#'+p+'st)" stroke-width="4"/>';
+    const cres=(rot)=>{ const cy=B-R*0.9; return '<g transform="rotate('+rot+' 0 '+cy.toFixed(1)+')"><path d="M 0 '+(cy-R*0.62).toFixed(1)+' Q '+(R*0.5).toFixed(1)+' '+(cy-R*0.5).toFixed(1)+' '+(R*0.5).toFixed(1)+' '+(cy-R*0.08).toFixed(1)+' Q '+(R*0.34).toFixed(1)+' '+(cy-R*0.32).toFixed(1)+' 0 '+(cy-R*0.5).toFixed(1)+' Z" fill="url(#'+p+'eb)" stroke="'+c+'" stroke-width=".5"/><path d="M 0 '+(cy-R*0.62).toFixed(1)+' Q '+(R*0.5).toFixed(1)+' '+(cy-R*0.5).toFixed(1)+' '+(R*0.5).toFixed(1)+' '+(cy-R*0.08).toFixed(1)+'" fill="none" stroke="#fff" stroke-width="1.2" opacity=".85"/></g>'; };
+    s+=cres(0)+cres(180);
+    s+='</g>';
+    // halka ile kabza bağlantısı
+    s+='<rect x="-2.5" y="'+(B-R*0.28).toFixed(1)+'" width="5" height="'+(R*0.28).toFixed(1)+'" rx="2" fill="url(#'+p+'st)" stroke="#04060a" stroke-width=".8"/>';
     return s; }
 
-  // çift ağızlı dev balta (altın metal gövde + enerji ağız)
-  function eGreataxe(p,o){ const c=o.c, sh=o.blLen||150, R=o.head||44, HT=-2-sh, ay=HT+26;
-    let s=eDefs(p,c,o.core)+pole(p,{top:HT,gruna:o.gruna});
+  // plazma savaş baltası (Forest War Axe vb.): uzun sap + tek enerji ağız
+  function eAxe(p,o){ const c=o.c, sh=o.blLen||120, R=o.head||46, HT=-15-sh, ay=HT+22;
+    let s=defs(p,c,o.core)+staff(p,{top:HT,c:c,acc:o.acc||'gd',wrap:o.wrap});
+    s+='<rect x="-4.5" y="'+(ay-2)+'" width="9" height="16" rx="2" fill="url(#'+p+'st)" stroke="#070a0e" stroke-width="1"/>';
+    s+=eBlade(p,'M -2.5 '+ay+' L 0 '+(HT-3).toFixed(1)+' L 2.5 '+ay+' Z',c,{edge:1});
+    const bit='M 3 '+(ay+2)+' Q '+(R*1.05).toFixed(1)+' '+(ay-R*0.1).toFixed(1)+' '+(R*0.92).toFixed(1)+' '+(ay-R*0.74).toFixed(1)+' Q '+(R*0.45).toFixed(1)+' '+(ay-R*0.42).toFixed(1)+' 3 '+(ay-R*0.12).toFixed(1)+' Z';
+    s+=eBlade(p,bit,c,{grad:'ev',edge:1.3,core:'M 5 '+(ay-R*0.06).toFixed(1)+' Q '+(R*0.66).toFixed(1)+' '+(ay-R*0.32).toFixed(1)+' '+(R*0.9).toFixed(1)+' '+(ay-R*0.68).toFixed(1),coreCol:o.core,coreW:2});
+    return s; }
+
+  // çift ağızlı dev balta (altın gövde + enerji ağız)
+  function eGreataxe(p,o){ const c=o.c, sh=o.blLen||150, R=o.head||44, HT=-15-sh, ay=HT+26;
+    let s=defs(p,c,o.core)+staff(p,{top:HT,c:c,acc:'gd',wrap:o.wrap});
     s+=eBlade(p,'M -3 '+ay+' L 0 '+(HT-5).toFixed(1)+' L 3 '+ay+' Z',c,{edge:1.1});
     const bit=(dir)=>'M '+(dir*5)+' '+(ay+1)+' Q '+(dir*R*1.05).toFixed(1)+' '+(ay-R*0.05).toFixed(1)+' '+(dir*R*0.95).toFixed(1)+' '+(ay-R*0.72).toFixed(1)+' Q '+(dir*R*0.5).toFixed(1)+' '+(ay-R*0.46).toFixed(1)+' '+(dir*5)+' '+(ay-R*0.16).toFixed(1)+' Z';
     s+='<rect x="-6" y="'+(ay-3)+'" width="12" height="20" rx="3" fill="url(#'+p+'gd2)" stroke="#3a2a0a" stroke-width="1.2"/>';
@@ -253,227 +349,193 @@
     s+=eEdge(p,'M -'+(R*0.95).toFixed(1)+' '+(ay-R*0.72).toFixed(1)+' Q -'+(R*1.16).toFixed(1)+' '+(ay-R*0.35).toFixed(1)+' -'+(R*1.0).toFixed(1)+' '+(ay-R*0.02).toFixed(1),c,2.4);
     return s; }
 
-  // NOVA GREATSWORD: dev çift ağızlı enerji pala + kanatlı enerji muhafız (ultimate)
-  function eNovaGreat(p,o){ const c=o.c, L=o.blLen||206, w=o.blW||20, B=-2, G=o.guard||30;
+  // EFSANE GREATSWORD (Eternal Dark): dev kara çift-ağız + kızıl çekirdek + kanatlı muhafız
+  function eNovaGreat(p,o){ const c=o.c, core=o.core, edge=o.edge2||'#ff3b4d', L=o.blLen||206, w=o.blW||20, B=-15, G=o.guard||30, dark=o.dark;
     const d='M -'+w+' '+B+' L -'+(w*0.94).toFixed(1)+' '+(B-L*0.5).toFixed(1)+' L -'+(w*0.52).toFixed(1)+' '+(B-L*0.86).toFixed(1)+' L 0 '+(B-L)+' L '+(w*0.52).toFixed(1)+' '+(B-L*0.86).toFixed(1)+' L '+(w*0.94).toFixed(1)+' '+(B-L*0.5).toFixed(1)+' L '+w+' '+B+' Z';
-    let s=eDefs(p,c,o.core)+fGrip(p,{gripLen:34,wrap:o.wrap||'#2a0e16',gw:0,gruna:o.gruna});
-    s+='<rect x="-'+(w+2)+'" y="'+(B-2)+'" width="'+(2*w+4)+'" height="7" rx="2" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1.1"/>';
-    s+='<path d="M-4 '+B+' L-'+G+' '+(B-7)+' L-'+(G-3)+' '+(B+4)+' L-4 '+(B+5)+' Z" fill="url(#'+p+'eb)" stroke="'+c+'" stroke-width=".6" opacity=".92"/>';
-    s+='<path d="M4 '+B+' L'+G+' '+(B-7)+' L'+(G-3)+' '+(B+4)+' L4 '+(B+5)+' Z" fill="url(#'+p+'eb)" stroke="'+c+'" stroke-width=".6" opacity=".92"/>';
-    s+=eBlade(p,d,c,{grad:'ev',edge:1.7,core:'M0 '+(B-5)+' L0 '+(B-L+6).toFixed(1),coreW:w*0.4});
-    s+=eEdge(p,'M -'+(w*0.94).toFixed(1)+' '+(B-4)+' L -'+(w*0.52).toFixed(1)+' '+(B-L*0.86).toFixed(1)+' L 0 '+(B-L+4).toFixed(1),c,1.5);
-    s+=eEdge(p,'M '+(w*0.94).toFixed(1)+' '+(B-4)+' L '+(w*0.52).toFixed(1)+' '+(B-L*0.86).toFixed(1)+' L 0 '+(B-L+4).toFixed(1),c,1.5);
+    let s=defs(p,c,core,edge)+gripHandle(p,{c:edge,hiltLen:34,w:14,acc:'ac',guard:'band',pommelGem:edge});
+    // kanatlı enerji muhafız
+    s+='<path d="M-4 '+B+' L-'+G+' '+(B-7)+' L-'+(G-3)+' '+(B+4)+' L-4 '+(B+5)+' Z" fill="url(#'+p+'ac2)" stroke="'+edge+'" stroke-width=".6" opacity=".95"/>';
+    s+='<path d="M4 '+B+' L'+G+' '+(B-7)+' L'+(G-3)+' '+(B+4)+' L4 '+(B+5)+' Z" fill="url(#'+p+'ac2)" stroke="'+edge+'" stroke-width=".6" opacity=".95"/>';
+    if(dark){
+      s+='<path d="'+d+'" fill="'+edge+'" opacity=".34" filter="url(#'+p+'b2)"/>';
+      s+='<path d="'+d+'" fill="#1a0610"/>';
+      s+='<path d="'+d+'" fill="'+edge+'" opacity=".16"/>';
+      s+='<path d="'+d+'" fill="none" stroke="'+edge+'" stroke-width="2.4" opacity=".95" filter="url(#'+p+'b1)"/>';
+      s+='<path d="M0 '+(B-5)+' L0 '+(B-L+6).toFixed(1)+'" stroke="'+edge+'" stroke-width="2" stroke-linecap="round" opacity=".85"><animate attributeName="opacity" values=".85;.5;.85" dur="1.4s" repeatCount="indefinite"/></path>';
+    } else {
+      s+=eBlade(p,d,c,{grad:'ev',edge:1.7,core:'M0 '+(B-5)+' L0 '+(B-L+6).toFixed(1),coreCol:core,coreW:w*0.4});
+    }
     return s; }
 
-  // ikiz hançer: çapraz iki kısa hançer
-  function eTwinDagger(p,o){ const c=o.c, L=o.blLen||96, w=o.blW||9, B=-2;
+  // ikiz hançer
+  function eTwinDagger(p,o){ const c=o.c, L=o.blLen||96, w=o.blW||9, B=-12;
     const d='M -'+w+' '+B+' L -'+(w*0.7).toFixed(1)+' '+(B-L*0.6).toFixed(1)+' L 0 '+(B-L)+' L '+(w*0.7).toFixed(1)+' '+(B-L*0.6).toFixed(1)+' L '+w+' '+B+' Z';
-    const one=()=>fGrip(p,{gripLen:16,wrap:o.wrap||'#1c1238',gw:10,gruna:o.gruna})+eBlade(p,d,c,{core:'M0 '+B+' L0 '+(B-L+3).toFixed(1),coreW:w*0.5,edge:1.3});
-    return eDefs(p,c,o.core)+'<g transform="rotate(-10) translate(-4 2)">'+one()+'</g><g transform="rotate(10) translate(4 2)">'+one()+'</g>'; }
+    const one=()=>gripHandle(p,{c:c,hiltLen:18,w:10,acc:'ac',guard:'cross',kyber:false})+eBlade(p,d,c,{core:'M0 '+B+' L0 '+(B-L+3).toFixed(1),coreCol:o.core,coreW:w*0.5,edge:1.3});
+    return defs(p,c,o.core)+'<g transform="rotate(-10) translate(-4 2)">'+one()+'</g><g transform="rotate(10) translate(4 2)">'+one()+'</g>'; }
 
-  // tırpan (yeniden tasarım): metal sap + boyun + dolgun süpüren enerji hilal
-  function eScythe(p,o){ const c=o.c, R=o.head||78, shaft=o.shaft||112, HT=-2-shaft, ex=R*0.30, ey=HT-R*0.16;
-    let s=eDefs(p,c,o.core)+pole(p,{top:HT,gruna:o.gruna});
-    s+='<path d="M0 '+HT+' Q '+(R*0.28).toFixed(1)+' '+(HT-3)+' '+ex.toFixed(1)+' '+ey.toFixed(1)+'" stroke="url(#'+p+'mt)" stroke-width="4.5" fill="none" stroke-linecap="round"/>';
-    s+='<circle cx="0" cy="'+HT+'" r="4.5" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1.1"/>';
+  // tırpan: metal sap + boyun + süpüren enerji hilal
+  function eScythe(p,o){ const c=o.c, R=o.head||78, shaft=o.shaft||112, HT=-15-shaft, ex=R*0.30, ey=HT-R*0.16;
+    let s=defs(p,c,o.core)+staff(p,{top:HT,c:c,acc:o.acc||'gd',wrap:o.wrap});
+    s+='<path d="M0 '+HT+' Q '+(R*0.28).toFixed(1)+' '+(HT-3)+' '+ex.toFixed(1)+' '+ey.toFixed(1)+'" stroke="url(#'+p+'st)" stroke-width="4.5" fill="none" stroke-linecap="round"/>';
+    s+='<circle cx="0" cy="'+HT+'" r="4.5" fill="url(#'+p+'st)" stroke="#070a0e" stroke-width="1.1"/>';
     const d='M '+ex.toFixed(1)+' '+ey.toFixed(1)
       +' Q '+(R*0.95).toFixed(1)+' '+(ey-R*0.2).toFixed(1)+' '+(R*0.92).toFixed(1)+' '+(ey-R*0.66).toFixed(1)
       +' Q '+(R*0.86).toFixed(1)+' '+(ey-R*0.92).toFixed(1)+' '+(R*0.55).toFixed(1)+' '+(ey-R*0.98).toFixed(1)
       +' Q '+(R*0.7).toFixed(1)+' '+(ey-R*0.5).toFixed(1)+' '+(ex+2).toFixed(1)+' '+(ey-R*0.06).toFixed(1)+' Z';
-    s+=eBlade(p,d,c,{grad:'ev',edge:1.3,core:'M '+(ex+2).toFixed(1)+' '+(ey-R*0.04).toFixed(1)+' Q '+(R*0.62).toFixed(1)+' '+(ey-R*0.42).toFixed(1)+' '+(R*0.52).toFixed(1)+' '+(ey-R*0.9).toFixed(1),coreW:2.4});
+    s+=eBlade(p,d,c,{grad:'ev',edge:1.3,core:'M '+(ex+2).toFixed(1)+' '+(ey-R*0.04).toFixed(1)+' Q '+(R*0.62).toFixed(1)+' '+(ey-R*0.42).toFixed(1)+' '+(R*0.52).toFixed(1)+' '+(ey-R*0.9).toFixed(1),coreCol:o.core,coreW:2.4});
     if(o.blackhole){ const bx=(R*0.55).toFixed(1), by=(ey-R*0.98).toFixed(1);
       s+='<g transform="translate('+bx+' '+by+')"><circle r="7" fill="#08040f"/><circle r="7" fill="none" stroke="'+c+'" stroke-width="2"><animate attributeName="r" values="7;11;7" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;.2;.9" dur="2s" repeatCount="indefinite"/></circle><circle r="4" fill="none" stroke="#fff" stroke-width="1"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="3s" repeatCount="indefinite"/></circle></g>'; }
     return s; }
 
-  // ortalı + çapraz kart yerleşimi
+  // çekiç: metal sap + enerji çekirdekli dev başlık
+  function eHammer(p,o){ const c=o.c, sh=o.blLen||120, w=o.blW||22, HT=-15-sh, hy=HT+18;
+    let s=defs(p,c,o.core)+staff(p,{top:HT,c:c,acc:'gd',wrap:o.wrap});
+    s+='<rect x="-'+(w+10)+'" y="'+(hy-15)+'" width="'+(2*w+20)+'" height="30" rx="6" fill="url(#'+p+'st)" stroke="#0c0e16" stroke-width="1.6"/>';
+    s+='<rect x="-'+(w+10)+'" y="'+(hy-15)+'" width="8" height="30" fill="#fff" opacity=".18"/>';
+    s+='<rect x="-'+(w+3)+'" y="'+(hy-9)+'" width="'+(2*w+6)+'" height="18" rx="3" fill="#0c1016"/>';
+    s+='<circle cx="0" cy="'+hy+'" r="8" fill="url(#'+p+'rg)"/><circle cx="0" cy="'+hy+'" r="4.6" fill="'+c+'" filter="url(#'+p+'b1)"><animate attributeName="r" values="4.6;3;4.6" dur="1.3s" repeatCount="indefinite"/></circle>';
+    s+='<rect x="-'+(w+11)+'" y="'+(hy-8)+'" width="3" height="3" fill="url(#'+p+'gd)"/><rect x="'+(w+8)+'" y="'+(hy+5)+'" width="3" height="3" fill="url(#'+p+'gd)"/>';
+    return s; }
+
+  // glaive: uzun sap + süpüren enerji ağız (Phoenix)
+  function eGlaive(p,o){ const c=o.c, sh=o.blLen||150, L=o.head||90, w=o.blW||18, HT=-15-sh;
+    let s=defs(p,c,o.core)+staff(p,{top:HT,c:c,acc:'gd',wrap:o.wrap});
+    s+='<rect x="-5" y="'+(HT-4)+'" width="10" height="12" rx="3" fill="url(#'+p+'st)" stroke="#0c0e16" stroke-width="1"/>';
+    const d='M-2 '+(HT-2)+' Q-'+(w-2)+' '+(HT-L*0.22).toFixed(1)+' -1 '+(HT-L*0.5).toFixed(1)+' Q'+(w+10)+' '+(HT-L*0.46).toFixed(1)+' '+(w+6)+' '+(HT-L*0.14).toFixed(1)+' Q'+w+' '+(HT-L*0.16).toFixed(1)+' 2 '+(HT-2)+' Z';
+    s+=eBlade(p,d,c,{grad:'ev',edge:1.4,core:'M0 '+(HT-6)+' Q4 '+(HT-L*0.28).toFixed(1)+' -1 '+(HT-L*0.46).toFixed(1),coreCol:o.core,coreW:2.2});
+    return s; }
+
+  /* ===================== KART YERLEŞİMİ ===================== */
   function lsCard(p, drawFn, span, rot){
     const cy=(span.top+span.bottom)/2, H=span.bottom-span.top, s=(118/H);
     rot=(rot==null?-30:rot);
     return '<g transform="translate(200 70) rotate('+rot+') scale('+s.toFixed(3)+')"><g transform="translate(0 '+(-cy).toFixed(1)+')">'+drawFn(p)+'</g></g>';
   }
-
-  /* ===================== KORUNAN DÖVME ŞEKİLLER (çekiç/glaive/ikiz) ===================== */
-  function wdefs(p, c, core){
-    return '<defs>'
-      + '<linearGradient id="'+p+'bl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="'+c+'" stop-opacity=".5"/><stop offset=".5" stop-color="'+(core||'#ffffff')+'"/><stop offset="1" stop-color="'+c+'"/></linearGradient>'
-      + '<linearGradient id="'+p+'mt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfd6e2"/><stop offset=".5" stop-color="#5a6272"/><stop offset="1" stop-color="#2a303c"/></linearGradient>'
-      + '<linearGradient id="'+p+'hf" x1="-1" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0e1016"/><stop offset=".5" stop-color="#39414e"/><stop offset="1" stop-color="#0b0d12"/></linearGradient>'
-      + '<linearGradient id="'+p+'gd2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset=".5" stop-color="#b8862a"/><stop offset="1" stop-color="#5a3e10"/></linearGradient>'
-      + A.energy(p+'au', c, '#ffffff') + A.bloom(p+'bl2', 3) + A.bloom(p+'bl1', 1.6)
-      + '</defs>';
-  }
-  function grip(p, len, wrapCol, pomCol, runes){
-    let g='<rect x="-3.4" y="0" width="6.8" height="'+len+'" rx="2.2" fill="'+(wrapCol||'#3a2e22')+'" stroke="#1c1610" stroke-width="1"/>';
-    for(let i=6;i<len-4;i+=6) g+='<path d="M-3.4 '+i+' l6.8 2" stroke="#1c1610" stroke-width="1.2" opacity=".6"/>';
-    if(runes) for(let i=8;i<len-6;i+=10) g+='<rect x="-1.4" y="'+i+'" width="2.8" height="2.8" fill="'+runes+'" opacity=".85"><animate attributeName="opacity" values=".85;.3;.85" dur="1.6s" begin="'+(i*0.05).toFixed(1)+'s" repeatCount="indefinite"/></rect>';
-    g+='<ellipse cx="0" cy="'+(len+3)+'" rx="6.5" ry="6.5" fill="url(#'+p+'gd2)" stroke="#1c1610" stroke-width="1"/>';
-    if(pomCol) g+='<circle cx="0" cy="'+(len+3)+'" r="3" fill="'+pomCol+'"><animate attributeName="opacity" values="1;.5;1" dur="1.8s" repeatCount="indefinite"/></circle>';
-    return g;
-  }
-  function haft(p, topY, rune){
-    const total = 18 - topY;
-    let s='<rect x="-3.6" y="'+topY+'" width="7.2" height="'+total.toFixed(1)+'" rx="3" fill="url(#'+p+'hf)" stroke="#070a0e" stroke-width="1"/>'
-      +'<rect x="-3.4" y="'+topY+'" width="2.2" height="'+total.toFixed(1)+'" fill="#fff" opacity=".06"/>';
-    for(let y=topY+16; y<8; y+=30){
-      s+='<rect x="-5.2" y="'+y.toFixed(1)+'" width="10.4" height="5.2" rx="2" fill="#262b35" stroke="#070a0e" stroke-width=".9"/>';
-      if(rune) s+='<rect x="-1.3" y="'+(y+1.4).toFixed(1)+'" width="2.6" height="2.6" rx=".6" fill="'+rune+'"><animate attributeName="opacity" values="1;.3;1" dur="1.8s" begin="'+(Math.abs(y)*0.012).toFixed(2)+'s" repeatCount="indefinite"/></rect>';
-    }
-    s+='<path d="M-4.5 12 L0 24 L4.5 12 Z" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1"/>';
-    return s;
-  }
-  function aura(p, len, w, c, lvl){
-    if(!lvl) return '';
-    let s='';
-    if(lvl>=1) s+='<path d="M0 0 L-'+(w+3)+' -'+(len*0.4)+' L0 -'+len+' L'+(w+3)+' -'+(len*0.4)+' Z" fill="'+c+'" opacity=".22" filter="url(#'+p+'bl2)"/>';
-    if(lvl>=2) s+='<ellipse cx="0" cy="-'+(len*0.6)+'" rx="'+(w+10)+'" ry="'+(len*0.55)+'" fill="url(#'+p+'au)" opacity=".38"/>';
-    if(lvl>=3){ const r=rng(len*7); for(let i=0;i<14;i++){ const yy=(r()*len).toFixed(0), xx=((r()-0.5)*w*3).toFixed(0), d=(1.4+r()*1.6).toFixed(1);
-      s+='<circle cx="'+xx+'" cy="-'+yy+'" r="'+(0.8+r()*1.4).toFixed(2)+'" fill="'+(r()<0.5?c:'#ffffff')+'"><animate attributeName="cy" values="-'+yy+';-'+(parseFloat(yy)+30).toFixed(0)+'" dur="'+d+'s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;0" dur="'+d+'s" repeatCount="indefinite"/></circle>'; } }
-    return s;
-  }
-  function bTwin(p,c,len,w){ return ''
-    +'<g transform="rotate(-9)">'+bSword(p,c,len,w)+'</g>'
-    +'<g transform="rotate(9) translate(8 4)">'+bSword(p,c,len*0.92,w*0.85)+'</g>'; }
-  function bSword(p,c,len,w){ return ''
-    +'<path d="M-'+w+' -14 L0 -'+len+' L'+w+' -14 L'+(w-2)+' -2 L-'+(w-2)+' -2 Z" fill="url(#'+p+'bl)" stroke="#0c0e16" stroke-width="1.4"/>'
-    +'<path d="M0 -16 L0 -'+(len-6)+'" stroke="#fff" stroke-width="1.4" opacity=".7"/>'
-    +'<path d="M-'+w+' -14 L-1.5 -'+(len-10)+' L-1.5 -14 Z" fill="#fff" opacity=".18"/>'; }
-  function bGlaive(p,c,len,w,rune){ const topY=-(len*0.5);
-    return haft(p,topY,rune)
-      +'<g transform="translate(0 '+topY+')"><rect x="-5" y="-4" width="10" height="12" rx="3" fill="url(#'+p+'mt)" stroke="#0c0e16" stroke-width="1"/>'
-      +'<g filter="url(#'+p+'bl1)">'
-      +'<path d="M-2 -2 Q-'+(w-2)+' -'+(len*0.22)+' -1 -'+(len*0.5)+' Q'+(w+10)+' -'+(len*0.46)+' '+(w+6)+' -'+(len*0.14)+' Q'+w+' -'+(len*0.16)+' 2 -2 Z" fill="url(#'+p+'bl)" stroke="#0c0e16" stroke-width="1.3"/>'
-      +'<path d="M-1 -'+(len*0.46)+' Q'+(w+4)+' -'+(len*0.42)+' '+(w+2)+' -'+(len*0.16)+'" stroke="#fff" stroke-width="1.6" fill="none" opacity=".8"/>'
-      +'<path d="M0 -6 Q4 -'+(len*0.28)+' -1 -'+(len*0.46)+'" stroke="#fff" stroke-width="1" fill="none" opacity=".5"/>'
-      +'</g></g>'; }
-  function bHammer(p,c,len,w,rune){ const topY=-(len*0.62);
-    let s='<rect x="-4.6" y="'+topY+'" width="9.2" height="'+(18-topY).toFixed(1)+'" rx="3.5" fill="url(#'+p+'hf)" stroke="#070a0e" stroke-width="1"/>';
-    for(let y=topY+18; y<8; y+=30) s+='<rect x="-6" y="'+y.toFixed(1)+'" width="12" height="5.4" rx="2" fill="#262b35" stroke="#070a0e" stroke-width=".9"/>'+(rune?'<rect x="-1.4" y="'+(y+1.4).toFixed(1)+'" width="2.8" height="2.8" fill="'+rune+'"><animate attributeName="opacity" values="1;.3;1" dur="1.8s" repeatCount="indefinite"/></rect>':'');
-    s+='<path d="M-5 12 L0 24 L5 12 Z" fill="url(#'+p+'mt)" stroke="#070a0e" stroke-width="1"/>';
-    s+='<g transform="translate(0 '+topY+')">'
-      +'<rect x="-'+(w+12)+'" y="-16" width="'+(w*2+24)+'" height="32" rx="6" fill="url(#'+p+'mt)" stroke="#0c0e16" stroke-width="1.6"/>'
-      +'<rect x="-'+(w+12)+'" y="-16" width="9" height="32" fill="#fff" opacity=".16"/>'
-      +'<rect x="-'+(w+4)+'" y="-10" width="'+(w*2+8)+'" height="20" rx="3" fill="#0c1016"/>'
-      +'<circle cx="0" cy="0" r="8" fill="url(#'+p+'au)"/><circle cx="0" cy="0" r="4.6" fill="'+c+'" filter="url(#'+p+'bl1)"><animate attributeName="r" values="4.6;3;4.6" dur="1.3s" repeatCount="indefinite"/></circle>'
-      +(rune?'<rect x="-'+(w+2)+'" y="-7" width="3" height="3" fill="'+rune+'"/><rect x="'+(w-1)+'" y="4" width="3" height="3" fill="'+rune+'"/>':'')
-      +'</g>';
-    return s; }
-  function gem(p,col){ return '<circle cx="0" cy="-1" r="3.4" fill="'+col+'" stroke="#fff" stroke-width=".6"><animate attributeName="opacity" values="1;.5;1" dur="1.6s" repeatCount="indefinite"/></circle>'; }
-  function frame(p, bgStr, c, core, shapeFn, cfg){
-    const len=cfg.len, w=cfg.w, gl=cfg.gl||44, rot=cfg.rot!=null?cfg.rot:-30;
-    let inner = aura(p,len,w,c,cfg.aura);
-    if(!cfg.polearm){
-      inner += grip(p, gl, cfg.wrap, cfg.pom, cfg.gruna)
-        + (cfg.guard!==false ? '<path d="M-'+(cfg.gw||14)+' -2 Q0 -10 '+(cfg.gw||14)+' -2 L'+((cfg.gw||14)-3)+' 6 Q0 0 -'+((cfg.gw||14)-3)+' 6 Z" fill="url(#'+p+'gd2)" stroke="#1c1610" stroke-width="1.2"/>' : '')
-        + (cfg.glowBlade===false ? shapeFn(p,c,len,w,cfg.gruna) : '<g filter="url(#'+p+'bl1)">'+shapeFn(p,c,len,w,cfg.gruna)+'</g>');
-    } else { inner += shapeFn(p,c,len,w,cfg.gruna); }
-    inner += (cfg.extra?cfg.extra(p,len,w,c):'');
-    const topAbs = cfg.polearm? len*1.04 : len+14, botAbs = cfg.polearm? 26 : gl+10;
-    const cy=(-topAbs+botAbs)/2, H=topAbs+botAbs, s=118/H;
-    return bgStr + wdefs(p,c,core) + '<g transform="translate(200 70) rotate('+rot+') scale('+s.toFixed(3)+')"><g transform="translate(0 '+(-cy).toFixed(1)+')">'+inner+'</g></g>';
-  }
-
-  /* ===================== 20 SİLAH ===================== */
   const sp=(top,bottom)=>({top:top,bottom:bottom});
 
-  window.NB2_WEAPONS = [
-    // —— SIRADAN ——
-    {n:'Apprentice Light Blade', tier:'Common', power:1, c:'#4db8ff', fx:'+8% tap damage',
-     build:p=>bg(p,'#2e6ad8','#10203a',{glow:.32,stars:1})+lsCard(p,q=>lsSaber(q,{c:'#4db8ff',core:'#eaf6ff',blLen:150,blW:10,hiltLen:30,emitter:'flared',led:'#9fd8ff',anim:1,seed:11}),sp(-166,22),-30)},
-    {n:'Sentinel Saber', tier:'Common', power:2, c:'#6ad0ff', fx:'+4% crit chance',
-     build:p=>bg(p,'#357fd8','#10203a',{glow:.34,stars:2})+lsCard(p,q=>lsTsuba(q,{c:'#6ad0ff',core:'#ffffff',blLen:168,blW:11,hiltLen:32,tsuba:13,ornate:1,accent:'gd',emitter:'flared',led:'#6ad0ff',anim:1,seed:22}),sp(-186,24),-30)},
-    // —— GELİŞMİŞ ——
-    {n:'Verdant Shoto', tier:'Advanced', power:3, c:'#54e08a', fx:'+8% attack speed',
-     build:p=>bg(p,'#2ea86a','#16301f',{glow:.32})+lsCard(p,q=>eShoto(q,{c:'#54e08a',core:'#eafff0',blLen:84,blW:12,gruna:'#aaffc4'}),sp(-92,30),-28)},
-    {n:'Forest War Axe', tier:'Advanced', power:4, c:'#7bffb6', fx:'+10% area (shock) damage',
-     build:p=>bg(p,'#2ea86a','#16301f',{glow:.34})+lsCard(p,q=>eAxe(q,{c:'#7bffb6',core:'#f2fff6',blLen:120,head:46,gruna:'#aef0c8'}),sp(-128,26),-26)},
-    {n:'Emerald Scimitar', tier:'Advanced', power:5, c:'#54e08a', fx:'Bleed: 20% of tap damage over 3s',
-     build:p=>bg(p,'#2ea86a','#16301f',{glow:.36,embers:5,ember:'#7dffb0'})+lsCard(p,q=>eScimitar(q,{c:'#54e08a',core:'#eafff0',blLen:150,blW:9,gruna:'#aef0c8'}),sp(-158,30),-30)},
-    // —— NADİR ——
-    {n:'Frost Spear', tier:'Rare', power:6, c:'#8fc6ff', fx:'8% stun chance',
-     build:p=>bg(p,'#3a7ad8','#142a4a',{glow:.36,stars:6})+lsCard(p,q=>eSpear(q,{c:'#8fc6ff',core:'#eaf4ff',blLen:150,head:50,blW:9,gruna:'#bfe0ff'}),sp(-208,28),-32)},
-    {n:'Ocean Katana', tier:'Rare', power:7, c:'#7fc8ff', fx:'+12% passive DPS',
-     build:p=>bg(p,'#2e8ad8','#142a4a',{glow:.38,stars:7})+lsCard(p,q=>eKatana(q,{c:'#7fc8ff',core:'#ffffff',blLen:158,blW:8,gruna:'#bfe6ff'}),sp(-166,32),-30)},
-    {n:'Storm Crossguard Saber', tier:'Rare', power:8, c:'#6ad0ff', fx:'+12% ally hero damage',
-     build:p=>bg(p,'#3a6ad8','#101e3a',{glow:.4,stars:8})+lsCard(p,q=>lsCross(q,{c:'#6ad0ff',core:'#ffffff',blLen:150,blW:10,hiltLen:30,w:12,qb:34,ornate:1,led:'#6ad0ff',seed:88}),sp(-167,21),-30)},
-    // —— EPİK ——
-    {n:'Amethyst Saberstaff', tier:'Epic', power:9, c:'#c89bff', fx:'Armor pierce: +10% all damage',
-     build:p=>bg(p,'#7a3ad8','#1e1040',{glow:.4,stars:9})+lsCard(p,q=>lsSaberstaff(q,{c:'#c89bff',core:'#ffffff',blLen:150,blW:9,hiltLen:44,w:11,ornate:2,accent:'gd',led:'#c89bff',anim:2,seed:99}),sp(-174,174),-20)},
-    {n:'Light Scythe: Void', tier:'Epic', power:10, c:'#b86bff', fx:'+12% area (harvest) damage',
-     build:p=>bg(p,'#6a2ad8','#16082e',{glow:.42,stars:10})+lsCard(p,q=>eScythe(q,{c:'#b86bff',core:'#f0e0ff',shaft:112,head:78,gruna:'#d9b8ff'}),sp(-198,28),-26)},
-    {n:'Runed War Sword', tier:'Epic', power:11, c:'#b86bff', fx:'Combo target −8',
-     build:p=>bg(p,'#7a2ad8','#1a0a30',{glow:.44,embers:11,ember:'#c89bff'})+lsCard(p,q=>eRunedSword(q,{c:'#b86bff',core:'#f0e0ff',blLen:148,blW:12,rune:'#e3ccff',gruna:'#e3ccff'}),sp(-156,30),-30)},
-    {n:'Violet Lightning Trident', tier:'Epic', power:12, c:'#c89bff', fx:'+35% crit damage',
-     build:p=>bg(p,'#7a3ad8','#1a0a36',{glow:.46,stars:12})+lsCard(p,q=>eTrident(q,{c:'#c89bff',core:'#ffffff',blLen:150,head:44,spread:11,gruna:'#d9b8ff'}),sp(-208,28),-32)},
-    // —— EFSANEVİ ——
-    {n:'Dragon Ember Blade', tier:'Legendary', power:13, c:'#ff7a3a', fx:'+30% boss damage · −12% attack speed',
-     build:p=>bg(p,'#d8521a','#2a0c08',{glow:.5,embers:13,ember:'#ff8a3a'})+lsCard(p,q=>eBuster(q,{c:'#ff7a3a',core:'#fff0c0',blLen:182,blW:22,gruna:'#ffcf6a'}),sp(-190,36),-30)},
-    {n:'Sunfire War Hammer', tier:'Legendary', power:14, c:'#ffb24a', fx:'+12% gold income',
-     build:p=>frame(p, bg(p,'#e0901a','#2a1a08',{glow:.5,embers:14,ember:'#ffd24a'}), '#ffd24a','#fff6d0', bHammer,
-       {len:188,w:22,aura:3,polearm:true,gruna:'#ffe9a0'})},
-    {n:'Phoenix Glaive', tier:'Legendary', power:15, c:'#ff7a2a', fx:'+18% Force XP gain',
-     build:p=>frame(p, bg(p,'#e0661a','#2a0e08',{glow:.54,embers:15,ember:'#ffae3a'}), '#ff9a3a','#fff0c0', bGlaive,
-       {len:206,w:18,aura:3,polearm:true,gruna:'#ffd24a',
-        extra:(p,len,w)=>A.rise(p+'fz',15,9,-w*2,w*2,-len,-len*0.3,'#ffae3a',1.6,1.6)})},
-    {n:'Golden Emperor Axe', tier:'Legendary', power:16, c:'#ffe07a', fx:'+15% area damage · +10% gold',
-     build:p=>bg(p,'#e0a81a','#2a1e08',{glow:.56,stars:16,embers:16,ember:'#ffe9a0'})+lsCard(p,q=>eGreataxe(q,{c:'#ffe07a',core:'#fffae0',blLen:150,head:44,gruna:'#fff0b8'}),sp(-160,28),-28)},
-    // —— MİTİK ——
-    {n:'Cosmic Twin Daggers', tier:'Mythic', power:17, c:'#c89bff', fx:'Double strike: left + right, 55% damage each',
-     build:p=>bg(p,'#7a4ad8','#0e0826',{glow:.6,stars:17})+lsCard(p,q=>eTwinDagger(q,{c:'#c89bff',core:'#ffffff',blLen:96,blW:9,gruna:'#ff9af0'}),sp(-104,26),-26)},
-    {n:'Starkiller Twin Blades', tier:'Mythic', power:18, c:'#ff3145', fx:'+18% attack speed (dual grip)',
-     build:p=>frame(p, bg(p,'#a02a5a','#1a0820',{glow:.6,stars:18,embers:18,ember:'#ff5a8a'}), '#ff5a7a','#ffffff', bTwin,
-       {len:170,w:11,gl:46,wrap:'#1e1020',aura:3,gw:16,gruna:'#ff9ab0'})},
-    {n:'Light Scythe: Black Hole', tier:'Mythic', power:19, c:'#9b6bff', fx:'+3% ALL stats',
-     build:p=>bg(p,'#5a3ad8','#080614',{glow:.6,stars:19})+lsCard(p,q=>eScythe(q,{c:'#9b6bff',core:'#ffffff',shaft:104,head:74,blackhole:true,gruna:'#c89bff'}),sp(-192,28),-26)},
-    {n:'NOVA SABER · Infinity', tier:'Mythic', power:20, c:'#ff3b4d', fx:'+4% ALL stats (peak)',
-     build:p=>bg(p,'#b83a6a','#0a0618',{glow:.7,stars:20,embers:20,ember:'#ff9af0'})+lsCard(p,q=>eNovaGreat(q,{c:'#ff3b4d',core:'#ffffff',blLen:212,blW:21,guard:32,gruna:'#ff9af0'}),sp(-220,40),-26)}
+  /* ===================== 20 SİLAH (renkler SWORDS ile birebir) ===================== */
+  // her giriş: draw fn (kanonik) + span (kart) + top (kahraman eli ölçeği)
+  const DEF = [
+    // 0 Sky Heirloom — ince eğitim saberi (temiz SW kabza)
+    {c:'#4db8ff',core:'#eaf6ff',tier:'Common',
+     draw:p=>lsSaber(p,{c:'#4db8ff',core:'#eaf6ff',blLen:150,blW:9,hiltLen:30,acc:'ac',emitter:'flared',led:'#9fd8ff',seed:11}),
+     span:sp(-168,20),top:-168, grip:'one'},
+    // 1 Crimson Tyrant — saldırgan kırmızı saber, pençe emitter
+    {c:'#ff4d5e',core:'#fff0f0',tier:'Common',
+     draw:p=>lsSaber(p,{c:'#ff4d5e',core:'#fff0f0',blLen:160,blW:10,hiltLen:32,acc:'gd',emitter:'claw',led:'#ff4d5e',seed:22}),
+     span:sp(-180,22),top:-180, grip:'one'},
+    // 2 Master's Green — bilge yeşil saber, halka muhafız
+    {c:'#54e08a',core:'#eafff0',tier:'Advanced',
+     draw:p=>lsSaber(p,{c:'#54e08a',core:'#eafff0',blLen:158,blW:10,hiltLen:32,acc:'gd',emitter:'ring',ringR:11,led:'#54e08a',seed:33}),
+     span:sp(-178,22),top:-178, grip:'one'},
+    // 3 Violet Verdict — uzun mor saber, electrum kabza + mücevher (Mace Windu)
+    {c:'#b86bff',core:'#f3e8ff',tier:'Advanced',
+     draw:p=>lsSaber(p,{c:'#b86bff',core:'#f3e8ff',blLen:176,blW:10,hiltLen:34,acc:'gd',emitter:'crown',crownGem:'#ffe6a0',pommelGem:'#b86bff',led:'#b86bff',motes:true,seed:44}),
+     span:sp(-198,24),top:-198, grip:'one'},
+    // 4 Cross Guard — çapraz saber, kararsız bıçak (Kylo Ren)
+    {c:'#ff3b30',core:'#fff0e8',tier:'Advanced',
+     draw:p=>lsCross(p,{c:'#ff3b30',core:'#fff0e8',blLen:152,blW:11,hiltLen:32,w:13,qb:34,acc:'dk',led:'#ff3b30',seed:55}),
+     span:sp(-170,22),top:-170, grip:'one'},
+    // 5 Twin White — çift beyaz saber (Ahsoka)
+    {c:'#f2f6ff',core:'#ffffff',tier:'Rare',
+     draw:p=>lsTwin(p,{c:'#f2f6ff',core:'#ffffff',blLen:128,blW:8,hiltLen:26,w:11,acc:'gd',seed:66}),
+     span:sp(-150,30),top:-150, grip:'twin'},
+    // 6 Cracked Ember — kararsız çatlak kızıl saber
+    {c:'#ff2d3e',core:'#fff0f0',tier:'Rare',
+     draw:p=>lsSaber(p,{c:'#ff2d3e',core:'#fff0f0',blLen:160,blW:11,hiltLen:30,acc:'ac',emitter:'flared',led:'#ff2d3e',crackle:true,seed:77}),
+     span:sp(-180,20),top:-180, grip:'one'},
+    // 7 Nightblade — DARKSABER (kara bıçak, krom kabza)
+    {c:'#cfd8e6',core:'#ffffff',tier:'Rare',
+     draw:p=>eDarksaber(p,{c:'#cfd8e6',core:'#ffffff',blLen:150,blW:11,gruna:'#9fd8ff'}),
+     span:sp(-176,22),top:-176, grip:'one'},
+    // 8 Orange Current — eğri turuncu saber (pala)
+    {c:'#ff8a3a',core:'#fff2e0',tier:'Epic',
+     draw:p=>eScimitar(p,{c:'#ff8a3a',core:'#fff2e0',blLen:150,blW:10,gruna:'#ffd2a8'}),
+     span:sp(-160,28),top:-160, grip:'one'},
+    // 9 Yellow Sentinel — altın sentinel saber, taç emitter
+    {c:'#ffd24a',core:'#fff8e0',tier:'Epic',
+     draw:p=>lsSaber(p,{c:'#ffd24a',core:'#fff8e0',blLen:166,blW:10,hiltLen:34,acc:'gd',emitter:'crown',crownGem:'#fff0b8',pommelGem:'#ffd24a',led:'#ffd24a',seed:99}),
+     span:sp(-188,24),top:-188, grip:'one'},
+    // 10 Spinning Crescent — dönen hilal kılıç (Inquisitor)
+    {c:'#ff4d5e',core:'#fff0f0',tier:'Epic',
+     draw:p=>eSpinner(p,{c:'#ff4d5e',core:'#fff0f0',head:78,spin:3.2,gruna:'#ffb3ba'}),
+     span:sp(-150,24),top:-150, grip:'two'},
+    // 11 Double Blue — çift uçlu staff (Maul, mavi)
+    {c:'#4db8ff',core:'#eaf6ff',tier:'Epic',
+     draw:p=>lsSaberstaff(p,{c:'#4db8ff',core:'#eaf6ff',blLen:148,blW:9,hiltLen:46,w:13,acc:'gd',led:'#4db8ff',motes:true,seed:111}),
+     span:sp(-174,174),top:-174, grip:'two'},
+    // 12 Dark Ancient — eğri kabzalı kızıl saber (Dooku)
+    {c:'#c41e2f',core:'#ffe8ea',tier:'Legendary',
+     draw:p=>lsCurved(p,{c:'#c41e2f',core:'#ffe8ea',blLen:170,blW:10,hiltLen:34,acc:'gd',led:'#c41e2f',seed:122}),
+     span:sp(-196,30),top:-196, grip:'one'},
+    // 13 Ancient Pale — ince soluk tapınak saberi, ornate kabza
+    {c:'#9fc6e8',core:'#f0f8ff',tier:'Legendary',
+     draw:p=>lsSaber(p,{c:'#9fc6e8',core:'#f0f8ff',blLen:160,blW:8,hiltLen:34,acc:'gd',emitter:'ring',ringR:12,pommelGem:'#9fc6e8',led:'#9fc6e8',seed:133}),
+     span:sp(-182,24),top:-182, grip:'one'},
+    // 14 Double-Edged Red — çift ağızlı kızıl staff
+    {c:'#ff4d5e',core:'#fff0f0',tier:'Legendary',
+     draw:p=>lsSaberstaff(p,{c:'#ff4d5e',core:'#fff0f0',blLen:150,blW:10,hiltLen:46,w:13,acc:'dk',led:'#ff4d5e',seed:144}),
+     span:sp(-176,176),top:-176, grip:'two'},
+    // 15 Golden Hunter — geniş altın savaş kılıcı + rünler
+    {c:'#ffd24a',core:'#fffae0',tier:'Legendary',
+     draw:p=>eRunedSword(p,{c:'#ffd24a',core:'#fffae0',blLen:152,blW:13,rune:'#fff0b8',gruna:'#ffe9a0'}),
+     span:sp(-168,28),top:-168, grip:'two'},
+    // 16 Crimson Fury — dev buster levha
+    {c:'#ff2438',core:'#fff0f0',tier:'Mythic',
+     draw:p=>eBuster(p,{c:'#ff2438',core:'#fff0f0',blLen:188,blW:22,gruna:'#ff9aa4'}),
+     span:sp(-196,30),top:-196, grip:'two'},
+    // 17 Exile Green — yıpranmış yeşil saber
+    {c:'#2e8b57',core:'#e8fff2',tier:'Mythic',
+     draw:p=>lsSaber(p,{c:'#2e8b57',core:'#e8fff2',blLen:160,blW:10,hiltLen:32,acc:'dk',emitter:'flared',dring:true,led:'#3fbf77',seed:155}),
+     span:sp(-180,22),top:-180, grip:'one'},
+    // 18 Holocron Blue — beam saber, holocron-tech (taç emitter)
+    {c:'#6ad4ff',core:'#f0fcff',tier:'Mythic',
+     draw:p=>lsSaber(p,{c:'#6ad4ff',core:'#f0fcff',blLen:182,blW:11,hiltLen:34,acc:'gd',emitter:'wing',pommelGem:'#6ad4ff',led:'#6ad4ff',motes:true,seed:166}),
+     span:sp(-204,24),top:-204, grip:'one'},
+    // 19 Eternal Dark — kara greatsword + kızıl çekirdek (ULTIMATE)
+    {c:'#1a0a10',core:'#ff6a78',tier:'Mythic',
+     draw:p=>eNovaGreat(p,{c:'#1a0a10',core:'#ff6a78',edge2:'#ff3b4d',blLen:208,blW:21,guard:32,dark:true}),
+     span:sp(-220,40),top:-220, grip:'two'}
   ];
+
+  // eğri kabzalı saber (Dooku) — gripHandle'a benzer ama kavisli sap
+  function lsCurved(p,o){ const H=o.hiltLen||34, w=o.w||12, h=w/2, top=-H/2, bot=H/2, c=o.c;
+    let s=defs(p,c,o.core,o.accCol);
+    // kavisli sap gövdesi
+    s+='<path d="M-'+h+' '+top+' Q-'+(h+5)+' 0 -'+(h-1)+' '+(bot+6)+' L'+(h+1)+' '+(bot+8)+' Q'+(h+2)+' 2 '+h+' '+top+' Z" fill="url(#'+p+'st)" stroke="#04060a" stroke-width="1"/>';
+    s+='<path d="M-'+(h-1)+' '+(top+1)+' Q-'+(h+4)+' 0 -'+(h-2)+' '+(bot+4)+'" stroke="#fff" stroke-width="1.4" fill="none" opacity=".25"/>';
+    for(let y=top+4;y<bot;y+=3.4) s+='<path d="M-'+(h+1)+' '+y.toFixed(1)+' q'+(w+2)+' .6 '+(w+2)+' 1.4" stroke="#0c1016" stroke-width="1.2" opacity=".55" fill="none"/>';
+    // alt kapak + mücevher
+    s+='<ellipse cx="'+(h*0.2)+'" cy="'+(bot+7)+'" rx="'+(h+1)+'" ry="2.6" fill="url(#'+p+(o.acc||'gd')+')" stroke="#04060a" stroke-width=".7"/>';
+    // kyber penceresi + LED
+    s+='<rect x="-1.6" y="'+(top+H*0.34).toFixed(1)+'" width="3.2" height="'+(H*0.3).toFixed(1)+'" rx="1.1" fill="'+c+'" filter="url(#'+p+'b1)"><animate attributeName="opacity" values=".95;.5;.95" dur="1.6s" repeatCount="indefinite"/></rect>';
+    s+=neck(p,top+1,w,o.acc||'gd');
+    // muhafız (eğri emitter — hafif yana eğik enerji ağız)
+    s+=emFlared(p,top,w,o.acc||'gd');
+    s+=blade(p,{len:o.blLen,w:o.blW||10,c:c,core:o.core,fromY:top-3,seed:o.seed});
+    return s;
+  }
+
+  // build() — galeri kartı (fallback) için arka plan + kanonik çizim
+  const TIER_BG = {Common:['#2e6ad8','#10203a'],Advanced:['#2ea86a','#16301f'],Rare:['#3a6ad8','#101e3a'],Epic:['#7a3ad8','#1a0a36'],Legendary:['#e0901a','#2a1a08'],Mythic:['#b83a6a','#0a0618']};
+  window.NB2_WEAPONS = DEF.map((d,i)=>{
+    const bgc=TIER_BG[d.tier]||['#3a6ad8','#101e3a'];
+    return { n:'Blade '+(i+1), tier:d.tier, power:i+1, c:d.c, fx:'',
+      build:p=>bg(p,bgc[0],bgc[1],{glow:.4,stars:i+3,embers:(d.tier==='Legendary'||d.tier==='Mythic')?(i+3):0,ember:d.c})
+        +lsCard(p,d.draw,d.span,d.grip==='two'&&d.span.bottom>100?-20:-30) };
+  });
 
   /* ===================== KAHRAMAN ELİNDEKİ SİLAH ===================== */
-  const HERO = [
-    {draw:p=>lsSaber(p,{c:'#4db8ff',core:'#eaf6ff',blLen:150,blW:10,hiltLen:30,emitter:'flared',led:'#9fd8ff',anim:1,seed:11}), top:-166},
-    {draw:p=>lsTsuba(p,{c:'#6ad0ff',core:'#ffffff',blLen:168,blW:11,hiltLen:32,tsuba:13,ornate:1,accent:'gd',emitter:'flared',led:'#6ad0ff',anim:1,seed:22}), top:-186},
-    {draw:p=>eShoto(p,{c:'#54e08a',core:'#eafff0',blLen:84,blW:12,gruna:'#aaffc4'}), top:-92, hand:9},
-    {draw:p=>eAxe(p,{c:'#7bffb6',core:'#f2fff6',blLen:120,head:46,gruna:'#aef0c8'}), top:-128},
-    {draw:p=>eScimitar(p,{c:'#54e08a',core:'#eafff0',blLen:150,blW:9,gruna:'#aef0c8'}), top:-158, hand:11},
-    {draw:p=>eSpear(p,{c:'#8fc6ff',core:'#eaf4ff',blLen:150,head:50,blW:9,gruna:'#bfe0ff'}), top:-208},
-    {draw:p=>eKatana(p,{c:'#7fc8ff',core:'#ffffff',blLen:158,blW:8,gruna:'#bfe6ff'}), top:-166, hand:14},
-    {draw:p=>lsCross(p,{c:'#6ad0ff',core:'#ffffff',blLen:150,blW:10,hiltLen:30,w:12,qb:34,ornate:1,led:'#6ad0ff',seed:88}), top:-167},
-    {draw:p=>lsSaberstaff(p,{c:'#c89bff',core:'#ffffff',blLen:150,blW:9,hiltLen:44,w:11,ornate:2,accent:'gd',led:'#c89bff',anim:2,seed:99}), top:-174},
-    {draw:p=>eScythe(p,{c:'#b86bff',core:'#f0e0ff',shaft:112,head:78,gruna:'#d9b8ff'}), top:-198},
-    {draw:p=>eRunedSword(p,{c:'#b86bff',core:'#f0e0ff',blLen:148,blW:12,rune:'#e3ccff',gruna:'#e3ccff'}), top:-156, hand:12},
-    {draw:p=>eTrident(p,{c:'#c89bff',core:'#ffffff',blLen:150,head:44,spread:11,gruna:'#d9b8ff'}), top:-208},
-    {draw:p=>eBuster(p,{c:'#ff7a3a',core:'#fff0c0',blLen:182,blW:22,gruna:'#ffcf6a'}), top:-190, hand:14},
-    {s:bHammer, c:'#ffd24a', core:'#fff6d0', len:188, w:22, pole:1, rune:'#ffe9a0'},
-    {s:bGlaive, c:'#ff9a3a', core:'#fff0c0', len:206, w:18, pole:1, rune:'#ffd24a'},
-    {draw:p=>eGreataxe(p,{c:'#ffe07a',core:'#fffae0',blLen:150,head:44,gruna:'#fff0b8'}), top:-160},
-    {draw:p=>eTwinDagger(p,{c:'#c89bff',core:'#ffffff',blLen:96,blW:9,gruna:'#ff9af0'}), top:-104, hand:6},
-    {s:bTwin,   c:'#ff5a7a', core:'#ffffff', len:170, w:11, gl:46, gw:16, wrap:'#1e1020', rune:'#ff9ab0'},
-    {draw:p=>eScythe(p,{c:'#9b6bff',core:'#ffffff',shaft:104,head:74,blackhole:true,gruna:'#c89bff'}), top:-192},
-    {draw:p=>eNovaGreat(p,{c:'#ff3b4d',core:'#ffffff',blLen:212,blW:21,guard:32,gruna:'#ff9af0'}), top:-220}
-  ];
-
-  /* kavrama tipi: 'one' tek el, 'two' iki el (uzun sap), 'twin' çift silah */
-  window.NB2_WEAPON_GRIP = ['one','one','one','two','one','two','one','one','one','two','one','two','two','two','two','two','twin','twin','two','two'];
+  window.NB2_WEAPON_GRIP = DEF.map(d=>d.grip);
 
   window.NB2_heroBlade = function(i, scale, uid){
-    const d = HERO[i] || HERO[0];
+    const d = DEF[i] || DEF[0];
     const p = 'nbh'+(uid||('i'+i))+'_';
     const pow = i+1;
-    const grip2 = (window.NB2_WEAPON_GRIP||[])[i]||'one';
-    const reach = grip2==='two' ? 1.5 : 1;   // iki elli silahlar ekranda daha uzun
-    let inner, top, hand=0;
-    if(d.draw){ inner = d.draw(p); top = d.top; hand = d.hand||0; }
-    else {
-      const gl = d.gl||42;
-      inner = wdefs(p, d.c, d.core)
-        + (d.pole ? d.s(p,d.c,d.len,d.w,d.rune)
-          : grip(p, gl, d.wrap||'#2a221a', null, d.rune)
-            + (d.gw ? '<path d="M-'+d.gw+' -2 Q0 -10 '+d.gw+' -2 L'+(d.gw-3)+' 6 Q0 0 -'+(d.gw-3)+' 6 Z" fill="url(#'+p+'gd2)" stroke="#1c1610" stroke-width="1.2"/>' : '')
-            + '<g filter="url(#'+p+'bl1)">'+d.s(p,d.c,d.len,d.w,d.rune)+'</g>');
-      top = -(d.len + (d.pole? d.len*0.04 : 14));
-      hand = d.pole ? 0 : gl*0.4;   // dövme kılıçlarda yumruk kabzanın ortasına otursun
-    }
+    const grip2 = d.grip;
+    const reach = grip2==='two' ? 1.5 : 1;
+    const top = d.top;
     const k = ((60 + pow*1.05)*reach/Math.abs(top)) * (scale||1);
-    return '<g transform="scale('+k.toFixed(3)+')"><g transform="translate(0 '+(-hand).toFixed(1)+')">'+inner+'</g></g>';
+    return '<g transform="scale('+k.toFixed(3)+')">'+d.draw(p)+'</g>';
   };
 })();

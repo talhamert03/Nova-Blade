@@ -19,7 +19,7 @@
       if(document.body.classList.contains('spaceMode')||document.body.classList.contains('worldBoss')) return;
       if(e.target.closest('#bossBtn,#luckyShip,#ultraWrap,.modal,.drawer')) return;
       if(typeof enemy==='undefined' || !enemy || enemy.hp<=0) return;
-      const c=enemyCenter();
+      const c=(typeof enemyHitCenter==='function')?enemyHitCenter():enemyCenter();
       const sw=(typeof sword==='function')?sword():null;
       const col=(sw&&sw.color==='rainbow')?'#fff':((sw&&sw.glow)||'#8fe9ff');
       const cmb=(typeof combo!=='undefined')?combo:0;
@@ -30,19 +30,12 @@
   }
 
   // sweeping enerji kesim yayı — combo ile büyür, yön değişir
-  let slashDir=1;
+  let slashDir=1, lastSlash=0;
   function bigSlash(x,y,col,cmb){
-    slashDir=-slashDir;
-    const scale=1+Math.min(cmb,60)/90;        // combo arttıkça yay büyür
-    const ang=(slashDir>0? -32: 28)+(Math.random()*16-8);
-    const d=document.createElement('div');
-    d.className='nbj-slash';
-    d.style.left=x+'px'; d.style.top=y+'px';
-    d.style.transform='translate(-50%,-50%) rotate('+ang+'deg) scale('+scale.toFixed(2)+')';
-    d.innerHTML='<svg width="150" height="150" viewBox="-75 -75 150 150">'
-      +'<path d="M-58 -26 Q0 -70 58 -22" fill="none" stroke="'+col+'" stroke-width="7" stroke-linecap="round" filter="drop-shadow(0 0 6px '+col+')"/>'
-      +'<path d="M-58 -26 Q0 -70 58 -22" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>';
-    fxRoot.appendChild(d); setTimeout(()=>d.remove(),300);
+    // KALDIRILDI (çift-slash): ana savurma yayı artık heroSwing()→saberArc() ile çiziliyor
+    // (filtresiz, düşmana ortalı, her modda görünür). Burada ikinci bir yay üretmek
+    // hem görsel olarak üst üste biniyor hem de gereksiz kompozit maliyeti ekliyordu.
+    return;
   }
 
   // combo aurası — kahraman çevresinde nabız atan halka (yüksek combo)

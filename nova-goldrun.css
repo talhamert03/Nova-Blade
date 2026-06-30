@@ -1,0 +1,59 @@
+/* ============================================================================
+   NOVA BLADE · GOLD RUN CSS — uçan kargo dronu + düşen/parçalanan sandık
+   ========================================================================== */
+#goldRunner{position:absolute; top:14%; width:90px; height:70px; z-index:14; padding:0;
+  background:none; border:none; cursor:pointer; pointer-events:auto;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+#goldRunner .grGlow{position:absolute; left:50%; top:54%; width:62px; height:42px; transform:translate(-50%,-50%);
+  border-radius:50%; background:radial-gradient(circle, rgba(255,210,90,.5), transparent 68%);
+  pointer-events:none; animation:grGlowP 1.3s ease-in-out infinite}
+@keyframes grGlowP{0%,100%{opacity:.55; transform:translate(-50%,-50%) scale(1)}50%{opacity:.9; transform:translate(-50%,-50%) scale(1.12)}}
+#goldRunner .grChest{transform-origin:45px 30px; animation:grSwing 1.4s ease-in-out infinite}
+@keyframes grSwing{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+#goldRunner .grHint{position:absolute; left:50%; bottom:-7px; transform:translateX(-50%);
+  font:900 9px/1 ui-monospace,monospace; letter-spacing:.06em; color:#2a1a00; background:#ffd24a;
+  padding:2px 7px; border-radius:7px; border:1.5px solid #7a4a14; white-space:nowrap;
+  box-shadow:0 1px 3px rgba(0,0,0,.4); animation:grHintP 1s ease-in-out infinite}
+@keyframes grHintP{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.12)}}
+#goldRunner.grTapped .grDrone{animation:grDroneAway .5s ease-in forwards}
+#goldRunner.grTapped .grChest,#goldRunner.grTapped .grHint,#goldRunner.grTapped .grGlow{opacity:0; transition:opacity .15s}
+@keyframes grDroneAway{to{transform:translateY(-40px); opacity:0}}
+
+/* yörünge: soldan sağa / sağdan sola (hafif dalga) */
+@keyframes grTravelR{
+  0%{left:-90px; top:14%}
+  25%{top:9%} 50%{top:15%} 75%{top:10%}
+  100%{left:100%; top:13%}
+}
+@keyframes grTravelL{
+  0%{left:100%; top:13%}
+  25%{top:10%} 50%{top:15%} 75%{top:9%}
+  100%{left:-90px; top:14%}
+}
+
+/* düşen sandık (yerçekimi) */
+.grChestFall{position:absolute; z-index:14; margin:-22px 0 0 -27px; pointer-events:none;
+  animation:grFall .48s cubic-bezier(.45,0,.85,1) forwards; filter:drop-shadow(0 5px 8px rgba(0,0,0,.5))}
+@keyframes grFall{
+  0%{transform:translateY(0) rotate(0); opacity:1}
+  85%{opacity:1}
+  100%{transform:translateY(var(--fall,160px)) rotate(28deg); opacity:1}
+}
+
+/* yere çarpma patlaması */
+.grBurst{position:absolute; z-index:15; width:130px; height:130px; margin:-65px 0 0 -65px; border-radius:50%;
+  pointer-events:none; background:radial-gradient(circle, #fff 0%, #ffe08a 26%, #ffae3a 46%, transparent 68%);
+  animation:grBurstK .44s ease-out forwards}
+@keyframes grBurstK{0%{opacity:0; transform:scale(.2)}18%{opacity:1; transform:scale(.8)}100%{opacity:0; transform:scale(1.5)}}
+
+.grSplinter{position:absolute; z-index:14; width:8px; height:5px; margin:-2px 0 0 -4px; border-radius:1.5px;
+  background:linear-gradient(#8a5a24,#5a3614); pointer-events:none;
+  animation:grSplinterK .7s cubic-bezier(.3,.5,.5,1) forwards}
+@keyframes grSplinterK{0%{opacity:1; transform:translate(0,0) rotate(0)}100%{opacity:0; transform:translate(var(--sx,0),var(--sy,-50px)) rotate(280deg)}}
+
+.grCoin{position:absolute; z-index:16; width:15px; height:15px; margin:-7px 0 0 -7px; border-radius:50%;
+  pointer-events:none; box-shadow:0 0 7px rgba(255,200,60,.7);
+  background:radial-gradient(circle at 35% 30%, #fff4c0, #ffd24a 46%, #b8860b);
+  border:1px solid #8a6410}
+
+@media (max-width:380px){ #goldRunner{width:78px; height:62px} }

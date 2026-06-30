@@ -2,32 +2,32 @@
    NOVA BLADE · WORLD BOSS — kalıcı orb + savaş arenası + 5 iblis boss
    ============================================================================= */
 
-/* ---------- kalıcı yuvarlak World Boss orb (sağ üst) ---------- */
+/* ---------- World Boss bar (combat dock'ta, sahne dışında) ---------- */
 #wbOrb{
-  position:absolute; top:76px; right:12px; z-index:30;
-  width:56px; height:56px; border-radius:50%;
-  background:radial-gradient(circle at 38% 32%, #4a1018 0%, #2a070c 60%, #150305 100%);
-  border:2px solid #ff3b4d;
-  box-shadow:0 0 0 3px rgba(255,59,77,.14), 0 0 18px -2px #ff3b4d, inset 0 0 14px -4px #ff8a8a;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:transform .14s ease, box-shadow .2s;
-  animation:wbOrbPulse 2.2s ease-in-out infinite;
+  position:static; z-index:30; margin:0 0 6px; width:100%;
+  display:flex; align-items:center; gap:10px; padding:7px 12px; min-height:46px;
+  border-radius:11px;
+  background:linear-gradient(180deg,#2a070c,#180407);
+  border:1px solid #ff3b4d;
+  box-shadow:0 0 12px -2px rgba(255,59,77,.4), inset 0 0 14px -6px #ff8a8a;
+  cursor:pointer; transition:transform .14s ease, box-shadow .2s;
+  animation:wbOrbPulse 2.4s ease-in-out infinite;
 }
-#wbOrb:active{ transform:scale(.92); }
-#wbOrb:hover{ box-shadow:0 0 0 3px rgba(255,59,77,.22), 0 0 26px 0 #ff3b4d, inset 0 0 14px -2px #ffb0b0; }
-#wbOrb svg{ width:74%; height:74%; display:block; filter:drop-shadow(0 1px 2px #000); }
-#wbOrb .wbOrbRing{ position:absolute; inset:-6px; border-radius:50%; border:2px solid #ff3b4d; opacity:0; animation:wbOrbRing 2.2s ease-out infinite; pointer-events:none; }
+#wbOrb:active{ transform:scale(.97); }
+#wbOrb svg{ width:34px; height:34px; flex:0 0 auto; display:block; filter:drop-shadow(0 1px 2px #000); }
+#wbOrb .wbOrbRing{ display:none; }
 #wbOrb .wbOrbCount{
-  position:absolute; bottom:-4px; right:-4px; min-width:18px; height:18px; padding:0 4px;
-  border-radius:9px; background:#ffd24a; color:#2a1a00; font:800 11px/18px ui-monospace,monospace;
+  flex:0 0 auto; margin-left:auto; min-width:22px; height:22px; padding:0 7px;
+  border-radius:11px; background:#ffd24a; color:#2a1a00; font:800 13px/22px ui-monospace,monospace;
   text-align:center; border:1.5px solid #2a070c; box-shadow:0 1px 3px #000;
 }
+#wbOrb .wbOrbCount{ display:none; }
 #wbOrb .wbOrbLbl{
-  position:absolute; top:50%; right:60px; transform:translateY(-50%);
-  font:800 8px/1 ui-monospace,monospace; letter-spacing:.08em; color:#ff7a8a;
-  text-shadow:0 1px 2px #000; white-space:nowrap; pointer-events:none; text-align:right;
+  position:static; transform:none; flex:1 1 auto; text-align:left;
+  font:800 13px/1.15 'Orbitron',ui-monospace,monospace; letter-spacing:.06em; color:#ff8a96;
+  text-shadow:0 1px 2px #000; white-space:nowrap;
 }
-@keyframes wbOrbPulse{ 0%,100%{ box-shadow:0 0 0 3px rgba(255,59,77,.14), 0 0 16px -2px #ff3b4d, inset 0 0 14px -4px #ff8a8a; } 50%{ box-shadow:0 0 0 4px rgba(255,59,77,.22), 0 0 26px 1px #ff3b4d, inset 0 0 16px -2px #ffb0b0; } }
+@keyframes wbOrbPulse{ 0%,100%{ box-shadow:0 0 12px -2px rgba(255,59,77,.32), inset 0 0 14px -6px #ff8a8a; } 50%{ box-shadow:0 0 18px 0 rgba(255,59,77,.5), inset 0 0 16px -4px #ffb0b0; } }
 @keyframes wbOrbRing{ 0%{ opacity:.6; transform:scale(1); } 100%{ opacity:0; transform:scale(1.5); } }
 body.spaceMode #wbOrb, body.worldBoss #wbOrb{ display:none; }
 

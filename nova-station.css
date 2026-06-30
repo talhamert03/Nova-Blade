@@ -1,0 +1,932 @@
+/* =============================================================================
+   NOVA BLADE · SPACE STATION — COLONY SCENE styling (nova-station.css)
+   PORTRAIT / mobile-first. Constrained to the game's 520px frame.
+   A vertical planetside outpost: parallax sky (gas giant + rose planet),
+   atmospheric horizon, a constructed base deck with foundation pads + glowing
+   conduits, living tappable factories, holo console, and a subterranean mine.
+   Plus the hyperspace cinematic + world-boss alarm skin.
+   ============================================================================= */
+:root{ --stnFont:'Orbitron',ui-monospace,system-ui,sans-serif; }
+
+/* ---------- HUD currency chips (top game bar) ---------- */
+#topbar .resource.stnRes{ gap:4px; }
+#oreRes .ico, #fuelRes .ico{ filter:drop-shadow(0 0 4px currentColor); }
+#oreRes{ color:#b98bff; } #fuelRes{ color:#46d8ff; }
+#oreRes #oreVal, #fuelRes #fuelVal{ color:#fff; }
+
+/* ============================ OVERLAY ROOT (matches game frame) ============================ */
+/* BULLETPROOF HIDE: the overlay is body's LAST child. If anything ever forces it
+   visible (stale cache, a stray display:block, or a broken position:fixed on a
+   weak WebView), it would render IN-FLOW below the bottom nav and leak the colony
+   onto the main screen. We defend on three axes — display + visibility +
+   pointer-events — and FORCE the fixed full-screen layout whenever shown. */
+#stnOverlay{ position:fixed !important; inset:0; top:0; left:0; right:0; bottom:0;
+  width:var(--appW,440px); height:var(--appH,860px); --fw:var(--appW,440px); z-index:120; overflow:hidden;
+  background:#04040c; color:#dfe9ff; font-family:var(--stnFont);
+  opacity:0; transition:opacity .35s ease; }
+#stnOverlay:not(.show){ display:none !important; visibility:hidden !important; pointer-events:none !important; }
+#stnOverlay.show{ display:block !important; visibility:visible; pointer-events:auto; opacity:1;
+  position:fixed !important; top:0 !important; left:0 !important; bottom:0 !important; }
+#stnOverlay *{ box-sizing:border-box; }
+.stnView{ position:absolute; inset:0; display:none; }
+.stnView.on{ display:block; }
+
+/* ============================ SKY / ATMOSPHERE ============================ */
+.stnSky{ position:absolute; inset:0;
+  background:
+    radial-gradient(130% 50% at 50% 86%, rgba(120,55,160,.40), transparent 62%),
+    radial-gradient(80% 46% at 30% 24%, rgba(120,70,200,.26), transparent 64%),
+    linear-gradient(180deg, #07040f 0%, #0c0822 30%, #160b2c 55%, #211036 78%, #2a1640 100%); }
+.stnPlanet{ position:absolute; top:0; left:0; right:0; height:50%; pointer-events:none; opacity:.95; }
+.stnPlanet .pxIn{ position:absolute; inset:-3% -3% -3% -3%; transition:transform .12s linear; }
+.stnStars{ position:absolute; top:0; left:0; right:0; height:52%; pointer-events:none; }
+.stnStars i{ position:absolute; border-radius:50%; background:#dfeaff;
+  box-shadow:0 0 4px rgba(190,215,255,.7); animation:stnTwinkle 4s ease-in-out infinite; }
+.stnStars.l2 i{ animation-duration:6s; } .stnStars.l3 i{ animation-duration:8s; opacity:.6; }
+@keyframes stnTwinkle{ 0%,100%{ opacity:.85; } 50%{ opacity:.22; } }
+.stnVign{ position:absolute; inset:0; pointer-events:none; z-index:6;
+  box-shadow:inset 0 0 90px 14px rgba(4,2,12,.7); }
+
+/* volumetric god-rays from the dome apex */
+.stnRays{ position:absolute; top:-6%; left:0; right:0; height:62%; z-index:2; pointer-events:none;
+  background:
+    conic-gradient(from 180deg at 50% 0%,
+      transparent 0deg, rgba(150,210,255,.07) 8deg, transparent 16deg,
+      transparent 24deg, rgba(150,210,255,.05) 32deg, transparent 40deg,
+      transparent 320deg, rgba(150,210,255,.06) 332deg, transparent 344deg,
+      transparent 352deg, rgba(150,210,255,.05) 360deg);
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 80%); mask-image:linear-gradient(180deg,#000,transparent 80%);
+  mix-blend-mode:screen; display:none; transform-origin:50% 0; }
+@keyframes stnRays{ 0%,100%{ opacity:.6; transform:scaleX(1); } 50%{ opacity:1; transform:scaleX(1.08); } }
+
+/* glass biodome canopy (over the sky) — TEMIZ cam kubbe; koloni içindeyiz */
+.stnDomeGlass{ position:absolute; top:0; left:0; right:0; height:72%; z-index:3; pointer-events:none; opacity:1; }
+.stnDomeGlass svg{ width:100%; height:100%; display:block; }
+.stnDomeGlass::after{ content:''; position:absolute; inset:0; pointer-events:none;
+  box-shadow:inset 0 0 60px rgba(140,220,255,.10); }
+/* metal koloni tabanı — cam kubbenin içindeki dökme çelik platform */
+.stnPlatform{ position:absolute; left:50%; top:48%; width:99%; height:64%; transform:translate(-50%,-50%);
+  border-radius:50%; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse at 50% 38%, #3a4451 0%, #28313d 44%, #181f28 66%, transparent 80%);
+  box-shadow:inset 0 0 60px rgba(0,0,0,.5), 0 8px 44px rgba(0,0,0,.5); }
+.stnPlatform::before{ content:''; position:absolute; inset:6%; border-radius:50%;
+  border:1px solid rgba(150,205,245,.20); box-shadow:0 0 20px rgba(90,165,225,.12) inset; }
+/* cam kubbenin metal zemine oturduğu ayak halkası */
+.stnPlatform::after{ content:''; position:absolute; inset:0; border-radius:50%;
+  border:1.5px solid rgba(120,215,255,.22); box-shadow:0 0 24px rgba(120,210,255,.16); }
+
+/* ambient floating motes inside the colony */
+.stnAmbient{ position:absolute; inset:0; z-index:4; pointer-events:none; }
+.stnAmbient i{ position:absolute; border-radius:50%; background:radial-gradient(circle,#cfeaff,rgba(120,180,255,.2));
+  box-shadow:0 0 6px rgba(150,200,255,.7); opacity:.5; animation:stnMote linear infinite; }
+@keyframes stnMote{ 0%{ transform:translateY(24px); opacity:0; } 14%{ opacity:.6; }
+  70%{ opacity:.5; } 100%{ transform:translateY(-200px); opacity:0; } }
+
+/* ============================ SCROLLABLE COLONY ============================ */
+.stnScroll{ position:absolute; inset:0; display:flex; flex-direction:column;
+  overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; z-index:2; }
+.stnScroll::-webkit-scrollbar{ display:none; }
+.stnSkyGap{ flex:0 0 auto; height:clamp(120px, 20vh, 240px); pointer-events:none; }
+
+.stnHorizon{ flex:0 0 auto; position:relative; height:clamp(80px,13vh,150px); margin-bottom:-2px; pointer-events:none; z-index:1; }
+.stnHorizon .pxIn{ position:absolute; inset:0; }
+
+/* the planetary surface the base sits on — METALLİK ÜS zemini (mor değil) */
+.stnBase{ flex:1 0 auto; position:relative; min-height:clamp(440px, 68vh, 660px); padding-bottom:14px;
+  background:
+    radial-gradient(110% 70% at 50% 28%, rgba(120,175,215,.13), transparent 60%),
+    linear-gradient(180deg, transparent 0%, #2b323e 7%, #20262f 42%, #161b22 78%, #0d1117 100%); }
+/* fırçalanmış metal levha + panel dikişleri — üs/hangar zemini hissi */
+.stnBase::before{ content:''; position:absolute; inset:0; pointer-events:none; z-index:0; opacity:.5;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(150,180,210,.05) 0 1px, transparent 1px 86px),
+    repeating-linear-gradient(0deg, rgba(150,180,210,.045) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.10) 0 2px, transparent 2px 4px);
+  -webkit-mask-image:linear-gradient(180deg, transparent 4%, #000 22%, #000 100%);
+  mask-image:linear-gradient(180deg, transparent 4%, #000 22%, #000 100%); }
+/* constructed colony floor — glowing hex deck panels (reads as a built habitat platform) */
+.baseDeck{ position:absolute; left:0; right:0; top:4%; bottom:0; pointer-events:none;
+  background-image:
+    radial-gradient(circle at 50% 44%, rgba(95,200,255,.08), transparent 58%),
+    repeating-linear-gradient(0deg, rgba(120,160,200,.05) 0 1px, transparent 1px 54px),
+    repeating-linear-gradient(90deg, rgba(120,160,200,.045) 0 1px, transparent 1px 54px);
+  -webkit-mask-image:radial-gradient(118% 80% at 50% 56%, #000 42%, transparent 80%);
+  mask-image:radial-gradient(118% 80% at 50% 56%, #000 42%, transparent 80%); opacity:.7; }
+/* a soft breathing energy pool on the deck */
+.baseDeck::after{ content:''; position:absolute; left:50%; top:48%; width:78%; height:46%; transform:translate(-50%,-50%);
+  border-radius:50%; background:radial-gradient(ellipse, rgba(110,200,255,.12), transparent 68%);
+  animation:stnDeckPulse 6s ease-in-out infinite; }
+@keyframes stnDeckPulse{ 0%,100%{ opacity:.5; } 50%{ opacity:1; } }
+.baseFog{ position:absolute; left:0; right:0; top:0; height:32%; pointer-events:none;
+  background:linear-gradient(180deg, rgba(130,170,210,.16), transparent);
+  mix-blend-mode:screen; animation:stnDeckPulse 9s ease-in-out infinite; }
+
+/* conduit network */
+.basePaths{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+.cdLine{ stroke:rgba(120,180,255,.22); stroke-width:2.5; vector-effect:non-scaling-stroke; }
+.cdFlow{ stroke:#6fd0ff; stroke-width:2; vector-effect:non-scaling-stroke; stroke-dasharray:3 9;
+  filter:drop-shadow(0 0 3px #46a8ff); opacity:.85; animation:cdFlow 1.2s linear infinite; }
+@keyframes cdFlow{ to{ stroke-dashoffset:-24; } }
+.cdNodes{ position:absolute; inset:0; pointer-events:none; z-index:1; }
+.cdNode{ position:absolute; width:8px; height:8px; transform:translate(-50%,-50%) rotate(45deg);
+  background:#6fd0ff; box-shadow:0 0 8px #46a8ff; opacity:.8; }
+
+/* ---- generic placed element (ground-point anchored bottom-center) ---- */
+.stnBase .stnDeco, .stnBase .stnCore, .stnBase .stnBuild, .stnBase .stnPad{
+  position:absolute; transform:translate(-50%,-100%); transform-origin:bottom center; }
+.stnBase .stnDeco svg, .stnCore svg, .stnBuild .bldArt svg, .stnPad svg{ width:100%; height:auto; display:block; }
+.stnDeco{ pointer-events:none; opacity:.92; filter:drop-shadow(0 8px 14px rgba(0,0,0,.5)); }
+
+/* command core */
+.stnCore{ pointer-events:none; filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(95,220,255,.4)); }
+.coreLbl{ position:absolute; left:50%; bottom:-4px; transform:translateX(-50%);
+  font-size:8px; font-weight:800; letter-spacing:.22em; color:#7fd0ff; white-space:nowrap;
+  text-shadow:0 0 8px rgba(70,160,255,.6); }
+
+/* ============================ FACTORY BUILDINGS ============================ */
+.stnBuild{ appearance:none; border:0; background:none; cursor:pointer; padding:0;
+  transition:filter .2s ease; filter:drop-shadow(0 14px 20px rgba(0,0,0,.55)); }
+.stnBuild .bldArt{ display:block; width:100%; position:relative; }
+.stnBuild .bldArt svg{ overflow:visible; }
+/* foundation pad under each building */
+.stnBuild::after{ content:''; position:absolute; left:50%; bottom:1%; width:80%; height:26px;
+  transform:translateX(-50%); border-radius:50%;
+  background:radial-gradient(ellipse, color-mix(in srgb,var(--ac,#5fdcff) 40%, transparent), transparent 72%);
+  border:1px solid color-mix(in srgb,var(--ac,#5fdcff) 30%, transparent);
+  filter:blur(.5px); opacity:.6; pointer-events:none; z-index:-1; }
+.stnBuild:hover{ filter:drop-shadow(0 16px 24px rgba(0,0,0,.6)) drop-shadow(0 0 14px color-mix(in srgb,var(--ac,#5fdcff) 60%, transparent)); }
+.stnBuild:active{ filter:drop-shadow(0 10px 16px rgba(0,0,0,.6)) brightness(1.08); }
+
+/* holographic name plate */
+.bldTag{ position:absolute; left:50%; top:-14px; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:1px; padding:4px 9px;
+  border-radius:8px; white-space:nowrap; pointer-events:none;
+  background:linear-gradient(180deg, rgba(10,16,30,.88), rgba(10,16,30,.66));
+  border:1px solid color-mix(in srgb,var(--ac,#5fdcff) 55%, transparent);
+  box-shadow:0 0 12px color-mix(in srgb,var(--ac,#5fdcff) 30%, transparent), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:blur(3px); opacity:0; transition:opacity .3s ease .1s; }
+#stnHub.on .bldTag{ opacity:1; }
+.bldTag b{ font-size:10px; font-weight:900; letter-spacing:.1em; color:#eaf4ff; }
+.bldTag i{ font-size:9px; font-style:normal; font-weight:800; letter-spacing:.08em; color:var(--ac,#5fdcff); }
+.bldTag::after{ content:''; position:absolute; left:50%; bottom:-5px; width:2px; height:5px;
+  transform:translateX(-50%); background:color-mix(in srgb,var(--ac,#5fdcff) 70%, transparent); }
+.stnBuild.locked .bldTag i{ color:#ff8a98; }
+.stnBuild.locked .bldTag{ border-color:rgba(255,90,110,.5); }
+.stnBuild.locked .bldArt{ filter:grayscale(.7) brightness(.62); }
+.stnBuild.locked::after{ background:radial-gradient(ellipse, rgba(255,70,100,.3), transparent 72%); border-color:rgba(255,70,100,.3); }
+
+/* maxed building: golden aura */
+.stnBuild.maxed .bldArt::after{ content:''; position:absolute; inset:-6% -6% 8% -6%; border-radius:50%;
+  background:radial-gradient(ellipse at 50% 56%, rgba(255,216,122,.28), transparent 66%);
+  pointer-events:none; animation:stnAura 3.2s ease-in-out infinite; }
+@keyframes stnAura{ 0%,100%{ opacity:.5; } 50%{ opacity:.95; } }
+
+/* locked barrier holo + padlock */
+.bldBarrier{ position:absolute; inset:8% 12% 9% 12%; border-radius:10px; pointer-events:none;
+  background:repeating-linear-gradient(120deg, rgba(255,50,80,.16) 0 9px, rgba(255,50,80,.04) 9px 18px);
+  border:1px solid rgba(255,70,100,.5); box-shadow:0 0 16px rgba(255,40,70,.4) inset;
+  animation:stnLockPulse 1.8s ease-in-out infinite; }
+@keyframes stnLockPulse{ 0%,100%{ opacity:.6; } 50%{ opacity:1; } }
+.bldLock{ position:absolute; left:50%; top:46%; transform:translate(-50%,-50%);
+  font-size:26px; filter:drop-shadow(0 0 8px rgba(255,60,90,.9)); pointer-events:none; }
+
+/* hyperdrive pad */
+.stnPad{ appearance:none; border:0; background:none; cursor:pointer; padding:0;
+  display:flex; flex-direction:column; align-items:center; gap:4px; }
+.stnPad .padLbl{ font-size:8.5px; font-weight:800; letter-spacing:.22em; color:#7fb6d6; margin-top:-4px; }
+.stnPad .padState{ font-size:10px; font-weight:900; letter-spacing:.06em; padding:4px 11px; border-radius:18px; border:1px solid currentColor; }
+.padState.go{ color:#ffd0aa; background:rgba(255,120,40,.14); box-shadow:0 0 14px rgba(255,120,40,.4); animation:stnLockPulse 1.6s ease-in-out infinite; }
+.padState.lock{ color:#ff96a4; background:rgba(255,60,80,.10); }
+.padState.dim{ color:#5a6a82; }
+.stnPad:active{ filter:brightness(1.1); }
+.stnPad.ready:hover{ filter:drop-shadow(0 0 16px rgba(255,140,60,.6)); }
+
+/* ============================ TOP HUD (shared) ============================ */
+.stnHUD{ position:absolute; left:0; right:0; top:0; z-index:30;
+  display:flex; align-items:center; gap:10px; padding:12px 12px;
+  background:linear-gradient(180deg, rgba(4,4,12,.9), rgba(4,4,12,.4) 70%, transparent); }
+.stnBack{ width:40px; height:40px; flex:0 0 auto; border-radius:12px; cursor:pointer;
+  background:rgba(12,20,38,.7); border:1px solid rgba(100,180,255,.32); color:#9fd0ff;
+  font-size:22px; line-height:1; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.stnBack:active{ transform:scale(.93); }
+.stnHudTitle{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
+.stnHudTitle span{ font-size:15px; font-weight:900; letter-spacing:.07em; color:#eaf4ff;
+  text-shadow:0 0 16px rgba(120,80,220,.6); white-space:nowrap; }
+.stnHudTitle small{ font-size:8px; letter-spacing:.24em; color:#6f88b8; font-weight:700; margin-top:3px; white-space:nowrap; }
+.stnHudCur{ margin-left:auto; display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end; }
+.stnCur{ display:flex; align-items:center; gap:5px; padding:5px 8px; border-radius:10px;
+  background:rgba(10,16,30,.72); border:1px solid rgba(100,180,255,.22);
+  font-size:11.5px; font-weight:800; font-variant-numeric:tabular-nums; backdrop-filter:blur(4px); }
+.stnCur .dot{ width:11px; height:11px; border-radius:3px; transform:rotate(45deg); box-shadow:0 0 7px currentColor; }
+.stnCur.fuel .dot{ border-radius:50%; transform:none; }
+.stnCur b{ color:#fff; }
+
+/* ============================ HOLO CONSOLE (bottom sheet) ============================ */
+.stnScrim{ position:absolute; inset:0; z-index:40; background:rgba(2,2,10,.5);
+  opacity:0; pointer-events:none; transition:opacity .3s ease; backdrop-filter:blur(1px); }
+.stnScrim.show{ opacity:1; pointer-events:auto; }
+.stnConsole{ position:absolute; left:0; right:0; bottom:0; z-index:50;
+  padding:18px 16px calc(20px + env(safe-area-inset-bottom)); border-radius:20px 20px 0 0;
+  background:linear-gradient(180deg, rgba(14,20,38,.98), rgba(8,11,24,1));
+  border-top:1px solid color-mix(in srgb,var(--ac,#5fdcff) 55%, transparent);
+  box-shadow:0 -10px 40px rgba(0,0,0,.6), 0 0 30px color-mix(in srgb,var(--ac,#5fdcff) 18%, transparent) inset;
+  transform:translateY(110%); transition:transform .34s cubic-bezier(.22,1,.36,1); }
+.stnConsole.show{ transform:translateY(0); }
+.stnConsole::before{ content:''; position:absolute; left:50%; top:8px; width:40px; height:4px;
+  transform:translateX(-50%); border-radius:3px; background:rgba(255,255,255,.2); }
+.conClose{ position:absolute; right:12px; top:10px; width:34px; height:34px; border-radius:9px; cursor:pointer;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); color:#cfe2ff; font-size:20px; line-height:1; z-index:2; }
+.conClose:active{ transform:scale(.92); }
+/* level-up flash on the whole sheet */
+.stnConsole.flashUp{ animation:conFlashUp .6s ease-out; }
+@keyframes conFlashUp{ 0%{ box-shadow:0 -10px 40px rgba(0,0,0,.6), 0 0 0 0 color-mix(in srgb,var(--ac,#5fdcff) 70%, transparent) inset; }
+  30%{ box-shadow:0 -10px 40px rgba(0,0,0,.6), 0 0 60px 6px color-mix(in srgb,var(--ac,#5fdcff) 55%, transparent) inset; }
+  100%{ box-shadow:0 -10px 40px rgba(0,0,0,.6), 0 0 30px color-mix(in srgb,var(--ac,#5fdcff) 18%, transparent) inset; } }
+
+/* showcase header */
+.conHero{ display:flex; align-items:center; gap:14px; margin-top:8px; }
+.conArt{ position:relative; width:96px; height:96px; flex:0 0 auto; border-radius:16px;
+  background:radial-gradient(circle at 50% 36%, color-mix(in srgb,var(--ac,#5fdcff) 22%, transparent), rgba(6,10,20,.7));
+  border:1px solid color-mix(in srgb,var(--ac,#5fdcff) 45%, transparent); overflow:hidden;
+  display:flex; align-items:flex-end; justify-content:center;
+  box-shadow:0 0 24px -6px color-mix(in srgb,var(--ac,#5fdcff) 60%, transparent) inset; }
+.conArt svg{ width:112%; height:112%; position:relative; z-index:1; }
+.conPedestal{ position:absolute; left:50%; bottom:5px; width:74%; height:14px; transform:translateX(-50%);
+  border-radius:50%; background:radial-gradient(ellipse, color-mix(in srgb,var(--ac,#5fdcff) 55%, transparent), transparent 70%);
+  filter:blur(1px); opacity:.7; }
+.conArt.pop{ animation:conArtPop .6s cubic-bezier(.2,1.5,.4,1); }
+@keyframes conArtPop{ 0%{ transform:scale(1); } 35%{ transform:scale(1.16); } 100%{ transform:scale(1); } }
+.conBurst{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+.conBurst::before,.conBurst::after{ content:''; position:absolute; left:50%; top:46%; transform:translate(-50%,-50%);
+  border-radius:50%; border:2px solid color-mix(in srgb,var(--ac,#5fdcff) 80%, #fff); }
+.conBurst::before{ width:10px; height:10px; animation:conRing .65s ease-out forwards; }
+.conBurst::after{ width:10px; height:10px; opacity:.6; animation:conRing .65s ease-out .12s forwards; }
+@keyframes conRing{ 0%{ width:8px; height:8px; opacity:.95; } 100%{ width:150px; height:150px; opacity:0; } }
+.conArt.maxed .conPlasma{ position:absolute; inset:-10%; border-radius:50%; pointer-events:none; z-index:2; }
+.conArt.maxed .conPlasma::before,.conArt.maxed .conPlasma::after{ content:''; position:absolute; inset:8%;
+  border-radius:50%; border:2px solid transparent; border-top-color:var(--ac,#5fdcff);
+  box-shadow:0 0 12px var(--ac,#5fdcff); animation:stnSpin 3s linear infinite; }
+.conArt.maxed .conPlasma::after{ inset:20%; animation-duration:2s; animation-direction:reverse; border-top-color:#fff; opacity:.7; }
+@keyframes stnSpin{ to{ transform:rotate(360deg); } }
+.conHd{ flex:1 1 auto; min-width:0; }
+.conName{ font-size:18px; font-weight:900; letter-spacing:.02em; color:#eaf4ff; line-height:1.1; }
+.conLvPill{ display:inline-block; margin-top:8px; padding:4px 11px; border-radius:20px;
+  font-size:12px; font-weight:900; letter-spacing:.08em; color:#fff;
+  background:color-mix(in srgb,var(--ac,#5fdcff) 22%, rgba(8,12,22,.8));
+  border:1px solid color-mix(in srgb,var(--ac,#5fdcff) 50%, transparent); }
+.conLvPill i{ font-style:normal; font-weight:700; opacity:.7; }
+.conLvPill.bump{ animation:conPillBump .55s cubic-bezier(.2,1.6,.4,1); }
+@keyframes conPillBump{ 0%{ transform:scale(1); } 40%{ transform:scale(1.22); filter:brightness(1.4); } 100%{ transform:scale(1); } }
+.conGauge{ flex:0 0 auto; width:62px; }
+.stnRing{ width:62px; height:62px; }
+
+/* progress + stat comparison */
+.conProg{ height:8px; border-radius:5px; margin:14px 0 12px; background:rgba(0,0,0,.45);
+  border:1px solid rgba(120,180,255,.16); overflow:hidden; }
+.conProg i{ display:block; height:100%; border-radius:5px;
+  background:linear-gradient(90deg, color-mix(in srgb,var(--ac,#5fdcff) 60%, #fff), var(--ac,#5fdcff));
+  box-shadow:0 0 10px var(--ac,#5fdcff); transition:width .5s cubic-bezier(.3,1,.4,1); }
+.conStatRow{ display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 14px; border-radius:13px; background:rgba(255,255,255,.04);
+  border:1px solid rgba(120,180,255,.16); }
+.conStatHd{ font-size:11px; font-weight:800; letter-spacing:.08em; color:#9fb6d6; display:flex; align-items:center; gap:7px; }
+.conStatHd i{ font-size:15px; font-style:normal; filter:drop-shadow(0 0 5px currentColor); }
+.conStatVals{ display:flex; align-items:center; gap:9px; font-variant-numeric:tabular-nums; }
+.cNow{ font-size:14px; font-weight:800; color:#c4d4ea; }
+.cArr{ font-size:15px; font-weight:900; }
+.cNext{ font-size:16px; font-weight:900; }
+.cNext.flash{ animation:conNextFlash .7s ease-out; }
+@keyframes conNextFlash{ 0%{ transform:scale(1.4); filter:brightness(1.8); text-shadow:0 0 14px currentColor; } 100%{ transform:scale(1); } }
+.conDesc{ font-size:11.5px; line-height:1.5; color:#9db3d2; text-wrap:pretty; margin:11px 2px 2px; }
+.conDesc em{ color:#fff; font-style:normal; font-weight:800; }
+
+.conBtns{ margin-top:14px; display:flex; flex-direction:column; gap:9px; }
+.conUp{ position:relative; overflow:hidden; width:100%; min-height:60px; border:0; border-radius:15px; cursor:pointer;
+  display:grid; grid-template-columns:1fr auto; align-items:center; gap:2px 12px; padding:0 18px;
+  background:linear-gradient(180deg, var(--ac,#5fdcff), color-mix(in srgb,var(--ac,#5fdcff) 52%, #05203a));
+  color:#04121f; font-family:inherit; box-shadow:0 6px 20px -4px color-mix(in srgb,var(--ac,#5fdcff) 60%, transparent), inset 0 1px 0 rgba(255,255,255,.5); }
+.conUp:active{ transform:translateY(1px); }
+.conUpGlow{ position:absolute; top:0; bottom:0; width:60%; left:-60%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+  animation:conShine 2.6s ease-in-out infinite; pointer-events:none; }
+@keyframes conShine{ 0%{ left:-60%; } 55%,100%{ left:120%; } }
+.conUp .ua{ grid-row:1; font-size:15px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+.conUp .ub{ grid-row:2; font-size:11px; font-weight:700; opacity:.8; }
+.conUp .uc{ grid-row:1 / span 2; grid-column:2; font-size:16px; font-weight:900; font-variant-numeric:tabular-nums; }
+.conUp.poor{ filter:grayscale(.45) brightness(.72); }
+.conUp.poor .conUpGlow{ display:none; }
+.conMax{ width:100%; min-height:54px; border-radius:14px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:2px; font-weight:900; letter-spacing:.08em; font-size:14px;
+  color:#2a1c00; background:linear-gradient(180deg,#ffd87a,#c8922a); }
+.conMax small{ font-size:10px; font-weight:700; letter-spacing:.02em; opacity:.85; }
+.conLock{ display:flex; align-items:center; gap:11px; padding:13px 14px; border-radius:14px;
+  background:repeating-linear-gradient(120deg, rgba(255,50,80,.10) 0 11px, rgba(255,50,80,.03) 11px 22px);
+  border:1px solid rgba(255,70,100,.4); }
+.conLock .lk{ font-size:24px; filter:drop-shadow(0 0 7px rgba(255,60,90,.9)); }
+.conLock .rq{ font-size:11.5px; line-height:1.45; color:#ffd0d6; } .conLock .rq b{ color:#fff; }
+.conMine{ width:100%; min-height:50px; border:0; border-radius:14px; cursor:pointer;
+  font-family:inherit; font-weight:900; letter-spacing:.09em; font-size:13px; color:#1a0b34;
+  background:linear-gradient(180deg,#c9a3ff,#7a3bd6); box-shadow:0 5px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.4); }
+.conMine:active{ transform:translateY(1px); }
+
+/* ============================ MINE (subterranean scene) ============================ */
+#stnMine{ background:#070310; }
+.mnBg{ position:absolute; inset:0;
+  background:
+    radial-gradient(90% 56% at 50% 86%, rgba(120,50,200,.42), transparent 62%),
+    radial-gradient(54% 40% at 16% 22%, rgba(90,40,160,.3), transparent 70%),
+    radial-gradient(54% 40% at 86% 18%, rgba(60,30,120,.3), transparent 70%),
+    linear-gradient(180deg, #0a0518, #150826 60%, #1d0a30); }
+.mnBg::before{ content:''; position:absolute; left:0; right:0; top:0; height:30%;
+  background:repeating-linear-gradient(94deg, rgba(0,0,0,.4) 0 26px, transparent 26px 60px);
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent); mask-image:linear-gradient(180deg,#000,transparent); opacity:.45; }
+.mnFog{ position:absolute; left:0; right:0; bottom:0; height:52%; pointer-events:none;
+  background:linear-gradient(180deg, transparent, rgba(150,80,230,.16) 68%, rgba(170,100,255,.30)); mix-blend-mode:screen; }
+.mnMotes{ position:absolute; inset:0; pointer-events:none; }
+.mnMotes i{ position:absolute; width:3px; height:3px; border-radius:50%; background:#c9a3ff;
+  box-shadow:0 0 6px #b98bff; opacity:.6; animation:mnRise linear infinite; }
+@keyframes mnRise{ 0%{ transform:translateY(20px); opacity:0; } 12%{ opacity:.7; } 100%{ transform:translateY(-180px); opacity:0; } }
+.mnStage{ position:absolute; left:0; right:0; top:18%; bottom:30%;
+  display:flex; align-items:flex-end; justify-content:center; }
+.mnRig{ width:min(76vw,330px); filter:drop-shadow(0 18px 30px rgba(0,0,0,.6)); }
+.mnRig svg{ width:100%; height:auto; display:block; overflow:visible; }
+.mnCryB{ position:absolute; bottom:0; width:clamp(48px,15vw,72px); opacity:.85; filter:drop-shadow(0 0 12px rgba(150,80,230,.5)); }
+.mnCryB svg{ width:100%; height:auto; display:block; }
+.stnOreFloat{ position:absolute; left:50%; top:30%; transform:translateX(-50%); z-index:9;
+  font-size:26px; font-weight:900; color:#d8b8ff; text-shadow:0 0 14px rgba(150,90,255,.95);
+  pointer-events:none; animation:stnOreUp 1s ease-out forwards; letter-spacing:.04em; }
+@keyframes stnOreUp{ 0%{ opacity:0; transform:translateX(-50%) translateY(14px) scale(.6); }
+  18%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1.15); }
+  100%{ opacity:0; transform:translateX(-50%) translateY(-60px) scale(1); } }
+@keyframes stnQuake{ 0%,100%{ transform:translate(0,0); } 25%{ transform:translate(-3px,2px); }
+  50%{ transform:translate(3px,-1px); } 75%{ transform:translate(-2px,-2px); } }
+#stnOverlay.quake #stnMineStage{ animation:stnQuake .3s ease; }
+.mnHud{ position:absolute; left:0; right:0; bottom:0; z-index:20;
+  padding:16px 16px calc(20px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg, transparent, rgba(8,4,18,.8) 28%, rgba(8,4,18,.97)); }
+.mnTop{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.mnOre{ display:flex; flex-direction:column; }
+.mnOreN{ font-size:32px; font-weight:900; color:#fff; letter-spacing:.02em; line-height:1;
+  text-shadow:0 0 20px rgba(150,90,255,.8); font-variant-numeric:tabular-nums; }
+.mnOreL{ font-size:9.5px; font-weight:800; letter-spacing:.16em; color:#b98bff; margin-top:5px; }
+.mnRate{ text-align:right; font-size:14px; font-weight:900; color:#d9caff; font-variant-numeric:tabular-nums; }
+.mnRate small{ display:block; font-size:9.5px; font-weight:600; color:#8b7fb8; letter-spacing:.03em; margin-top:3px; }
+.mnBar{ height:15px; border-radius:9px; margin:12px 0; background:rgba(10,4,22,.85);
+  border:1px solid rgba(150,110,255,.3); overflow:hidden; }
+.mnBar i{ display:block; height:100%; border-radius:9px; width:0%;
+  background:linear-gradient(90deg,#3a1170,#7a3bd6,#b884ff); background-size:200% 100%;
+  box-shadow:0 0 16px rgba(150,90,255,.6); animation:stnShimmer 2.4s linear infinite; transition:width .5s linear; }
+@keyframes stnShimmer{ from{ background-position:0 0; } to{ background-position:200% 0; } }
+.mnRefine{ width:100%; min-height:56px; border:0; border-radius:14px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  background:linear-gradient(180deg,#45d6ff,#1e7fb8); color:#03141f; font-family:inherit;
+  box-shadow:0 5px 18px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.45); }
+.mnRefine:active{ transform:translateY(1px); }
+.mnRefine:disabled{ filter:grayscale(.55) brightness(.62); cursor:not-allowed; }
+.mnRefine .ra{ font-size:14px; font-weight:900; letter-spacing:.09em; }
+.mnRefine .ra.dim{ opacity:.85; }
+.mnRefine .rb{ font-size:10px; font-weight:700; opacity:.82; letter-spacing:.02em; }
+/* +20 dk ilerlet (ödüllü reklam) — yeşil "advance" butonu, refine'in altında */
+.mnAdvance{ width:100%; min-height:50px; margin-top:8px; border:0; border-radius:14px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  background:linear-gradient(180deg,#3be88a,#1c9a57); color:#03200f; font-family:inherit;
+  box-shadow:0 5px 18px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.4); }
+.mnAdvance:active{ transform:translateY(1px); }
+.mnAdvance:disabled{ filter:grayscale(.55) brightness(.62); cursor:not-allowed; }
+.mnAdvance .ra{ font-size:13.5px; font-weight:900; letter-spacing:.07em; }
+.mnAdvance .ra.dim{ opacity:.85; }
+.mnAdvance .rb{ font-size:10px; font-weight:700; opacity:.85; letter-spacing:.02em; }
+
+/* ============================ HYPERDRIVE CINEMATIC ============================ */
+#hyperCine{ position:fixed; inset:0; top:0; left:0;
+  width:var(--appW,440px); height:var(--appH,860px); z-index:200; background:#01010a; overflow:hidden; display:none; }
+#hyperCine.show{ display:block; }
+.hcStars{ position:absolute; inset:0; pointer-events:none; }
+.hcStars i{ position:absolute; height:2px; border-radius:2px; right:50%;
+  background:linear-gradient(90deg, transparent, #cfe6ff); transform-origin:right center; }
+#hyperCine.warp .hcStars i{ animation:hcStreak 1.2s cubic-bezier(.5,0,.85,.3) forwards; }
+@keyframes hcStreak{ 0%{ width:2px; opacity:0; transform:translateX(0) scaleX(1); }
+  10%{ opacity:1; } 100%{ width:120vw; opacity:.95; transform:translateX(-120vw) scaleX(1); } }
+.hcTunnel{ position:absolute; inset:0; perspective:520px; pointer-events:none; opacity:0;
+  display:flex; align-items:center; justify-content:center; transition:opacity .4s ease; }
+#hyperCine.tunnel .hcTunnel{ opacity:1; }
+.hcTunnel .ring{ position:absolute; width:220px; height:220px; border-radius:50%; border:6px solid;
+  transform:translateZ(-1400px) scale(.2); }
+#hyperCine.tunnel .hcTunnel .ring{ animation:hcRing 2.2s linear infinite; }
+@keyframes hcRing{ 0%{ transform:translateZ(-1600px) scale(.12); opacity:0; }
+  16%{ opacity:1; } 100%{ transform:translateZ(180px) scale(2.6); opacity:0; } }
+.hcFlash{ position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; }
+#hyperCine.flash .hcFlash{ animation:hcFlash 1.4s ease-out forwards; }
+@keyframes hcFlash{ 0%{ opacity:0; } 14%{ opacity:1; } 100%{ opacity:0; } }
+.hcPlanet{ position:absolute; inset:0; opacity:0; pointer-events:none;
+  background:
+    radial-gradient(60% 50% at 50% 118%, rgba(255,150,60,.55), transparent 60%),
+    radial-gradient(40% 34% at 50% 116%, rgba(255,80,40,.8), transparent 64%),
+    linear-gradient(180deg, #0a0208, #1a0604);
+  transition:opacity .6s ease; }
+#hyperCine.arrive .hcPlanet{ opacity:1; }
+.hcSkip{ position:absolute; bottom:26px; right:22px; z-index:5; opacity:0; pointer-events:none;
+  padding:11px 18px; border-radius:30px; cursor:pointer; background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.3); color:#fff; font-family:var(--stnFont);
+  font-weight:800; font-size:12px; letter-spacing:.12em; transition:opacity .4s ease; }
+#hyperCine.canskip .hcSkip{ opacity:1; pointer-events:auto; }
+
+/* ============================ WORLD-BOSS ALARM SKIN ============================ */
+body.wbAlarm #wbScene::before{ content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 0%, rgba(255,60,40,.18), transparent 60%),
+             linear-gradient(180deg, rgba(120,12,8,.30), transparent 40%);
+  animation:wbAlarmPulse 1.4s ease-in-out infinite; }
+@keyframes wbAlarmPulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+body.wbAlarm #wbBoss{ animation:wbDescend 1.6s cubic-bezier(.3,.7,.4,1) 1, wbSway 4.6s ease-in-out 1.6s infinite !important; }
+@keyframes wbDescend{ 0%{ transform:translateY(-60vh) scale(1.04); } 100%{ transform:translateY(0) scale(1); } }
+@keyframes wbSway{ 0%,100%{ transform:translateY(0) rotate(-1.2deg); } 50%{ transform:translateY(-6px) rotate(1.2deg); } }
+#stnCurtain{ position:fixed; inset:0; z-index:210; background:#000; opacity:0; pointer-events:none; transition:opacity 1.5s ease; }
+#stnCurtain.on{ opacity:1; }
+#wbOrb{ display:none !important; }
+
+/* locked weapon/armor tier button (injected into existing gallery) */
+.swBtns .lockBtn, .buyBtn.lockBtn{ background:rgba(255,60,80,.10) !important;
+  border:1px solid rgba(255,80,100,.4) !important; color:#ffc2cb !important; cursor:not-allowed; }
+.buyBtn.lockBtn .bAct{ color:#ffd0d6 !important; }
+.buyBtn.lockBtn .bCost{ color:#ff8a98 !important; }
+
+@media (prefers-reduced-motion: reduce){
+  .stnStars i,.mnMotes i,.mnBar i,.cdFlow,.conArt.maxed .conPlasma::before,.conArt.maxed .conPlasma::after,
+  .stnBuild.maxed .bldArt::after,.bldBarrier,.padState.go,
+  .stnRays,.stnAmbient i,.baseDeck::after,.baseFog,.conLevelFx,.conArtPop{ animation:none !important; }
+}
+
+/* ============================================================
+   PERF + SOFT PASS  — A36 gibi orta cihazlarda akıcılık.
+   SMIL idle animasyonları JS ile donduruldu (en pahalı kısım);
+   burada en çok kasan GPU/paint efektleri sadeleştirilir ve
+   atmosfer daha yumuşak, daha sakin hale getirilir.
+   ============================================================ */
+/* 1) backdrop-filter (blur) WebView'de en çok kasan efekt — kaldır, panel yarı saydam kalsın */
+#stnOverlay .stnBack, #stnOverlay .stnCur, #stnOverlay .bldTag, #stnOverlay .stnScrim{
+  backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+#stnOverlay .bldTag{ background:rgba(10,18,34,.88); }
+#stnOverlay .stnBack{ background:rgba(12,20,38,.86); }
+#stnOverlay .stnCur{ background:rgba(10,16,30,.86); }
+/* 2) çok-katmanlı ağır drop-shadow filtreleri → tek hafif gölge (paint ucuzlar) */
+.stnDeco{ filter:drop-shadow(0 5px 7px rgba(0,0,0,.42)); }
+.stnCore{ filter:drop-shadow(0 7px 11px rgba(0,0,0,.5)); }
+.stnBuild, .stnBuild:hover, .stnBuild:active{ filter:drop-shadow(0 7px 11px rgba(0,0,0,.45)); }
+.cdFlow{ filter:none; }                       /* glow yerine düz akış çizgisi */
+/* 3) yıldız twinkle'ı yavaşlat ve glow'u hafiflet — daha sakin gökyüzü, daha az repaint */
+.stnStars i{ animation-duration:8s !important; box-shadow:0 0 3px rgba(190,215,255,.55); }
+.stnStars.l2 i{ animation-duration:11s !important; }
+.stnStars.l3 i{ animation-duration:14s !important; }
+/* 4) SOFT LIFE — binalar/çekirdek çok yavaş, narin bir nefes alır.
+      Konumlandırma transform'u dış katmanda; animasyonu İÇ svg'ye uygula (çakışmaz). */
+@media (prefers-reduced-motion:no-preference){
+  .stnCore svg{ animation:stnBreath 7s ease-in-out infinite; }
+  .stnBuild .bldArt{ animation:stnBreath 8.5s ease-in-out infinite; }
+  .stnBuild:nth-of-type(2n) .bldArt{ animation-duration:9.5s; animation-delay:-2.4s; }
+  @keyframes stnBreath{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-2px); } }
+}
+/* 5) kırmızı kilit pulse'unu yumuşat (göze daha hoş, daha az dikkat çeken) */
+.bldBarrier{ animation-duration:3.2s !important; }
+.padState.go{ animation-duration:2.6s !important; }
+/* 6) düşük-FPS modunda istasyondaki süsleme animasyonlarını tamamen kes */
+body.nb-lowfx #stnOverlay .stnStars i, body.nb-lowfx #stnOverlay .stnAmbient i,
+body.nb-lowfx .stnCore svg, body.nb-lowfx .stnBuild .bldArt,
+body.nb-lowfx .baseDeck::after, body.nb-lowfx .baseFog, body.nb-lowfx .cdFlow{ animation:none !important; }
+
+/* ============================================================
+   REDESIGN v9 — "AURORA OUTPOST"
+   Tamamen yeni, daha sakin ve performansli atmosfer. Bu blok en sonda
+   oldugu icin tum agir efektleri override eder. Kural: SADECE ucuz
+   ozellikler (transform / opacity / d(uz gradient). HICBIR yerde
+   mix-blend-mode, backdrop-filter, conic-gradient, feGaussianBlur veya
+   her-kare yeniden rasterize edilen filtre YOK. SVG idle SMIL'leri JS ile
+   zaten donduruldu; buradaki canlilik tamamen ucuz CSS animasyonlarindan
+   gelir (aurora suzulmesi, yildiz parildama, cekirdek nabzi, kanal akisi,
+   bina nefesi) — atmosfer korunur, kasma gider.
+   ============================================================ */
+/* --- GOKYUZU: cok-katmanli radial yigini yerine tek temiz indigo gece --- */
+#stnOverlay .stnSky{
+  background:linear-gradient(180deg,#04050e 0%,#080b1c 30%,#0c1230 56%,#102043 80%,#14274d 100%) !important; }
+/* --- Cam kubbe (dev SVG, 72% ekran) KALDIRILDI — acik uzay hissi, paint cok ucuzlar --- */
+#stnOverlay .stnDomeGlass{ display:none !important; }
+/* --- AURORA BANDI: bos .stnRays dugumunu yeniden kullan (conic+blend yerine
+       tek ucuz lineer gradient + transform suzulmesi). Atmosferin ana hareketi. --- */
+#stnOverlay .stnRays{ display:block !important; top:1%; height:48%; z-index:2;
+  mix-blend-mode:normal !important; -webkit-mask-image:radial-gradient(125% 92% at 50% 0,#000,transparent 76%);
+  mask-image:radial-gradient(125% 92% at 50% 0,#000,transparent 76%);
+  background:linear-gradient(174deg, transparent 0%, rgba(64,220,196,.12) 38%, rgba(108,150,255,.10) 66%, transparent 100%) !important;
+  transform-origin:50% 0; animation:stnAurora 16s ease-in-out infinite !important; }
+@keyframes stnAurora{ 0%,100%{ transform:translateX(-3%) scaleX(1.04); opacity:.65; }
+  50%{ transform:translateX(3%) scaleX(1.12); opacity:1; } }
+/* --- YILDIZLAR: sakin, hafif parildama (glow kucuk) --- */
+#stnOverlay .stnStars i{ box-shadow:0 0 3px rgba(180,225,255,.5) !important; }
+/* --- VINYET: hafiflet --- */
+#stnOverlay .stnVign{ box-shadow:inset 0 0 72px 10px rgba(3,4,10,.55) !important; }
+/* --- KOLONI PLATFORMU: tek radial, agir ic golgeler temizlendi --- */
+#stnOverlay .stnPlatform{
+  background:radial-gradient(ellipse at 50% 40%, #2f3a49 0%, #1d2530 52%, transparent 78%) !important;
+  box-shadow:0 8px 28px rgba(0,0,0,.42) !important; }
+#stnOverlay .stnPlatform::before{ box-shadow:none !important; border-color:rgba(110,200,255,.16) !important; }
+#stnOverlay .stnPlatform::after{ box-shadow:none !important; border-color:rgba(96,210,255,.18) !important; }
+/* --- US ZEMINI: soguk celik tonu --- */
+#stnOverlay .stnBase{
+  background:
+    radial-gradient(110% 70% at 50% 24%, rgba(86,150,210,.10), transparent 58%),
+    linear-gradient(180deg, transparent 0%, #232c38 7%, #19212c 44%, #11161f 80%, #0a0e16 100%) !important; }
+/* --- SIS KATMANLARI: mix-blend YOK, duz hafif gradient --- */
+#stnOverlay .baseFog{ mix-blend-mode:normal !important;
+  background:linear-gradient(180deg, rgba(88,140,205,.10), transparent) !important; }
+/* --- KANAL AKISI: glow filtresi yok, ince temiz cizgi (zaten ucuz dash animasyonu) --- */
+#stnOverlay .cdFlow{ filter:none !important; }
+/* --- KOMUTA CEKIRDEGI: ucuz nabiz glow (opacity+scale, tek pseudo) — canlilik --- */
+#stnOverlay .stnCore{ position:absolute; }
+#stnOverlay .stnCore::after{ content:''; position:absolute; left:50%; top:42%; width:128%; height:128%;
+  transform:translate(-50%,-50%); border-radius:50%; pointer-events:none; z-index:-1;
+  background:radial-gradient(circle, rgba(95,220,255,.20), transparent 64%);
+  animation:stnCoreGlow 4.2s ease-in-out infinite; }
+@keyframes stnCoreGlow{ 0%,100%{ opacity:.45; transform:translate(-50%,-50%) scale(.95); }
+  50%{ opacity:1; transform:translate(-50%,-50%) scale(1.06); } }
+/* --- MADEN SAHNESI: cok-radial + scanline-blend yerine sade derin mor --- */
+#stnMine .mnBg{
+  background:
+    radial-gradient(82% 52% at 50% 88%, rgba(98,46,162,.34), transparent 62%),
+    linear-gradient(180deg,#080513,#120824 60%,#180a2c) !important; }
+#stnMine .mnBg::before{ display:none !important; }
+#stnMine .mnFog{ mix-blend-mode:normal !important;
+  background:linear-gradient(180deg, transparent, rgba(120,70,200,.18) 70%, rgba(150,90,235,.26)) !important; }
+
+/* --- DUSUK-FPS (telefon varsayilani): cogu sey statik AMA atmosfer olmesin.
+       Sadece en ucuz iki hareket acik kalir: aurora suzulmesi + yildiz parildama. --- */
+body.nb-lowfx #stnOverlay .stnRays{ animation:stnAurora 22s ease-in-out infinite !important; }
+body.nb-lowfx #stnOverlay .stnStars.l1 i{ animation:stnTwinkle 13s ease-in-out infinite !important; }
+/* cekirdek nabzi ve diger her sey low-fx'te kapali kalir (CPU/pil tasarrufu) */
+body.nb-lowfx #stnOverlay .stnCore::after{ animation:none !important; opacity:.5; }
+
+/* ============================================================
+   ACIL PERF YAMASI — low-fx'te Station SVG FILTRELERINI tamamen kaldir.
+   Governor #bgWrap filtrelerini kapatiyordu ama #stnOverlay'i ATLIYORDU:
+   bu yuzden binalardaki feGaussianBlur glow + CSS drop-shadow her kaydirma
+   karesinde yeniden rasterize oluyor = Station'in kalan en buyuk kasma
+   kaynagi. Filtre yok edilince sahne BIR KEZ boyanip onbellege alinir.
+   (Tam yeniden tasarim gelene kadar anlik akicilik kazanci.)
+   ============================================================ */
+body.nb-lowfx #stnOverlay [filter]{ filter:none !important; }
+body.nb-lowfx #stnOverlay svg [filter]{ filter:none !important; }
+body.nb-lowfx #stnOverlay .stnBuild,
+body.nb-lowfx #stnOverlay .stnBuild:hover,
+body.nb-lowfx #stnOverlay .stnBuild:active,
+body.nb-lowfx #stnOverlay .stnCore,
+body.nb-lowfx #stnOverlay .stnDeco,
+body.nb-lowfx #stnMine .mnRig,
+body.nb-lowfx #stnMine .mnCryB{ filter:none !important; }
+/* kaydirma sirasinda repaint'i azalt: govde katmanini compositor'a sabitle */
+body.nb-lowfx #stnOverlay .stnBase{ will-change:transform; }
+
+/* ============================================================
+   PROMENADE REDESIGN — "ORBITAL WALKWAY" (yatay gez)
+   Dikey KAYDIRMA (scroll) tamamen kaldirildi. Onun yerine kolonide
+   parmagiyla surukleyerek dolasilan, transform ile panlanan GENIS bir
+   serit var. Transform her zaman GPU'da kompozit edilir => SVG ASLA
+   her-kare yeniden boyanmaz. (Station kasmasinin asil sebebi scroll-repaint
+   idi.) Arka plan gezegen/yildiz/aurora yavas parallax ile derinlik verir.
+   Bu blok en sonda; tum eski dikey-sahne kurallarini override eder.
+   ============================================================ */
+#stnHub{ --worldW:calc(var(--fw,520px) * 1.62); }
+/* genis serit — surukle-pan katmani */
+#stnHub .stnWorld{ position:absolute; left:0; top:0; height:100%; width:var(--worldW);
+  z-index:2; will-change:transform; transform:translate3d(0,0,0); touch-action:none; cursor:grab; }
+#stnHub .stnWorld:active{ cursor:grabbing; }
+/* uzak sira daglar/megayapi tum seridi kaplar, zeminin arkasinda durur */
+#stnHub .stnWorld .stnHorizon{ position:absolute; left:0; right:0; top:auto; bottom:41%;
+  width:100%; height:clamp(92px,16vh,172px); margin:0; z-index:0; opacity:.82; }
+#stnHub .stnWorld .stnHorizon .pxIn{ position:absolute; inset:0 -6% 0 -6%; will-change:transform; }
+/* yuruyus zemini (metal platform serit) */
+#stnHub .stnGround{ position:absolute; left:0; right:0; bottom:0; height:46%; z-index:0;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(86,150,210,.12), transparent 60%),
+    linear-gradient(180deg, #242d3a 0%, #19212c 40%, #11161f 78%, #0a0e16 100%); }
+#stnHub .stnGround::before{ content:''; position:absolute; inset:0; opacity:.5; pointer-events:none;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(150,180,210,.05) 0 1px, transparent 1px 128px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.10) 0 2px, transparent 2px 5px);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 24%); mask-image:linear-gradient(180deg,transparent,#000 24%); }
+/* koloni icerik katmani = tum serit */
+#stnHub .stnWorld .stnBase{ position:absolute; inset:0; min-height:0; padding:0; background:none !important; }
+#stnHub .stnWorld .stnBase::before{ display:none !important; }
+/* yuruyus yolu boyunca isikli guc-rayi (statik, ucuz) */
+.stnFloorRail{ position:absolute; left:1.5%; right:1.5%; bottom:40%; height:2px; z-index:1; pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(95,200,255,.45) 10%, rgba(95,200,255,.45) 90%, transparent);
+  box-shadow:0 0 9px rgba(80,170,255,.35); }
+.stnFloorRail::after{ content:''; position:absolute; left:6%; right:6%; top:3px; height:46px;
+  background:linear-gradient(180deg, rgba(95,200,255,.08), transparent); }
+/* gezegen yatay parallax icin biraz buyut */
+#stnHub .stnPlanet{ height:54%; }
+
+/* "surukle ile kesfet" ipucu rozeti */
+.stnHint{ position:absolute; left:50%; bottom:18%; transform:translateX(-50%); z-index:7;
+  display:flex; gap:10px; align-items:center; padding:8px 16px; border-radius:30px; pointer-events:none;
+  background:rgba(8,14,26,.72); border:1px solid rgba(120,180,255,.3); color:#bcd6ff;
+  font-size:11px; font-weight:800; letter-spacing:.13em; white-space:nowrap;
+  animation:stnHintPulse 2.6s ease-in-out infinite; transition:opacity .5s ease; }
+.stnHint span{ color:#6fd0ff; font-size:16px; animation:stnHintArrow 1.8s ease-in-out infinite; }
+.stnHint span:last-child{ animation-delay:.9s; }
+.stnHint.gone{ opacity:0; }
+@keyframes stnHintPulse{ 0%,100%{ opacity:.7; } 50%{ opacity:1; } }
+@keyframes stnHintArrow{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(4px); } }
+/* alt mini-konum rayi (kameranin serit uzerindeki yeri) */
+.stnRail{ position:absolute; left:26%; right:26%; bottom:6.5%; height:4px; z-index:7; pointer-events:none;
+  border-radius:3px; background:rgba(255,255,255,.12); overflow:hidden; }
+.stnRail i{ position:absolute; top:50%; left:0%; transform:translate(-50%,-50%); width:38%; height:4px;
+  border-radius:3px; background:linear-gradient(90deg,#5fdcff,#6c96ff); box-shadow:0 0 7px rgba(95,200,255,.5);
+  transition:left .06s linear; }
+
+/* low-fx: ipucu ok hareketini kes, geri kalan zaten statik */
+body.nb-lowfx .stnHint span{ animation:none !important; }
+@media (prefers-reduced-motion:reduce){ .stnHint,.stnHint span{ animation:none !important; } }
+
+/* ============================================================
+   STATION PERF + ÇENTİK PAYI
+   1) İstasyon açıkken arkadaki AĞIR oyun sahnesi (tam ekran nebula bgWrap,
+      parçacıklar, savaş aktörleri, fx) GÖRÜNMÜYOR ama yine de her kare
+      kompozit/paint ediliyordu. İstasyon overlay'i zaten her şeyi kapatıyor;
+      bu yüzden arka sahneyi display:none yaparız → büyük CPU/GPU tasarrufu,
+      promenade kaydırması belirgin akıcılaşır. (World-boss da aynısını yapar.)
+   ============================================================ */
+body.stnActive #bgWrap,
+body.stnActive #particleLayer,
+body.stnActive #actors,
+body.stnActive #fxLayer,
+body.stnActive #frenzyGlow,
+body.stnActive #forceFxLayer,
+body.stnActive #buffRow,
+body.stnActive #comboBox,
+body.stnActive #alarmLayer,
+body.stnActive #flashLayer,
+body.stnActive #spaceScene{ display:none !important; }
+
+/* 2) ÇENTİK / TAM EKRAN — istasyonun üst HUD'u ve alt kontrolleri güvenli alana
+      saygı göstersin; çentik altında/jest çubuğu altında kalmasın. */
+#stnHUD{ padding-top:calc(12px + max(env(safe-area-inset-top), 8px)) !important; }
+#stnHub .stnHint{ bottom:calc(18% + env(safe-area-inset-bottom)); }
+#stnHub .stnRail{ bottom:calc(6.5% + env(safe-area-inset-bottom)); }
+.mnHud{ padding-bottom:calc(20px + max(env(safe-area-inset-bottom), 10px)) !important; }
+.stnConsole{ padding-bottom:calc(20px + max(env(safe-area-inset-bottom), 10px)) !important; }
+
+/* ============================================================
+   STATION CİLA (v2) — daha zengin/göze hoş yüzeyler. Salt CSS.
+   ============================================================ */
+.stnCur{
+  background:linear-gradient(180deg, rgba(18,26,48,.82), rgba(8,12,26,.82)) !important;
+  border:1px solid rgba(120,180,255,.28) !important;
+  box-shadow:inset 0 1px 0 rgba(150,195,255,.16), 0 2px 8px -3px rgba(0,0,0,.6) !important;
+}
+.stnHudTitle span{ text-shadow:0 0 18px rgba(120,90,235,.7), 0 1px 2px rgba(0,0,0,.6) !important; }
+.stnBack{ box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 4px 12px -4px rgba(0,0,0,.6); transition:transform .12s, filter .14s; }
+.stnBack:active{ filter:brightness(1.1); }
+/* maden HUD kartı: cam panel + üst accent hattı */
+.mnHud{
+  background:linear-gradient(180deg, transparent, rgba(10,5,22,.86) 26%, rgba(8,4,18,.985)) !important;
+}
+.mnHud::before{ content:''; position:absolute; left:14px; right:14px; top:8px; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(150,110,255,.5),transparent); }
+/* konsol (bina yükseltme) kartına derinlik */
+.stnConsole{ box-shadow:0 -10px 40px -8px rgba(0,0,0,.7), inset 0 1px 0 rgba(160,140,255,.12) !important; }
+.conLvPill{ box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 0 14px -4px var(--ac,#9a6bff); }
+/* refine + advance butonlarına dokunsal his (zaten stillendi, derinlik ekle) */
+.mnRefine,.mnAdvance{ box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 5px 16px -6px rgba(0,0,0,.6) !important; }
+.mnRefine:active:not(:disabled),.mnAdvance:active:not(:disabled){ transform:translateY(1px) scale(.99); filter:brightness(1.07); }
+
+/* ============================================================
+   3) PARALLAX KENAR BOŞLUĞU FIX — gezegen/yıldız/dağ katmanları yatay
+      süzülürken kenarlarında ASLA boşluk açılmasın diye viewport'tan belirgin
+      GENİŞ yapılır (taşma payı). Faktörler JS'te düşürüldü; buradaki overhang
+      en uç pan'da bile boşluğu kapatır. ("pembe gezegen tarafında boşluk" bug'ı)
+   ============================================================ */
+#stnHub .stnPlanet{ left:-12%; right:-12%; width:124%; }
+#stnHub .stnPlanet .pxIn{ position:absolute; inset:0 -14% 0 -14%; will-change:transform; }
+#stnHub .stnStars{ left:-14%; right:-14%; width:128%; }
+#stnHub .stnRays{ left:-14%; right:-14%; width:128%; }
+#stnHub .stnWorld .stnHorizon{ left:-18%; right:-18%; width:136%; }
+#stnHub .stnWorld .stnHorizon .pxIn{ inset:0 -20% 0 -20%; }
+
+/* ============================================================
+   4) ZEMİN DOKU + DERİNLİK GÜZELLEŞTİRME — promenade tabanını yalın gradient
+      yerine: sıcak ufuk parıltısı + ince çelik panel/ek-çizgi dokusu + yakın
+      kenarda derinlik vinyeti. Hepsi STATİK gradient → bedava (paint ucuz).
+   ============================================================ */
+#stnHub .stnGround{
+  background:
+    radial-gradient(130% 96% at 50% 2%, rgba(120,180,235,.16), transparent 52%),
+    radial-gradient(80% 60% at 14% 0%, rgba(95,200,255,.10), transparent 60%),
+    radial-gradient(80% 60% at 86% 0%, rgba(150,110,255,.10), transparent 60%),
+    linear-gradient(180deg, #2a3442 0%, #1d2632 34%, #141b25 66%, #0a0e16 100%) !important; }
+/* ufuk çizgisinde sıcak enerji şeridi */
+#stnHub .stnGround::after{ content:''; position:absolute; left:0; right:0; top:-1px; height:2px;
+  background:linear-gradient(90deg, transparent, rgba(120,210,255,.55) 30%, rgba(160,130,255,.5) 70%, transparent);
+  box-shadow:0 0 14px rgba(110,190,255,.5); pointer-events:none; }
+/* çelik döşeme dokusu: ince dikey ek-çizgi + uzak perspektif yatay hatlar */
+#stnHub .stnGround::before{ opacity:.6 !important;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(150,185,220,.055) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(90deg, rgba(150,185,220,.03) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(180deg, rgba(120,160,200,.05) 0 1px, transparent 1px 40px) !important;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 20%,#000 88%,transparent) !important;
+  mask-image:linear-gradient(180deg,transparent,#000 20%,#000 88%,transparent) !important; }
+/* yürüyüş yolu boyunca ışıklı güç-rayı biraz daha canlı */
+#stnHub .stnFloorRail{ background:linear-gradient(90deg, transparent, rgba(95,200,255,.7) 20%, rgba(160,130,255,.6) 80%, transparent) !important;
+  box-shadow:0 0 10px rgba(95,200,255,.45) !important; }
+
+/* ============================================================
+   ZEMİN BOŞLUĞU FIX — "FOREGROUND DECK"
+   Uzun (portre) telefonlarda binaların ALTINDA kalan büyük, boş ve siyaha
+   düşen zemin bandı vardı (kullanıcı: "yerdeki alanda boşluk"). Horizon,
+   dağlar ve binalara DOKUNMADAN; en alttaki bandı, üzerinde durduğumuz YAKIN
+   güverteye dönüştürüyoruz: çelik derinlik gradyanı + perspektif panel
+   dikişleri + önden gelen ışıklı kenar. Hepsi STATİK gradient → paint bedava.
+   ============================================================ */
+/* 1) Mevcut zeminin dibi artık tam siyaha düşmesin (boşluk hissini azaltır) */
+#stnHub .stnGround{
+  background:
+    radial-gradient(130% 96% at 50% 2%, rgba(120,180,235,.16), transparent 52%),
+    radial-gradient(80% 60% at 14% 0%, rgba(95,200,255,.10), transparent 60%),
+    radial-gradient(80% 60% at 86% 0%, rgba(150,110,255,.10), transparent 60%),
+    linear-gradient(180deg, #2a3442 0%, #1d2632 32%, #19222e 62%, #141c27 100%) !important; }
+/* doku, alt kenara kadar uzasın (artık 88%'de kesilip boşluk bırakmıyor) */
+#stnHub .stnGround::before{
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 100%) !important;
+  mask-image:linear-gradient(180deg,transparent,#000 18%,#000 100%) !important; }
+
+/* 2) YAKIN GÜVERTE — promenade'de gizlenen .stnBase::before yeniden kullanılır.
+      Alt ~%34'lük bandı, oyuncunun üzerinde durduğu aydınlık ön-plan zemine
+      çevirir: çelik gradyan + perspektif panel ızgarası, üstte yumuşak geçiş. */
+#stnHub .stnWorld .stnBase::before{
+  content:''; display:block !important; position:absolute; left:0; right:0; top:auto; bottom:0;
+  height:38%; z-index:1; pointer-events:none; opacity:1;
+  background:
+    repeating-linear-gradient(90deg, rgba(165,200,235,.09) 0 1px, transparent 1px 70px),
+    repeating-linear-gradient(180deg, rgba(130,175,215,.07) 0 1px, transparent 1px 32px),
+    linear-gradient(180deg, rgba(40,52,67,0) 0%, rgba(46,59,75,.7) 26%, #34414f 62%, #232e3b 100%) !important;
+  -webkit-mask-image:linear-gradient(180deg, transparent, #000 30%, #000 100%) !important;
+  mask-image:linear-gradient(180deg, transparent, #000 30%, #000 100%) !important; }
+/* yakın güvertenin ön kenarında ışıklı eşik (derinlik / "buradan başlar") */
+#stnHub .stnWorld .stnBase::after{
+  content:''; display:block !important; position:absolute; left:3%; right:3%; bottom:38%; top:auto;
+  height:2px; z-index:2; pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(120,205,255,.6) 20%, rgba(165,135,255,.5) 80%, transparent);
+  box-shadow:0 0 16px rgba(105,190,255,.4); }
+
+/* =============================================================================
+   TERRAIN — NIHAİ KALİTE GEÇİŞİ (yalnızca ZEMİN; gezegen/gökyüzü atmosferi aynı)
+   Tümü STATİK gradient katmanları → bir kez boyanır, önbelleğe alınır. Promenade
+   pan'i .stnWorld'ü translate3d ile kaydırdığından zemin GPU'da kompozit edilir,
+   ASLA yeniden boyanmaz. Endüstriyel "hex-tech güverte": çelik plakalar + perçinler
+   + ince tread dokusu + perspektif derinlik hatları + ufuk ışığı.
+   ============================================================================= */
+#stnHub .stnGround{
+  background:
+    /* ufuktan sızan tepe ışığı */
+    radial-gradient(150% 78% at 50% 0%, rgba(125,195,255,.22), transparent 56%),
+    /* üssün altındaki sıcak çekirdek parıltısı */
+    radial-gradient(72% 130% at 50% 6%, rgba(150,120,255,.13), transparent 62%),
+    /* kenar derinlik vinyeti */
+    radial-gradient(120% 100% at 50% 120%, rgba(0,0,0,.5), transparent 60%),
+    /* taban çelik dikey tonlama */
+    linear-gradient(180deg, #2c3a4d 0%, #213040 28%, #182230 58%, #0e151f 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(150,205,255,.20) !important;
+}
+#stnHub .stnGround::before{
+  content:''; position:absolute; inset:0; opacity:1 !important; pointer-events:none;
+  background-image:
+    /* panel köşe perçinleri */
+    radial-gradient(circle at 1px 1px, rgba(180,215,250,.16) 0 1.3px, transparent 1.9px),
+    /* çapraz tread mikro-dokusu (metalik) */
+    repeating-linear-gradient(45deg, rgba(255,255,255,.022) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,.06) 0 2px, transparent 2px 7px),
+    /* büyük panel dikey ek-yerleri + iç pah ışığı */
+    repeating-linear-gradient(90deg, rgba(8,12,18,.6) 0 2px, rgba(150,190,235,.05) 2px 3px, transparent 3px 128px),
+    /* perspektif güverte yatay hatları (ufka doğru maskeyle solar) */
+    repeating-linear-gradient(0deg, rgba(8,12,18,.42) 0 2px, transparent 2px 64px) !important;
+  background-size: 128px 64px, auto, auto, auto, auto !important;
+  background-position: 0 0 !important;
+  -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 13%, #000 100%) !important;
+          mask-image:linear-gradient(180deg, transparent 0, #000 13%, #000 100%) !important;
+}
+/* ufuk enerji şeridi (eşik) */
+#stnHub .stnGround::after{
+  content:''; position:absolute; left:0; right:0; top:-1px; height:3px;
+  background:linear-gradient(90deg, transparent, rgba(120,210,255,.62) 28%, rgba(168,135,255,.56) 72%, transparent) !important;
+  box-shadow:0 0 16px rgba(110,190,255,.5) !important; pointer-events:none; }
+/* YAKIN ÖN-DECK — oyuncunun üzerinde durduğu aydınlık güverte (daha belirgin plaka + tread) */
+#stnHub .stnWorld .stnBase::before{
+  content:''; display:block !important; position:absolute; left:0; right:0; top:auto; bottom:0;
+  height:38%; z-index:1; pointer-events:none; opacity:1;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(190,220,250,.14) 0 1.4px, transparent 2px),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(90deg, rgba(10,14,20,.5) 0 2px, rgba(165,200,235,.07) 2px 3px, transparent 3px 92px),
+    repeating-linear-gradient(0deg, rgba(10,14,20,.32) 0 1px, transparent 1px 30px),
+    linear-gradient(180deg, rgba(46,60,78,0) 0%, rgba(52,67,86,.78) 26%, #3a4858 60%, #26323f 100%) !important;
+  background-size: 92px 30px, auto, auto, auto, auto !important;
+  -webkit-mask-image:linear-gradient(180deg, transparent, #000 30%, #000 100%) !important;
+          mask-image:linear-gradient(180deg, transparent, #000 30%, #000 100%) !important; }
+
+/* =============================================================================
+   HUB REDESIGN v10 — "CONTROL DECK"  (en sonda → tüm eski promenade kurallarını ezer)
+   Sürükle-gez kaldırıldı. İstasyon artık çerçeveye TAM oturan, kaydırmasız (gerekirse
+   dikey kayan) bir kontrol güvertesi: üstte gezegen/aurora arka planı, ortada komuta
+   çekirdeği başlığı, 2×2 etkileşimli bina kılavuzu, altta hyperdrive CTA. Her şey
+   her zaman görünür ve çerçeveden taşmaz.
+   ============================================================================= */
+#stnHub{ position:absolute; inset:0; overflow:hidden; }
+/* arka plan katmanları — tüm hub'ı kaplar, sabit (parallax yok) */
+#stnHub .stnSky{ position:absolute; inset:0; z-index:0; }
+#stnHub .stnPlanet{ position:absolute; left:-6%; right:-6%; top:0; width:112%; height:42%; z-index:0; opacity:.9; }
+#stnHub .stnPlanet .pxIn{ position:absolute; inset:0; transform:none !important; }
+#stnHub .stnStars{ position:absolute; left:0; right:0; top:0; width:100%; height:46%; z-index:0; transform:none !important; }
+#stnHub .stnRays{ position:absolute !important; left:0; right:0; top:1%; width:100%; height:44%; z-index:0; }
+#stnHub .stnHorizon{ position:absolute; left:-4%; right:-4%; top:auto; bottom:auto; width:108%;
+  height:clamp(80px,15vh,150px); margin:0; z-index:0; opacity:.7;
+  top:30%; -webkit-mask-image:linear-gradient(180deg,#000,transparent); mask-image:linear-gradient(180deg,#000,transparent); }
+#stnHub .stnHorizon .pxIn{ position:absolute; inset:0; transform:none !important; }
+#stnHub .stnVign{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+
+/* gövde — HUD'un altından başlar, içerik sığmazsa dikey kayar */
+.stnHubBody{ position:absolute; left:0; right:0; z-index:5;
+  top:calc(58px + max(env(safe-area-inset-top),6px)); bottom:0;
+  display:flex; flex-direction:column; gap:13px;
+  padding:6px clamp(12px,4vw,20px) calc(16px + env(safe-area-inset-bottom));
+  overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.stnHubBody::-webkit-scrollbar{ display:none; }
+
+/* komuta çekirdeği başlığı */
+.stnHero{ flex:0 0 auto; display:flex; align-items:center; gap:13px; padding:4px 2px 2px; }
+.stnHeroArt{ width:64px; height:74px; flex:0 0 auto; position:relative;
+  filter:drop-shadow(0 6px 12px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(95,220,255,.35)); }
+.stnHeroArt svg{ width:100%; height:100%; display:block; }
+.stnHeroTxt{ min-width:0; }
+.stnHeroName{ font-size:19px; font-weight:900; letter-spacing:.06em; color:#eaf4ff; line-height:1.05;
+  text-shadow:0 0 18px rgba(120,90,235,.6); }
+.stnHeroSub{ font-size:9px; font-weight:700; letter-spacing:.22em; color:#7f9cc4; margin-top:5px; }
+
+/* 2×2 bina kılavuzu */
+.stnGrid{ flex:0 0 auto; display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+.stnTile{ position:relative; appearance:none; cursor:pointer; padding:0; overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--ac,#5fdcff) 42%, transparent); border-radius:16px;
+  background:linear-gradient(180deg, rgba(16,24,44,.86), rgba(8,12,24,.92));
+  box-shadow:0 6px 18px -8px rgba(0,0,0,.7), inset 0 1px 0 rgba(160,200,255,.1),
+    0 0 16px -6px color-mix(in srgb,var(--ac,#5fdcff) 50%, transparent);
+  display:flex; flex-direction:column; transition:transform .12s ease, box-shadow .2s ease; }
+.stnTile:active{ transform:scale(.975); }
+.stnTileArt{ position:relative; height:clamp(96px,17vh,128px); display:flex; align-items:flex-end; justify-content:center;
+  background:radial-gradient(120% 90% at 50% 18%, color-mix(in srgb,var(--ac,#5fdcff) 16%, transparent), transparent 64%); }
+.stnTileArt svg{ width:78%; height:96%; display:block; filter:drop-shadow(0 6px 10px rgba(0,0,0,.5)); }
+.stnTileInfo{ padding:8px 11px 11px; border-top:1px solid rgba(120,180,255,.12);
+  background:linear-gradient(180deg, rgba(10,16,30,.4), rgba(6,10,20,.7)); }
+.stnTileTop{ display:flex; align-items:baseline; justify-content:space-between; gap:6px; }
+.stnTileName{ font-size:10.5px; font-weight:900; letter-spacing:.07em; color:#eaf4ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.stnTileLv{ font-size:10px; font-weight:800; color:var(--ac,#5fdcff); white-space:nowrap; flex:0 0 auto; }
+.stnTileBar{ height:5px; border-radius:4px; margin:7px 0 6px; background:rgba(0,0,0,.45);
+  border:1px solid rgba(120,180,255,.14); overflow:hidden; }
+.stnTileBar i{ display:block; height:100%; border-radius:4px; transition:width .4s ease; }
+.stnTileFoot{ font-size:9.5px; font-weight:800; letter-spacing:.04em; color:#9db3d2; }
+.stnTileNow{ color:#cfe0f6; }
+.stnTileMax{ color:#ffd87a; }
+.stnTileLock{ color:#ff96a4; }
+/* maxed: altın kenar */
+.stnTile.maxed{ border-color:rgba(255,216,122,.5); box-shadow:0 6px 18px -8px rgba(0,0,0,.7), 0 0 18px -4px rgba(255,200,90,.5); }
+/* kilitli: gri + kırmızı bariyer */
+.stnTile.locked .stnTileArt svg{ filter:grayscale(.75) brightness(.6); }
+.stnTile.locked{ border-color:rgba(255,90,110,.42); }
+.stnTileBarrier{ position:absolute; left:0; right:0; top:0; height:clamp(96px,17vh,128px); z-index:2; pointer-events:none;
+  background:repeating-linear-gradient(125deg, rgba(255,55,85,.16) 0 9px, rgba(255,55,85,.04) 9px 18px); }
+.stnTileBarrier::after{ content:'🔒'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  font-size:24px; filter:drop-shadow(0 0 7px rgba(255,60,90,.9)); }
+
+/* hyperdrive pad CTA kartı */
+.stnPadCard{ flex:0 0 auto; appearance:none; cursor:pointer; margin-top:auto;
+  display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px;
+  border:1px solid rgba(255,150,80,.4); background:linear-gradient(180deg, rgba(40,24,16,.7), rgba(20,12,8,.85));
+  box-shadow:inset 0 1px 0 rgba(255,200,150,.16), 0 6px 18px -8px rgba(0,0,0,.7); transition:transform .12s ease; }
+.stnPadCard:active{ transform:scale(.985); }
+.stnPadArt{ width:62px; height:34px; flex:0 0 auto; }
+.stnPadArt svg{ width:100%; height:100%; display:block; }
+.stnPadTxt{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; text-align:left; }
+.stnPadTxt b{ font-size:12px; font-weight:900; letter-spacing:.12em; color:#ffe2c8; }
+.stnPadTxt i{ font-size:10.5px; font-style:normal; font-weight:700; color:#ffbf96; }
+.stnPadGo{ flex:0 0 auto; font-size:22px; font-weight:900; color:#ffb27a; }
+.stnPadCard.go{ border-color:rgba(255,140,60,.7); box-shadow:inset 0 1px 0 rgba(255,200,150,.2), 0 0 22px -4px rgba(255,130,50,.6); animation:stnLockPulse 2s ease-in-out infinite; }
+.stnPadCard.lock .stnPadTxt i{ color:#ff96a4; }
+.stnPadCard.dim{ filter:grayscale(.5) brightness(.7); }
+.stnPadCard.dim .stnPadTxt b{ color:#9fb0c6; } .stnPadCard.dim .stnPadTxt i{ color:#6f88a8; } .stnPadCard.dim .stnPadGo{ color:#5a6a82; }
+
+/* HUD başlık fazla uzun olmasın diye min genişlik koruması */
+#stnHUD{ padding:12px clamp(10px,4vw,16px); }
+#stnHUD .stnHudTitle span{ font-size:14px; }
+
+/* küçük çerçevelerde (kısa ekran) sıkılaştır */
+@media (max-height:680px){
+  .stnTileArt{ height:84px; }
+  .stnTileBarrier{ height:84px; }
+  .stnHero{ padding-top:0; }
+  .stnHeroArt{ width:54px; height:62px; }
+}
