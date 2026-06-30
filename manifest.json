@@ -1,12 +1,23 @@
 {
   "name": "Nova Blade",
   "short_name": "Nova Blade",
-  "description": "An action-packed survival game. Fight enemies and upgrade your hero!",
-  "start_url": "./",
+  "start_url": "index.html",
   "display": "fullscreen",
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
   "scope": "./",
-  "lang": "en"
+  "lang": "en",
+  "icons": [
+    {
+      "src": "https://talhamert03.github.io/Nova-Blade/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "https://talhamert03.github.io/Nova-Blade/icon512.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
 }
