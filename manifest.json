@@ -3,11 +3,15 @@
   "dir": "ltr",
   "display": "standalone",
   "name": "NovaBlade",
-  "orientation": "any",
-  "scope": "/",
+  "orientation": "portrait",
+  "scope": "./",
   "short_name": "NovaBlade",
-  "start_url": "/",
+  "start_url": "index.html",
   "theme_color": "#ffffff",
   "id": "com.alphawolfgames.novablade",
-  "description": "An action-packed survival game. Fight enemies and upgrade your hero!\""
+  "description": "An action-packed survival game. Fight enemies and upgrade your hero!\"",
+  "lang": "en",
+  "categories": [
+    "games"
+  ]
 }
